@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>TDT Tygervalley Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f8f8f7;--surface:#ffffff;--border:#e5e4e0;--border-hover:#cccbc7;
+  --text:#1a1a18;--text-muted:#6b6a66;--text-hint:#9c9b97;
+  --accent:#1a1a18;--accent-fg:#ffffff;
+  --success-bg:#eaf3de;--success-text:#3b6d11;
+  --warning-bg:#faeeda;--warning-text:#854f0b;
+  --danger-bg:#fcebeb;--danger-text:#a32d2d;
+  --info-bg:#e6f1fb;--info-text:#185fa5;
+  --radius-sm:6px;--radius-md:8px;--radius-lg:12px;
+}
+body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:var(--bg);height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:212px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:16px 18px;border-bottom:1px solid var(--border);font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;color:var(--text)}
+.sidebar-logo i{font-size:18px}
+.sidebar-nav{flex:1;padding:8px}
+.nav-section{font-size:10px;color:var(--text-hint);padding:10px 10px 4px;text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--radius-md);cursor:pointer;font-size:12.5px;color:var(--text-muted);margin-bottom:1px;transition:background 0.12s,color 0.12s}
+.nav-item:hover{background:#f0efeb;color:var(--text)}
+.nav-item.active{background:#f0efeb;color:var(--text);font-weight:500}
+.nav-item i{font-size:15px;flex-shrink:0}
+.sidebar-footer{padding:8px;border-top:1px solid var(--border)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:50px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex-shrink:0}
+.topbar-title{font-weight:600;font-size:14px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--info-bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--info-text)}
+.content{flex:1;overflow-y:auto;padding:22px}
+.page{display:none}
+.page.active{display:block}
+
+/* GRIDS */
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:18px}
+
+/* METRIC CARD */
+.metric-card{background:#f0efeb;border-radius:var(--radius-md);padding:14px 16px}
+.metric-label{font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.metric-value{font-size:22px;font-weight:600}
+.metric-sub{font-size:11px;color:var(--text-hint);margin-top:2px}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:14px}
+.card-title{font-weight:600;font-size:13px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--radius-sm);font-size:11px;font-weight:500}
+.badge-success{background:var(--success-bg);color:var(--success-text)}
+.badge-warning{background:var(--warning-bg);color:var(--warning-text)}
+.badge-danger{background:var(--danger-bg);color:var(--danger-text)}
+.badge-info{background:var(--info-bg);color:var(--info-text)}
+.badge-gray{background:#f0efeb;color:var(--text-muted)}
+
+/* ALERT ROWS */
+.alert-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.alert-row:last-child{border-bottom:none;padding-bottom:0}
+.alert-row i{font-size:15px;flex-shrink:0}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.tbl th{text-align:left;padding:8px 10px;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;white-space:nowrap}
+.tbl td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:#f8f8f7}
+.tbl tr.clickable{cursor:pointer}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;transition:background 0.12s}
+.btn:hover{background:#f0efeb}
+.btn-primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn-primary:hover{opacity:0.88}
+.btn-sm{padding:4px 10px;font-size:11px}
+
+/* INITIALS */
+.init{width:28px;height:28px;border-radius:50%;background:var(--info-bg);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--info-text);flex-shrink:0}
+.mono{font-family:'Courier New',monospace;font-size:11px;background:#f0efeb;padding:2px 6px;border-radius:4px}
+
+/* KANBAN */
+.kanban{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kcol{background:#f0efeb;border-radius:var(--radius-lg);padding:12px}
+.kcol-title{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:0.04em}
+.ktask{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;margin-bottom:8px;font-size:12px}
+.ktask-title{font-weight:500;margin-bottom:3px}
+.ktask-meta{color:var(--text-muted);font-size:11px;display:flex;align-items:center;gap:4px;margin-top:6px}
+
+/* DOC ROWS */
+.doc-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}
+.doc-row:last-child{border-bottom:none}
+.doc-icon{width:32px;height:32px;border-radius:var(--radius-md);background:var(--info-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.doc-icon i{font-size:15px;color:var(--info-text)}
+
+/* BACK BTN */
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text-muted);cursor:pointer;margin-bottom:14px;padding:4px 0}
+.back-btn:hover{color:var(--text)}
+
+/* DETAIL */
+.detail-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.detail-avatar{width:46px;height:46px;border-radius:50%;background:var(--info-bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--info-text);flex-shrink:0}
+.field-label{font-size:11px;color:var(--text-muted);margin-bottom:2px}
+.field-value{font-size:13px;font-weight:500}
+.field-group{margin-bottom:12px}
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-field label{font-size:11px;color:var(--text-muted);font-weight:500}
+.form-field input,.form-field select{font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);width:100%;font-family:'Inter',sans-serif;outline:none}
+.form-field input:focus,.form-field select:focus{border-color:var(--accent)}
+
+/* ONBOARDING STEPS */
+.steps-bar{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border)}
+.step{flex:1;padding:10px 12px;font-size:11px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;transition:all 0.15s}
+.step.active{color:var(--text);border-bottom-color:var(--text)}
+.step.done{color:var(--success-text);border-bottom-color:var(--success-text)}
+
+/* UPLOAD BOXES */
+.upload-box{border:1.5px dashed var(--border);border-radius:var(--radius-md);padding:18px;text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:10px;cursor:pointer;transition:background 0.12s}
+.upload-box:hover{background:#f0efeb}
+.upload-box i{font-size:22px;display:block;margin-bottom:6px}
+.upload-done{border-style:solid;border-color:#c0dd97;background:var(--success-bg);color:var(--success-text)}
+
+/* CONSENT */
+.consent-box{background:#f0efeb;border-radius:var(--radius-md);padding:14px 16px;margin-bottom:14px;font-size:12px;line-height:1.7;color:var(--text-muted)}
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:12px}
+.check-row input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--accent)}
+
+/* MISC */
+.pg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pg-sub{font-size:12px;color:var(--text-muted)}
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:var(--radius-sm);font-size:11px;background:#f0efeb;color:var(--text-muted);margin-right:4px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo"><i class="ti ti-steering-wheel"></i>TDT Tygervalley</div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+    <div class="nav-section">People</div>
+    <div class="nav-item" onclick="nav('drivers',this)"><i class="ti ti-users"></i>Drivers</div>
+    <div class="nav-item" onclick="nav('onboarding',this)"><i class="ti ti-clipboard-check"></i>Onboarding</div>
+    <div class="nav-section">Fleet</div>
+    <div class="nav-item" onclick="nav('vehicles',this)"><i class="ti ti-truck"></i>Vehicles</div>
+    <div class="nav-item" onclick="nav('uniforms',this)"><i class="ti ti-shirt"></i>Uniforms</div>
+    <div class="nav-section">Operations</div>
+    <div class="nav-item" onclick="nav('tasks',this)"><i class="ti ti-clipboard-list"></i>Tasks</div>
+    <div class="nav-item" onclick="nav('contracts',this)"><i class="ti ti-file-text"></i>Contracts</div>
+    <div class="nav-item" onclick="nav('compliance',this)"><i class="ti ti-writing"></i>Compliance</div>
+    <div class="nav-section">Documents</div>
+    <div class="nav-item" onclick="nav('sops',this)"><i class="ti ti-file-description"></i>SOPs</div>
+    <div class="nav-item" onclick="nav('policies',this)"><i class="ti ti-book"></i>Policies</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="nav-item"><i class="ti ti-settings"></i>Settings</div>
+    <div class="nav-item"><i class="ti ti-logout"></i>Sign out</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-right">
+      <span style="font-size:12px;color:var(--text-muted)">Fleet Manager</span>
+      <div class="avatar">FM</div>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="grid-3">
+        <div class="metric-card"><div class="metric-label">Active drivers</div><div class="metric-value">24</div><div class="metric-sub">2 on leave</div></div>
+        <div class="metric-card"><div class="metric-label">Vehicles</div><div class="metric-value">18</div><div class="metric-sub">3 in maintenance</div></div>
+        <div class="metric-card"><div class="metric-label">Open tasks</div><div class="metric-value">9</div><div class="metric-sub">3 overdue</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><span><i class="ti ti-alert-triangle" style="color:#854f0b;margin-right:5px"></i>Expiry alerts</span><span class="badge badge-danger">4 urgent</span></div>
+          <div class="alert-row"><i class="ti ti-id" style="color:#a32d2d"></i><div style="flex:1"><div>James Molefe — driver license</div><div style="font-size:11px;color:var(--text-muted)">Expires in 8 days</div></div><span class="badge badge-danger">Urgent</span></div>
+          <div class="alert-row"><i class="ti ti-truck" style="color:#a32d2d"></i><div style="flex:1"><div>CA 123-456 — roadworthy</div><div style="font-size:11px;color:var(--text-muted)">Expires in 12 days</div></div><span class="badge badge-danger">Urgent</span></div>
+          <div class="alert-row"><i class="ti ti-id" style="color:#854f0b"></i><div style="flex:1"><div>Sipho Dlamini — PDP</div><div style="font-size:11px;color:var(--text-muted)">Expires in 31 days</div></div><span class="badge badge-warning">Soon</span></div>
+          <div class="alert-row"><i class="ti ti-truck" style="color:#854f0b"></i><div style="flex:1"><div>WC 789-012 — license disc</div><div style="font-size:11px;color:var(--text-muted)">Expires in 45 days</div></div><span class="badge badge-warning">Soon</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span><i class="ti ti-clipboard-list" style="margin-right:5px"></i>Recent tasks</span><span class="badge badge-info">9 open</span></div>
+          <div class="alert-row"><i class="ti ti-circle" style="color:#a32d2d"></i><div style="flex:1"><div>License renewal — J. Molefe</div><div style="font-size:11px;color:var(--text-muted)">Allocated → HR</div></div><span class="badge badge-danger">Overdue</span></div>
+          <div class="alert-row"><i class="ti ti-circle" style="color:#854f0b"></i><div style="flex:1"><div>Vehicle inspection CA 123-456</div><div style="font-size:11px;color:var(--text-muted)">In progress → Tech</div></div><span class="badge badge-warning">In progress</span></div>
+          <div class="alert-row"><i class="ti ti-circle" style="color:#185fa5"></i><div style="flex:1"><div>Uniform allocation — 3 new drivers</div><div style="font-size:11px;color:var(--text-muted)">Initialised</div></div><span class="badge badge-gray">New</span></div>
+          <div class="alert-row"><i class="ti ti-circle-check" style="color:#3b6d11"></i><div style="flex:1"><div>SOP sign-off — F. Naidoo</div><div style="font-size:11px;color:var(--text-muted)">Completed yesterday</div></div><span class="badge badge-success">Done</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span><i class="ti ti-clipboard-check" style="margin-right:5px"></i>Onboarding in progress</span><span class="badge badge-info">3 active</span></div>
+        <table class="tbl"><thead><tr><th style="width:22%">Name</th><th style="width:28%">Email</th><th style="width:16%">Status</th><th style="width:18%">Current step</th><th style="width:16%">Started</th></tr></thead>
+        <tbody>
+          <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td>thabo.p@fleet.co.za</td><td><span class="badge badge-info">In progress</span></td><td>Uploads</td><td>8 May 2025</td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="init">NK</div>Nomsa Khumalo</div></td><td>nomsa.k@fleet.co.za</td><td><span class="badge badge-warning">Awaiting docs</span></td><td>Financial</td><td>10 May 2025</td></tr>
+          <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="init">RS</div>Ruan Smith</div></td><td>ruan.s@fleet.co.za</td><td><span class="badge badge-gray">Not started</span></td><td>Personal details</td><td>13 May 2025</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- DRIVERS -->
+    <div class="page" id="page-drivers">
+      <div id="drivers-list">
+        <div class="pg-hdr"><div class="pg-sub">24 drivers registered</div><button class="btn btn-primary btn-sm" onclick="nav('onboarding',document.querySelectorAll('.nav-item')[2])"><i class="ti ti-plus"></i>Add driver</button></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th style="width:22%">Driver</th><th style="width:13%">Staff code</th><th style="width:11%">License</th><th style="width:14%">License expiry</th><th style="width:14%">PDP expiry</th><th style="width:13%">Status</th><th style="width:13%"></th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="showDriver('JM','James Molefe','DRV-001','Code 10','james.m@fleet.co.za','+27 82 555 0101','Cape Town','badge-danger','8 days','badge-success','14 months','badge-success','Active')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">JM</div>James Molefe</div></td><td><span class="mono">DRV-001</span></td><td>Code 10</td><td><span class="badge badge-danger">8 days</span></td><td><span class="badge badge-success">14 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('JM','James Molefe','DRV-001','Code 10','james.m@fleet.co.za','+27 82 555 0101','Cape Town','badge-danger','8 days','badge-success','14 months','badge-success','Active')">View</button></td></tr>
+              <tr class="clickable" onclick="showDriver('SD','Sipho Dlamini','DRV-002','Code 14','sipho.d@fleet.co.za','+27 83 555 0202','Johannesburg','badge-success','11 months','badge-warning','31 days','badge-success','Active')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">SD</div>Sipho Dlamini</div></td><td><span class="mono">DRV-002</span></td><td>Code 14</td><td><span class="badge badge-success">11 months</span></td><td><span class="badge badge-warning">31 days</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('SD','Sipho Dlamini','DRV-002','Code 14','sipho.d@fleet.co.za','+27 83 555 0202','Johannesburg','badge-success','11 months','badge-warning','31 days','badge-success','Active')">View</button></td></tr>
+              <tr class="clickable" onclick="showDriver('FN','Fatima Naidoo','DRV-003','Code 10','fatima.n@fleet.co.za','+27 84 555 0303','Durban','badge-success','8 months','badge-success','9 months','badge-success','Active')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">FN</div>Fatima Naidoo</div></td><td><span class="mono">DRV-003</span></td><td>Code 10</td><td><span class="badge badge-success">8 months</span></td><td><span class="badge badge-success">9 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('FN','Fatima Naidoo','DRV-003','Code 10','fatima.n@fleet.co.za','+27 84 555 0303','Durban','badge-success','8 months','badge-success','9 months','badge-success','Active')">View</button></td></tr>
+              <tr class="clickable" onclick="showDriver('TP','Thabo Pretorius','DRV-004','Code 08','thabo.p@fleet.co.za','+27 85 555 0404','Pretoria','badge-success','5 months','badge-gray','N/A','badge-gray','On leave')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td><span class="mono">DRV-004</span></td><td>Code 08</td><td><span class="badge badge-success">5 months</span></td><td>—</td><td><span class="badge badge-gray">On leave</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('TP','Thabo Pretorius','DRV-004','Code 08','thabo.p@fleet.co.za','+27 85 555 0404','Pretoria','badge-success','5 months','badge-gray','N/A','badge-gray','On leave')">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="driver-detail" style="display:none">
+        <div class="back-btn" onclick="document.getElementById('drivers-list').style.display='';document.getElementById('driver-detail').style.display='none'"><i class="ti ti-arrow-left"></i>Back to drivers</div>
+        <div class="card">
+          <div class="detail-header">
+            <div class="detail-avatar" id="d-init"></div>
+            <div><div style="font-weight:600;font-size:15px" id="d-name"></div><div style="font-size:12px;color:var(--text-muted)" id="d-code"></div></div>
+            <div style="margin-left:auto" id="d-status-badge"></div>
+          </div>
+          <hr class="divider">
+          <div class="form-grid">
+            <div class="field-group"><div class="field-label">License type</div><div class="field-value" id="d-license"></div></div>
+            <div class="field-group"><div class="field-label">Email</div><div class="field-value" id="d-email"></div></div>
+            <div class="field-group"><div class="field-label">Phone</div><div class="field-value" id="d-phone"></div></div>
+            <div class="field-group"><div class="field-label">Location</div><div class="field-value" id="d-location"></div></div>
+            <div class="field-group"><div class="field-label">License expiry</div><div class="field-value" id="d-lic-exp"></div></div>
+            <div class="field-group"><div class="field-label">PDP expiry</div><div class="field-value" id="d-pdp-exp"></div></div>
+          </div>
+          <hr class="divider">
+          <div style="font-weight:600;font-size:12px;margin-bottom:10px">Documents on file</div>
+          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Driver's license</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">ID document</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Proof of address</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Vehicle license</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONBOARDING -->
+    <div class="page" id="page-onboarding">
+      <div id="ob-list">
+        <div class="pg-hdr"><div class="pg-sub">Onboarding journeys are started from a driver's profile.</div><button class="btn btn-primary btn-sm" onclick="showOb()"><i class="ti ti-plus"></i>Start onboarding</button></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th style="width:22%">Name</th><th style="width:28%">Email</th><th style="width:16%">Status</th><th style="width:18%">Current step</th><th style="width:16%">Started</th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="showOb(3)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">JM</div>James Molefe</div></td><td>james.m@fleet.co.za</td><td><span class="badge badge-success">Complete</span></td><td>Data protection</td><td>12 Jan 2025</td></tr>
+              <tr class="clickable" onclick="showOb(1)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td>thabo.p@fleet.co.za</td><td><span class="badge badge-info">In progress</span></td><td>Uploads</td><td>8 May 2025</td></tr>
+              <tr class="clickable" onclick="showOb(2)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">NK</div>Nomsa Khumalo</div></td><td>nomsa.k@fleet.co.za</td><td><span class="badge badge-warning">Awaiting docs</span></td><td>Financial</td><td>10 May 2025</td></tr>
+              <tr class="clickable" onclick="showOb(0)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">RS</div>Ruan Smith</div></td><td>ruan.s@fleet.co.za</td><td><span class="badge badge-gray">Not started</span></td><td>Personal details</td><td>13 May 2025</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="ob-form" style="display:none">
+        <div class="back-btn" onclick="document.getElementById('ob-list').style.display='';document.getElementById('ob-form').style.display='none'"><i class="ti ti-arrow-left"></i>Back to onboarding</div>
+        <div class="steps-bar">
+          <div class="step" onclick="setStep(0)">1. Personal details</div>
+          <div class="step" onclick="setStep(1)">2. Uploads</div>
+          <div class="step" onclick="setStep(2)">3. Financial</div>
+          <div class="step" onclick="setStep(3)">4. Data protection</div>
+        </div>
+        <div id="ob-step-0" style="display:none">
+          <div class="card">
+            <div class="card-title">Personal details</div>
+            <div class="form-grid">
+              <div class="form-field"><label>First name</label><input type="text" value="Thabo"></div>
+              <div class="form-field"><label>Last name</label><input type="text" value="Pretorius"></div>
+              <div class="form-field"><label>Email address</label><input type="email" value="thabo.p@fleet.co.za"></div>
+              <div class="form-field"><label>Phone number</label><input type="tel" value="+27 85 555 0404"></div>
+              <div class="form-field"><label>SA ID number</label><input type="text" placeholder="13-digit ID number"></div>
+              <div class="form-field"><label>Staff code</label><input type="text" value="DRV-004"></div>
+              <div class="form-field"><label>License type</label><select><option>Code 08</option><option>Code 10</option><option>Code 14</option></select></div>
+              <div class="form-field"><label>License number</label><input type="text" placeholder="License number"></div>
+            </div>
+            <div class="form-field" style="margin-bottom:14px"><label>Residential address</label><input type="text" placeholder="Street, suburb, city, postal code"></div>
+            <button class="btn btn-primary" onclick="setStep(1)">Next — uploads <i class="ti ti-arrow-right"></i></button>
+          </div>
+        </div>
+        <div id="ob-step-1" style="display:none">
+          <div class="card">
+            <div class="card-title">Document uploads</div>
+            <div class="upload-done upload-box"><i class="ti ti-circle-check"></i>Driver's license — uploaded</div>
+            <div class="upload-done upload-box"><i class="ti ti-circle-check"></i>ID document — uploaded</div>
+            <div class="upload-box"><i class="ti ti-upload"></i>Proof of address<div style="font-size:11px;margin-top:3px">Click to upload PDF or image</div></div>
+            <div class="upload-box"><i class="ti ti-upload"></i>Vehicle license<div style="font-size:11px;margin-top:3px">Click to upload PDF or image</div></div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <button class="btn" onclick="setStep(0)"><i class="ti ti-arrow-left"></i>Back</button>
+              <button class="btn btn-primary" onclick="setStep(2)">Next — financial <i class="ti ti-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div id="ob-step-2" style="display:none">
+          <div class="card">
+            <div class="card-title">Banking details</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Bank name</label><select><option>ABSA</option><option>Standard Bank</option><option>FNB</option><option>Nedbank</option><option>Capitec</option></select></div>
+              <div class="form-field"><label>Account type</label><select><option>Cheque / current</option><option>Savings</option><option>Transmission</option></select></div>
+              <div class="form-field"><label>Account number</label><input type="text" placeholder="Account number"></div>
+              <div class="form-field"><label>Branch code</label><input type="text" placeholder="6-digit branch code"></div>
+              <div class="form-field"><label>Account holder name</label><input type="text" value="Thabo Pretorius"></div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="setStep(1)"><i class="ti ti-arrow-left"></i>Back</button>
+              <button class="btn btn-primary" onclick="setStep(3)">Next — data protection <i class="ti ti-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div id="ob-step-3" style="display:none">
+          <div class="card">
+            <div class="card-title">Data protection &amp; consent</div>
+            <div class="consent-box">By completing this onboarding, you acknowledge that TDT Tygervalley will collect, store and process your personal information in accordance with the Protection of Personal Information Act (POPIA). Your data will only be used for employment and fleet management purposes.</div>
+            <div class="check-row"><input type="checkbox" id="c1"><label for="c1">I consent to TDT Tygervalley processing my personal information as described above.</label></div>
+            <div class="check-row"><input type="checkbox" id="c2"><label for="c2">I confirm that all information and documents provided are accurate and authentic.</label></div>
+            <div class="check-row"><input type="checkbox" id="c3"><label for="c3">I have read and understood the company's data protection policy.</label></div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn" onclick="setStep(2)"><i class="ti ti-arrow-left"></i>Back</button>
+              <button class="btn btn-primary"><i class="ti ti-check"></i>Complete onboarding</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VEHICLES -->
+    <div class="page" id="page-vehicles">
+      <div class="pg-hdr"><div class="pg-sub">18 vehicles in fleet</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Add vehicle</button></div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th style="width:14%">Registration</th><th style="width:22%">Type / make</th><th style="width:18%">Assigned driver</th><th style="width:14%">License disc</th><th style="width:14%">Roadworthy</th><th style="width:10%">Status</th><th style="width:8%"></th></tr></thead>
+          <tbody>
+            <tr><td><span class="mono">CA 123-456</span></td><td>Rigid truck — Hino 300</td><td>James Molefe</td><td><span class="badge badge-success">6 months</span></td><td><span class="badge badge-danger">12 days</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+            <tr><td><span class="mono">WC 789-012</span></td><td>Panel van — Sprinter</td><td>Fatima Naidoo</td><td><span class="badge badge-warning">45 days</span></td><td><span class="badge badge-success">8 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+            <tr><td><span class="mono">GP 345-678</span></td><td>Tautliner — Freightliner</td><td>Sipho Dlamini</td><td><span class="badge badge-success">10 months</span></td><td><span class="badge badge-success">4 months</span></td><td><span class="badge badge-gray">Maintenance</span></td><td><button class="btn btn-sm">View</button></td></tr>
+            <tr><td><span class="mono">NL 901-234</span></td><td>Tipper — Volvo FMX</td><td>Thabo Pretorius</td><td><span class="badge badge-success">7 months</span></td><td><span class="badge badge-success">11 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- UNIFORMS -->
+    <div class="page" id="page-uniforms">
+      <div class="pg-hdr"><div class="pg-sub">Uniform register — staff code allocation</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Allocate uniform</button></div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th style="width:20%">Driver</th><th style="width:12%">Staff code</th><th style="width:12%">Shirt</th><th style="width:12%">Trousers</th><th style="width:10%">Jacket</th><th style="width:10%">Boots</th><th style="width:12%">Allocated</th><th style="width:12%">Status</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">JM</div>J. Molefe</div></td><td><span class="mono">DRV-001</span></td><td>3 × L</td><td>2 × 32</td><td>XL</td><td>10</td><td style="color:var(--text-muted)">12 Jan 2025</td><td><span class="badge badge-success">Full kit</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">SD</div>S. Dlamini</div></td><td><span class="mono">DRV-002</span></td><td>3 × XL</td><td>2 × 34</td><td>XXL</td><td>11</td><td style="color:var(--text-muted)">12 Jan 2025</td><td><span class="badge badge-success">Full kit</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">FN</div>F. Naidoo</div></td><td><span class="mono">DRV-003</span></td><td>3 × S</td><td>2 × 28</td><td>—</td><td>6</td><td style="color:var(--text-muted)">15 Mar 2025</td><td><span class="badge badge-warning">Incomplete</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">TP</div>T. Pretorius</div></td><td><span class="mono">DRV-004</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td style="color:var(--text-muted)">Pending</td><td><span class="badge badge-danger">Not issued</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="page" id="page-tasks">
+      <div class="pg-hdr"><div class="pg-sub">Workflow task manager</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>New task</button></div>
+      <div class="kanban">
+        <div class="kcol">
+          <div class="kcol-title">Initialised <span class="badge badge-gray" style="font-size:10px">2</span></div>
+          <div class="ktask"><div class="ktask-title">Uniform allocation</div><div style="color:var(--text-muted)">3 new drivers require kit</div><div class="ktask-meta"><i class="ti ti-user"></i>Unassigned</div></div>
+          <div class="ktask"><div class="ktask-title">SOP training sign-off</div><div style="color:var(--text-muted)">New loading SOP — all drivers</div><div class="ktask-meta"><i class="ti ti-user"></i>Unassigned</div></div>
+        </div>
+        <div class="kcol">
+          <div class="kcol-title">Allocated <span class="badge badge-info" style="font-size:10px">3</span></div>
+          <div class="ktask"><div class="ktask-title">License renewal — J. Molefe</div><div style="color:var(--text-muted)">Code 10 expires 23 May</div><div class="ktask-meta"><i class="ti ti-user"></i>HR — Sarah K.</div></div>
+          <div class="ktask"><div class="ktask-title">PDP renewal — S. Dlamini</div><div style="color:var(--text-muted)">PDP due in 31 days</div><div class="ktask-meta"><i class="ti ti-user"></i>HR — Sarah K.</div></div>
+          <div class="ktask"><div class="ktask-title">Roadworthy — CA 123-456</div><div style="color:var(--text-muted)">Book roadworthy test</div><div class="ktask-meta"><i class="ti ti-user"></i>Fleet — Mike D.</div></div>
+        </div>
+        <div class="kcol">
+          <div class="kcol-title">In progress <span class="badge badge-warning" style="font-size:10px">2</span></div>
+          <div class="ktask"><div class="ktask-title">Inspection CA 123-456</div><div style="color:var(--text-muted)">At workshop — est. 2 days</div><div class="ktask-meta"><i class="ti ti-user"></i>Tech — Dave P.</div></div>
+          <div class="ktask"><div class="ktask-title">Disc renewal WC 789-012</div><div style="color:var(--text-muted)">Application submitted DLTC</div><div class="ktask-meta"><i class="ti ti-user"></i>Admin — Lerato M.</div></div>
+        </div>
+        <div class="kcol">
+          <div class="kcol-title">Complete <span class="badge badge-success" style="font-size:10px">2</span></div>
+          <div class="ktask"><div class="ktask-title">SOP sign-off — F. Naidoo</div><div style="color:var(--text-muted)">Signed off 14 May 2025</div><div class="ktask-meta"><i class="ti ti-circle-check" style="color:#3b6d11"></i>Completed</div></div>
+          <div class="ktask"><div class="ktask-title">Uniform issue — F. Naidoo</div><div style="color:var(--text-muted)">Partial kit — jacket pending</div><div class="ktask-meta"><i class="ti ti-circle-check" style="color:#3b6d11"></i>Completed</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRACTS -->
+    <div class="page" id="page-contracts">
+      <div id="contracts-list">
+        <div class="pg-hdr"><div class="pg-sub">Driver contracts and mandates</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Add contract</button></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr><th style="width:22%">Driver</th><th style="width:24%">Contract type</th><th style="width:14%">Start date</th><th style="width:14%">End date</th><th style="width:14%">Status</th><th style="width:12%"></th></tr></thead>
+            <tbody>
+              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">JM</div>James Molefe</div></td><td>Permanent employment</td><td>1 Feb 2024</td><td>—</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
+              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">SD</div>Sipho Dlamini</div></td><td>Fixed term — 12 months</td><td>1 Mar 2025</td><td>28 Feb 2026</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
+              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">FN</div>Fatima Naidoo</div></td><td>Permanent employment</td><td>15 Apr 2023</td><td>—</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
+              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td>Fixed term — 6 months</td><td>1 Dec 2024</td><td>31 May 2025</td><td><span class="badge badge-warning">Expiring soon</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="contract-detail" style="display:none">
+        <div class="back-btn" onclick="document.getElementById('contracts-list').style.display='';document.getElementById('contract-detail').style.display='none'"><i class="ti ti-arrow-left"></i>Back to contracts</div>
+        <div class="card">
+          <div class="detail-header"><div class="detail-avatar">JM</div><div><div style="font-weight:600;font-size:15px">James Molefe</div><div style="font-size:12px;color:var(--text-muted)">Permanent employment contract</div></div><span class="badge badge-success" style="margin-left:auto">Active</span></div>
+          <hr class="divider">
+          <div class="form-grid">
+            <div class="field-group"><div class="field-label">Contract type</div><div class="field-value">Permanent employment</div></div>
+            <div class="field-group"><div class="field-label">Start date</div><div class="field-value">1 February 2024</div></div>
+            <div class="field-group"><div class="field-label">End date</div><div class="field-value">—</div></div>
+            <div class="field-group"><div class="field-label">Signed date</div><div class="field-value">28 January 2024</div></div>
+          </div>
+          <hr class="divider">
+          <div style="font-weight:600;font-size:12px;margin-bottom:10px">Attached documents</div>
+          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Signed employment contract</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 28 Jan 2024 · 8 pages</div></div><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLIANCE -->
+    <div class="page" id="page-compliance">
+      <div class="pg-hdr"><div class="pg-sub">Signed document records — acknowledgements and sign-offs</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Add record</button></div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="tbl">
+          <thead><tr><th style="width:18%">Driver</th><th style="width:30%">Document</th><th style="width:14%">Type</th><th style="width:16%">Signed date</th><th style="width:12%">Status</th><th style="width:10%"></th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">JM</div>J. Molefe</div></td><td>Code of conduct acknowledgement</td><td><span class="tag">Policy</span></td><td>12 Jan 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">JM</div>J. Molefe</div></td><td>Vehicle pre-trip SOP sign-off</td><td><span class="tag">SOP</span></td><td>12 Jan 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">FN</div>F. Naidoo</div></td><td>Data protection consent (POPIA)</td><td><span class="tag">Consent</span></td><td>15 Mar 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">FN</div>F. Naidoo</div></td><td>Loading SOP acknowledgement</td><td><span class="tag">SOP</span></td><td>14 May 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">SD</div>S. Dlamini</div></td><td>Code of conduct acknowledgement</td><td><span class="tag">Policy</span></td><td>1 Mar 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">TP</div>T. Pretorius</div></td><td>Code of conduct acknowledgement</td><td><span class="tag">Policy</span></td><td>—</td><td><span class="badge badge-danger">Outstanding</span></td><td><button class="btn btn-sm"><i class="ti ti-send"></i></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SOPs -->
+    <div class="page" id="page-sops">
+      <div class="pg-hdr"><div class="pg-sub">Standard operating procedures library</div><button class="btn btn-primary btn-sm"><i class="ti ti-upload"></i>Upload SOP</button></div>
+      <div class="card">
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Loading and unloading procedure</div><div style="font-size:11px;color:var(--text-muted)">Version 3.1 · Updated 2 Apr 2025 · 12 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Driver safety and conduct</div><div style="font-size:11px;color:var(--text-muted)">Version 2.0 · Updated 10 Jan 2025 · 8 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Vehicle pre-trip inspection checklist</div><div style="font-size:11px;color:var(--text-muted)">Version 1.4 · Updated 5 Mar 2025 · 4 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Hazardous materials handling</div><div style="font-size:11px;color:var(--text-muted)">Version 1.0 · Updated 22 Feb 2025 · 18 pages</div></div><span class="badge badge-warning">Under review</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+      </div>
+    </div>
+
+    <!-- POLICIES -->
+    <div class="page" id="page-policies">
+      <div class="pg-hdr"><div class="pg-sub">Company policies and governance documents</div><button class="btn btn-primary btn-sm"><i class="ti ti-upload"></i>Upload policy</button></div>
+      <div class="card">
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Code of conduct</div><div style="font-size:11px;color:var(--text-muted)">Version 2.1 · Updated 1 Jan 2025 · 6 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Data protection policy (POPIA)</div><div style="font-size:11px;color:var(--text-muted)">Version 1.3 · Updated 15 Feb 2025 · 10 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Leave and attendance policy</div><div style="font-size:11px;color:var(--text-muted)">Version 1.0 · Updated 1 Jan 2025 · 4 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Disciplinary and grievance procedure</div><div style="font-size:11px;color:var(--text-muted)">Version 2.0 · Updated 10 Mar 2025 · 14 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Health and safety policy</div><div style="font-size:11px;color:var(--text-muted)">Version 1.2 · Updated 20 Apr 2025 · 8 pages</div></div><span class="badge badge-warning">Under review</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+const titles={dashboard:'Dashboard',drivers:'Drivers',onboarding:'Onboarding',vehicles:'Vehicles',uniforms:'Uniforms',tasks:'Tasks',contracts:'Contracts',compliance:'Compliance records',sops:'SOPs',policies:'Policies'};
+
+function nav(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent=titles[id];
+}
+
+function showDriver(init,name,code,lic,email,phone,loc,licBadge,licExp,pdpBadge,pdpExp,statusBadge,status){
+  document.getElementById('drivers-list').style.display='none';
+  document.getElementById('driver-detail').style.display='';
+  document.getElementById('d-init').textContent=init;
+  document.getElementById('d-name').textContent=name;
+  document.getElementById('d-code').textContent=code;
+  document.getElementById('d-license').textContent=lic;
+  document.getElementById('d-email').textContent=email;
+  document.getElementById('d-phone').textContent=phone;
+  document.getElementById('d-location').textContent=loc;
+  document.getElementById('d-lic-exp').innerHTML='<span class="badge '+licBadge+'">'+licExp+'</span>';
+  document.getElementById('d-pdp-exp').innerHTML='<span class="badge '+pdpBadge+'">'+pdpExp+'</span>';
+  document.getElementById('d-status-badge').innerHTML='<span class="badge '+statusBadge+'">'+status+'</span>';
+}
+
+function showOb(step){
+  document.getElementById('ob-list').style.display='none';
+  document.getElementById('ob-form').style.display='';
+  setStep(typeof step!=='undefined'?step:0);
+}
+
+function setStep(n){
+  [0,1,2,3].forEach(i=>{
+    const el=document.getElementById('ob-step-'+i);
+    if(el) el.style.display=(i===n)?'':'none';
+    const s=document.querySelectorAll('.step')[i];
+    if(s){s.className='step'+(i<n?' done':i===n?' active':'');}
+  });
+}
+
+function showContract(){
+  document.getElementById('contracts-list').style.display='none';
+  document.getElementById('contract-detail').style.display='';
+}
+</script>
+</body>
+</html>
