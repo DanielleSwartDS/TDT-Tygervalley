@@ -142,6 +142,12 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 .form-field input,.form-field select{font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);width:100%;font-family:'Inter',sans-serif;outline:none}
 .form-field input:focus,.form-field select:focus{border-color:var(--accent)}
 
+/* CONDITIONAL FIELD GROUPING */
+.cond-group{margin-bottom:14px}
+.cond-reason{background:#f8f8f7;border-left:3px solid var(--border-hover);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:10px 12px;margin-top:6px}
+.cond-reason label{display:flex;align-items:center;gap:4px}
+.cond-reason label i{font-size:13px;color:var(--text-hint)}
+
 /* ONBOARDING STEPS */
 .steps-bar{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--border)}
 .step{flex:1;padding:10px 12px;font-size:11px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;transition:all 0.15s}
@@ -385,7 +391,7 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
           <div class="form-grid">
             <div class="form-field" style="grid-column:1/-1"><label>Name &amp; Surname *</label><input type="text" id="lf-name" required></div>
             <div class="form-field"><label>Leave type *</label>
-              <select id="lf-type" required>
+              <select id="lf-type" required onchange="toggleSickNote()">
                 <option value="">Select...</option>
                 <option>Annual</option>
                 <option>Sick</option>
@@ -397,6 +403,11 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
             <div class="form-field"><label>&nbsp;</label></div>
             <div class="form-field"><label>Start date *</label><input type="date" id="lf-start" required></div>
             <div class="form-field"><label>End date *</label><input type="date" id="lf-end" required></div>
+          </div>
+          <div class="form-field" id="lf-sicknote-wrap" style="display:none;margin-bottom:16px">
+            <label>Sick note (attach a copy) *</label>
+            <input type="file" id="lf-sicknote" accept=".pdf,.jpg,.jpeg,.png">
+            <div id="lf-sicknote-status" style="font-size:11px;color:var(--text-muted);margin-top:4px"></div>
           </div>
           <div class="form-field" style="margin-bottom:16px"><label>Reason *</label><textarea id="lf-reason" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:70px"></textarea></div>
           <button class="btn btn-primary" type="submit" id="lf-submit-btn"><i class="ti ti-send"></i>Submit leave request</button>
@@ -413,19 +424,30 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
       <form id="eod-form" onsubmit="submitEodForm(event)">
         <div class="card" style="max-width:680px">
           <div class="card-title">Express</div>
-          <div class="form-grid">
+
+          <div class="cond-group">
             <div class="form-field"><label>Bookout before 08:00? *</label>
               <select id="eod-bookout" required onchange="toggleReason('eod-bookout','eod-bookout-reason-wrap')">
                 <option value="">Select...</option><option>Yes</option><option>No</option>
               </select>
             </div>
-            <div class="form-field" id="eod-bookout-reason-wrap" style="display:none"><label>Reason</label><input type="text" id="eod-bookout-reason"></div>
+            <div class="cond-reason" id="eod-bookout-reason-wrap" style="display:none">
+              <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason</label><input type="text" id="eod-bookout-reason"></div>
+            </div>
+          </div>
+
+          <div class="cond-group">
             <div class="form-field"><label>All staff on time for shift? *</label>
               <select id="eod-ontime" required onchange="toggleReason('eod-ontime','eod-ontime-reason-wrap')">
                 <option value="">Select...</option><option>Yes</option><option>No</option>
               </select>
             </div>
-            <div class="form-field" id="eod-ontime-reason-wrap" style="display:none"><label>Reason</label><input type="text" id="eod-ontime-reason"></div>
+            <div class="cond-reason" id="eod-ontime-reason-wrap" style="display:none">
+              <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason</label><input type="text" id="eod-ontime-reason"></div>
+            </div>
+          </div>
+
+          <div class="form-grid">
             <div class="form-field"><label>Deliveries *</label><input type="number" id="eod-deliveries" required></div>
             <div class="form-field"><label>Fails *</label><input type="number" id="eod-fails" required></div>
             <div class="form-field"><label>Scheduled for tomorrow *</label><input type="number" id="eod-scheduled"></div>
@@ -435,23 +457,28 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
               </select>
             </div>
           </div>
-          <div id="eod-earlylate-rows" style="display:none;margin-bottom:14px">
-            <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px">Early / late entries</label>
+
+          <div id="eod-earlylate-rows" class="cond-reason" style="display:none;margin-bottom:14px">
+            <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px"><i class="ti ti-corner-down-right"></i> Early / late entries</label>
             <div id="eod-earlylate-list"></div>
             <button type="button" class="btn btn-sm" onclick="addEarlyLateRow()"><i class="ti ti-plus"></i>Add another</button>
           </div>
-          <div class="form-grid">
+
+          <div class="cond-group">
             <div class="form-field"><label>All warehouse emails answered &amp; actioned? *</label>
               <select id="eod-emails" required onchange="toggleReason('eod-emails','eod-emails-reason-wrap')">
                 <option value="">Select...</option><option>Yes</option><option>No</option>
               </select>
             </div>
-            <div class="form-field" id="eod-emails-reason-wrap" style="display:none"><label>Reason &amp; note for next manager</label><input type="text" id="eod-emails-reason"></div>
+            <div class="cond-reason" id="eod-emails-reason-wrap" style="display:none">
+              <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason &amp; note for next manager</label><input type="text" id="eod-emails-reason"></div>
+              <div id="eod-adrian-flag" class="consent-box" style="margin-top:8px;margin-bottom:0">
+                <i class="ti ti-alert-triangle" style="color:#854f0b;margin-right:5px"></i>Adrian Van Wyk will be flagged in the email since warehouse emails were not fully actioned.
+              </div>
+            </div>
           </div>
-          <div id="eod-adrian-flag" style="display:none" class="consent-box" style="margin-bottom:14px">
-            <i class="ti ti-alert-triangle" style="color:#854f0b;margin-right:5px"></i>Adrian Van Wyk will be flagged in the email since warehouse emails were not fully actioned.
-          </div>
-          <div class="form-field" style="margin-bottom:0"><label>Any problems (drivers, warehouse, etc.)</label><textarea id="eod-problems" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea></div>
+
+          <div class="form-field" style="margin-bottom:0;margin-top:14px"><label>Any problems (drivers, warehouse, etc.)</label><textarea id="eod-problems" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea></div>
         </div>
 
         <div class="card" style="max-width:680px">
@@ -461,21 +488,48 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
             <div class="form-field"><label>Lates *</label><input type="number" id="eod-foodlates" required></div>
             <div class="form-field"><label>Doorbells *</label><input type="number" id="eod-doorbells" required></div>
             <div class="form-field"><label>Food fails *</label><input type="number" id="eod-foodfails" required></div>
-            <div class="form-field" style="grid-column:1/-1"><label>Forecasted drivers reached per 30 mins? *</label>
+          </div>
+
+          <div class="cond-group">
+            <div class="form-field"><label>Forecasted drivers reached per 30 mins? *</label>
               <select id="eod-forecast" required onchange="toggleReason('eod-forecast','eod-forecast-reason-wrap')">
                 <option value="">Select...</option><option>Yes</option><option>No</option>
               </select>
             </div>
-            <div class="form-field" id="eod-forecast-reason-wrap" style="display:none;grid-column:1/-1"><label>Timeslot &amp; reason</label><input type="text" id="eod-forecast-reason"></div>
+            <div class="cond-reason" id="eod-forecast-reason-wrap" style="display:none">
+              <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Timeslot &amp; reason</label><input type="text" id="eod-forecast-reason"></div>
+            </div>
           </div>
-          <div style="margin-bottom:14px">
+
+          <div style="margin-bottom:14px;margin-top:6px">
             <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px">Food to office (DFD numbers)</label>
             <div id="eod-dfd-list"></div>
             <button type="button" class="btn btn-sm" onclick="addDfdRow()"><i class="ti ti-plus"></i>Add another</button>
           </div>
           <div class="form-field" style="margin-bottom:14px"><label>Any problems (drivers, etc.)</label><textarea id="eod-foodproblems" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea></div>
-          <button class="btn btn-primary" type="submit" id="eod-submit-btn"><i class="ti ti-send"></i>Submit End of Day Report</button>
         </div>
+
+        <div class="card" style="max-width:680px">
+          <div class="card-title">Attachments</div>
+          <div class="pg-sub" style="margin-bottom:12px">Upload the relevant dashboards/sheets for today. All fields optional — attach what's available.</div>
+          <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Excel sheets</div>
+          <div class="form-grid" style="margin-bottom:6px">
+            <div class="form-field"><label>Food complaints</label><input type="file" id="att-food-complaints" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Express</label><input type="file" id="att-express" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Cash up</label><input type="file" id="att-cashup" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>COD dash</label><input type="file" id="att-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Driver dash</label><input type="file" id="att-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 8px">Images</div>
+          <div class="form-grid">
+            <div class="form-field"><label>Active Dash</label><input type="file" id="att-active-dash" accept=".png,.jpg,.jpeg"></div>
+            <div class="form-field"><label>COD Dash</label><input type="file" id="att-cod-dash-img" accept=".png,.jpg,.jpeg"></div>
+            <div class="form-field"><label>Driver Dash</label><input type="file" id="att-driver-dash-img" accept=".png,.jpg,.jpeg"></div>
+          </div>
+          <div id="eod-attach-status" style="font-size:11px;color:var(--text-muted);margin-top:10px"></div>
+        </div>
+
+        <button class="btn btn-primary" type="submit" id="eod-submit-btn"><i class="ti ti-send"></i>Submit End of Day Report</button>
       </form>
     </div>
 
@@ -794,6 +848,25 @@ const EMAILJS_TEMPLATE_EOD = "template_pl48jbc";
 const EMAILJS_PUBLIC_KEY = "_v2gf95gHb4cxwm_p";
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
+/* ===== FILE UPLOAD HELPER ===== */
+async function uploadFile(inputEl, folder){
+  if(!inputEl.files || !inputEl.files[0]) return null;
+  const file=inputEl.files[0];
+  const safeName=file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_');
+  const path=folder+'/'+Date.now()+'_'+safeName;
+  const { data, error } = await supabaseClient.storage.from('attachments').upload(path, file);
+  if(error) throw error;
+  const { data: urlData } = supabaseClient.storage.from('attachments').getPublicUrl(path);
+  return urlData.publicUrl;
+}
+
+function toggleSickNote(){
+  const isSick = document.getElementById('lf-type').value==='Sick';
+  const wrap=document.getElementById('lf-sicknote-wrap');
+  wrap.style.display = isSick ? '' : 'none';
+  document.getElementById('lf-sicknote').required = isSick;
+}
+
 /* ===== LEAVE REQUEST FORM ===== */
 async function submitLeaveForm(e){
   e.preventDefault();
@@ -801,19 +874,28 @@ async function submitLeaveForm(e){
   btn.disabled=true;
   btn.innerHTML='<i class="ti ti-loader-2"></i>Submitting...';
 
-  const data={
-    name_surname: document.getElementById('lf-name').value,
-    leave_type: document.getElementById('lf-type').value,
-    start_date: document.getElementById('lf-start').value,
-    end_date: document.getElementById('lf-end').value,
-    reason: document.getElementById('lf-reason').value
-  };
-
   try{
+    let sicknote_url=null;
+    const sickInput=document.getElementById('lf-sicknote');
+    if(sickInput.files && sickInput.files[0]){
+      document.getElementById('lf-sicknote-status').textContent='Uploading sick note...';
+      sicknote_url=await uploadFile(sickInput,'sick-notes');
+      document.getElementById('lf-sicknote-status').textContent='Uploaded.';
+    }
+
+    const data={
+      name_surname: document.getElementById('lf-name').value,
+      leave_type: document.getElementById('lf-type').value,
+      start_date: document.getElementById('lf-start').value,
+      end_date: document.getElementById('lf-end').value,
+      reason: document.getElementById('lf-reason').value,
+      sicknote_url
+    };
+
     const { error } = await supabaseClient.from('leave_requests').insert([data]);
     if(error) throw error;
 
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_LEAVE, data);
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_LEAVE, {...data, sicknote_url: sicknote_url||'None attached'});
 
     document.getElementById('leave-form').style.display='none';
     document.getElementById('leave-success').style.display='flex';
@@ -888,32 +970,59 @@ async function submitEodForm(e){
 
   const dfdNumbers=[...document.querySelectorAll('#eod-dfd-list > div')].map(row=>row.querySelector('.dfd-number').value).filter(v=>v);
 
-  const data={
-    report_date: new Date().toISOString().slice(0,10),
-    bookout_before_8: document.getElementById('eod-bookout').value==='Yes',
-    bookout_reason: document.getElementById('eod-bookout-reason').value,
-    staff_ontime: document.getElementById('eod-ontime').value==='Yes',
-    staff_ontime_reason: document.getElementById('eod-ontime-reason').value,
-    deliveries: parseInt(document.getElementById('eod-deliveries').value)||0,
-    fails: parseInt(document.getElementById('eod-fails').value)||0,
-    early_or_lates: earlyLates,
-    scheduled_tomorrow: parseInt(document.getElementById('eod-scheduled').value)||0,
-    warehouse_emails_actioned: document.getElementById('eod-emails').value==='Yes',
-    warehouse_emails_reason: document.getElementById('eod-emails-reason').value,
-    any_problems: document.getElementById('eod-problems').value,
-    food_orders: parseInt(document.getElementById('eod-orders').value)||0,
-    food_lates: parseInt(document.getElementById('eod-foodlates').value)||0,
-    doorbells: parseInt(document.getElementById('eod-doorbells').value)||0,
-    forecast_drivers_met: document.getElementById('eod-forecast').value==='Yes',
-    forecast_drivers_detail: document.getElementById('eod-forecast-reason').value,
-    food_fails: parseInt(document.getElementById('eod-foodfails').value)||0,
-    food_to_office: dfdNumbers,
-    food_problems: document.getElementById('eod-foodproblems').value
-  };
-
   try{
+    const attachStatus=document.getElementById('eod-attach-status');
+    attachStatus.textContent='Uploading attachments (if any)...';
+
+    const attachmentFields=[
+      {id:'att-food-complaints', key:'food_complaints_url', folder:'eod/food-complaints'},
+      {id:'att-express', key:'express_url', folder:'eod/express'},
+      {id:'att-cashup', key:'cashup_url', folder:'eod/cashup'},
+      {id:'att-cod-dash-xlsx', key:'cod_dash_xlsx_url', folder:'eod/cod-dash-xlsx'},
+      {id:'att-driver-dash-xlsx', key:'driver_dash_xlsx_url', folder:'eod/driver-dash-xlsx'},
+      {id:'att-active-dash', key:'active_dash_img_url', folder:'eod/active-dash-img'},
+      {id:'att-cod-dash-img', key:'cod_dash_img_url', folder:'eod/cod-dash-img'},
+      {id:'att-driver-dash-img', key:'driver_dash_img_url', folder:'eod/driver-dash-img'}
+    ];
+
+    const attachments={};
+    for(const f of attachmentFields){
+      const input=document.getElementById(f.id);
+      attachments[f.key]=await uploadFile(input, f.folder);
+    }
+    attachStatus.textContent='Attachments uploaded.';
+
+    const data={
+      report_date: new Date().toISOString().slice(0,10),
+      bookout_before_8: document.getElementById('eod-bookout').value==='Yes',
+      bookout_reason: document.getElementById('eod-bookout-reason').value,
+      staff_ontime: document.getElementById('eod-ontime').value==='Yes',
+      staff_ontime_reason: document.getElementById('eod-ontime-reason').value,
+      deliveries: parseInt(document.getElementById('eod-deliveries').value)||0,
+      fails: parseInt(document.getElementById('eod-fails').value)||0,
+      early_or_lates: earlyLates,
+      scheduled_tomorrow: parseInt(document.getElementById('eod-scheduled').value)||0,
+      warehouse_emails_actioned: document.getElementById('eod-emails').value==='Yes',
+      warehouse_emails_reason: document.getElementById('eod-emails-reason').value,
+      any_problems: document.getElementById('eod-problems').value,
+      food_orders: parseInt(document.getElementById('eod-orders').value)||0,
+      food_lates: parseInt(document.getElementById('eod-foodlates').value)||0,
+      doorbells: parseInt(document.getElementById('eod-doorbells').value)||0,
+      forecast_drivers_met: document.getElementById('eod-forecast').value==='Yes',
+      forecast_drivers_detail: document.getElementById('eod-forecast-reason').value,
+      food_fails: parseInt(document.getElementById('eod-foodfails').value)||0,
+      food_to_office: dfdNumbers,
+      food_problems: document.getElementById('eod-foodproblems').value,
+      ...attachments
+    };
+
     const { error } = await supabaseClient.from('eod_reports').insert([data]);
     if(error) throw error;
+
+    const attachmentLines=attachmentFields
+      .filter(f=>attachments[f.key])
+      .map(f=>f.key.replace('_url','').replace(/_/g,' ')+': '+attachments[f.key])
+      .join('\n');
 
     const emailData={
       ...data,
@@ -922,7 +1031,8 @@ async function submitEodForm(e){
       warehouse_emails_actioned: data.warehouse_emails_actioned?'Yes':'No',
       forecast_drivers_met: data.forecast_drivers_met?'Yes':'No',
       early_or_lates: earlyLates.length?earlyLates.map(r=>`MDX: ${r.mdx}, Reason: ${r.reason}, Email sent: ${r.email_sent}`).join(' | '):'None',
-      food_to_office: dfdNumbers.length?dfdNumbers.join(', '):'None'
+      food_to_office: dfdNumbers.length?dfdNumbers.join(', '):'None',
+      attachments: attachmentLines || 'None attached'
     };
 
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_EOD, emailData);
