@@ -92,11 +92,30 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 
 /* KANBAN */
 .kanban{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.kcol{background:#f0efeb;border-radius:var(--radius-lg);padding:12px}
-.kcol-title{font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;letter-spacing:0.04em}
-.ktask{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;margin-bottom:8px;font-size:12px}
-.ktask-title{font-weight:500;margin-bottom:3px}
-.ktask-meta{color:var(--text-muted);font-size:11px;display:flex;align-items:center;gap:4px;margin-top:6px}
+.kcol{background:#f0efeb;border-radius:var(--radius-lg);padding:10px;min-height:200px;transition:background 0.15s}
+.kcol.drag-over{background:var(--info-bg)}
+.kcol-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kcol-body{min-height:60px}
+.kcol-title{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em}
+.ktask{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 12px;margin-bottom:6px;cursor:grab;user-select:none;transition:opacity 0.12s,border-color 0.12s;font-size:12px}
+.ktask:active{cursor:grabbing}
+.ktask.dragging{opacity:0.3;border-style:dashed}
+.ktask:hover{border-color:var(--border-hover)}
+.ktask.priority-1{border-left:3px solid #e24b4a}
+.ktask.priority-2{border-left:3px solid #ef9f27}
+.ktask-header{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px}
+.ktask-title{font-weight:500;font-size:12px;flex:1}
+.ktask-desc{font-size:11px;color:var(--text-muted);margin-bottom:6px;line-height:1.5}
+.ktask-meta{color:var(--text-muted);font-size:11px;display:flex;align-items:center;gap:4px;margin-top:5px}
+.ktask-meta i{font-size:13px}
+.drop-line{height:3px;background:var(--text);border-radius:2px;margin-bottom:6px;opacity:0.4}
+.btn-icon{padding:4px;border:none;background:transparent;cursor:pointer;color:var(--text-muted);border-radius:var(--radius-md);display:inline-flex;align-items:center;font-family:'Inter',sans-serif}
+.btn-icon:hover{background:#f0efeb;color:var(--text)}
+.kanban-hint{font-size:11px;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:5px}
+.task-modal-wrap{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;z-index:200}
+.task-modal-wrap.open{display:flex}
+.task-modal{background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);padding:20px;width:360px;max-width:90vw}
+.task-modal-title{font-weight:600;font-size:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
 
 /* DOC ROWS */
 .doc-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}
@@ -381,31 +400,35 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 
     <!-- TASKS -->
     <div class="page" id="page-tasks">
-      <div class="pg-hdr"><div class="pg-sub">Workflow task manager</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>New task</button></div>
-      <div class="kanban">
-        <div class="kcol">
-          <div class="kcol-title">Initialised <span class="badge badge-gray" style="font-size:10px">2</span></div>
-          <div class="ktask"><div class="ktask-title">Uniform allocation</div><div style="color:var(--text-muted)">3 new drivers require kit</div><div class="ktask-meta"><i class="ti ti-user"></i>Unassigned</div></div>
-          <div class="ktask"><div class="ktask-title">SOP training sign-off</div><div style="color:var(--text-muted)">New loading SOP — all drivers</div><div class="ktask-meta"><i class="ti ti-user"></i>Unassigned</div></div>
+      <div class="pg-hdr">
+        <div>
+          <div class="pg-sub">Workflow task manager</div>
+          <div class="kanban-hint"><i class="ti ti-drag-drop"></i>Drag left/right to move columns &middot; drag up/down to prioritise</div>
         </div>
-        <div class="kcol">
-          <div class="kcol-title">Allocated <span class="badge badge-info" style="font-size:10px">3</span></div>
-          <div class="ktask"><div class="ktask-title">License renewal — J. Molefe</div><div style="color:var(--text-muted)">Code 10 expires 23 May</div><div class="ktask-meta"><i class="ti ti-user"></i>HR — Sarah K.</div></div>
-          <div class="ktask"><div class="ktask-title">PDP renewal — S. Dlamini</div><div style="color:var(--text-muted)">PDP due in 31 days</div><div class="ktask-meta"><i class="ti ti-user"></i>HR — Sarah K.</div></div>
-          <div class="ktask"><div class="ktask-title">Roadworthy — CA 123-456</div><div style="color:var(--text-muted)">Book roadworthy test</div><div class="ktask-meta"><i class="ti ti-user"></i>Fleet — Mike D.</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openTaskModal()"><i class="ti ti-plus"></i>New task</button>
+      </div>
+      <div class="kanban" id="kanban"></div>
+    </div>
+
+    <!-- TASK MODAL -->
+    <div class="task-modal-wrap" id="task-modal-wrap">
+      <div class="task-modal">
+        <div class="task-modal-title">New task <button class="btn-icon" onclick="closeTaskModal()" aria-label="Close"><i class="ti ti-x" style="font-size:16px"></i></button></div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px"><label style="font-size:11px;color:var(--text-muted);font-weight:500">Task title</label><input type="text" id="m-title" placeholder="e.g. License renewal" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none"></div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px"><label style="font-size:11px;color:var(--text-muted);font-weight:500">Description</label><textarea id="m-desc" placeholder="Brief description" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea></div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px"><label style="font-size:11px;color:var(--text-muted);font-weight:500">Assigned to</label><input type="text" id="m-assignee" placeholder="e.g. HR - Sarah K." style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none"></div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px"><label style="font-size:11px;color:var(--text-muted);font-weight:500">Start in column</label>
+          <select id="m-col" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            <option value="0">Initialised</option><option value="1">Allocated</option><option value="2">In progress</option><option value="3">Complete</option>
+          </select>
         </div>
-        <div class="kcol">
-          <div class="kcol-title">In progress <span class="badge badge-warning" style="font-size:10px">2</span></div>
-          <div class="ktask"><div class="ktask-title">Inspection CA 123-456</div><div style="color:var(--text-muted)">At workshop — est. 2 days</div><div class="ktask-meta"><i class="ti ti-user"></i>Tech — Dave P.</div></div>
-          <div class="ktask"><div class="ktask-title">Disc renewal WC 789-012</div><div style="color:var(--text-muted)">Application submitted DLTC</div><div class="ktask-meta"><i class="ti ti-user"></i>Admin — Lerato M.</div></div>
-        </div>
-        <div class="kcol">
-          <div class="kcol-title">Complete <span class="badge badge-success" style="font-size:10px">2</span></div>
-          <div class="ktask"><div class="ktask-title">SOP sign-off — F. Naidoo</div><div style="color:var(--text-muted)">Signed off 14 May 2025</div><div class="ktask-meta"><i class="ti ti-circle-check" style="color:#3b6d11"></i>Completed</div></div>
-          <div class="ktask"><div class="ktask-title">Uniform issue — F. Naidoo</div><div style="color:var(--text-muted)">Partial kit — jacket pending</div><div class="ktask-meta"><i class="ti ti-circle-check" style="color:#3b6d11"></i>Completed</div></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn" onclick="closeTaskModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="addTask()"><i class="ti ti-check"></i>Add task</button>
         </div>
       </div>
     </div>
+
 
     <!-- CONTRACTS -->
     <div class="page" id="page-contracts">
@@ -526,6 +549,74 @@ function setStep(n){
     if(s){s.className='step'+(i<n?' done':i===n?' active':'');}
   });
 }
+
+
+const KCOLS=[
+  {label:'Initialised',badge:'badge-gray',badgeCls:'background:#f0efeb;color:var(--text-muted);border:1px solid var(--border)'},
+  {label:'Allocated',badge:'badge-info',badgeCls:'background:var(--info-bg);color:var(--info-text)'},
+  {label:'In progress',badge:'badge-warning',badgeCls:'background:var(--warning-bg);color:var(--warning-text)'},
+  {label:'Complete',badge:'badge-success',badgeCls:'background:var(--success-bg);color:var(--success-text)'}
+];
+let kTasks=[
+  {id:'t1',col:0,order:0,title:'Uniform allocation',desc:'3 new drivers require full kit issue',assignee:'Unassigned'},
+  {id:'t2',col:0,order:1,title:'SOP training sign-off',desc:'New loading SOP - all drivers',assignee:'Unassigned'},
+  {id:'t3',col:1,order:0,title:'License renewal - J. Molefe',desc:'Code 10 expires 23 May',assignee:'HR - Sarah K.'},
+  {id:'t4',col:1,order:1,title:'PDP renewal - S. Dlamini',desc:'PDP due in 31 days',assignee:'HR - Sarah K.'},
+  {id:'t5',col:1,order:2,title:'Roadworthy - CA 123-456',desc:'Book roadworthy test',assignee:'Fleet - Mike D.'},
+  {id:'t6',col:2,order:0,title:'Inspection CA 123-456',desc:'At workshop - est. 2 days',assignee:'Tech - Dave P.'},
+  {id:'t7',col:2,order:1,title:'Disc renewal WC 789-012',desc:'Application submitted to DLTC',assignee:'Admin - Lerato M.'},
+  {id:'t8',col:3,order:0,title:'SOP sign-off - F. Naidoo',desc:'Signed off 14 May 2025',assignee:'Completed'},
+  {id:'t9',col:3,order:1,title:'Uniform issue - F. Naidoo',desc:'Partial kit - jacket pending',assignee:'Completed'}
+];
+let kDragId=null,kDragOverId=null,kDragOverCol=null,kDragOverPos='after',kIdCounter=10;
+function kGetCol(ci){return kTasks.filter(t=>t.col===ci).sort((a,b)=>a.order-b.order)}
+function renderKanban(){
+  const kb=document.getElementById('kanban');
+  if(!kb) return;
+  kb.innerHTML='';
+  KCOLS.forEach((col,ci)=>{
+    const colTasks=kGetCol(ci);
+    const colDiv=document.createElement('div');
+    colDiv.className='kcol';colDiv.dataset.col=ci;
+    const hdr=document.createElement('div');hdr.className='kcol-header';
+    hdr.innerHTML='<span class="kcol-title">'+col.label+'</span><span class="badge" style="'+col.badgeCls+';font-size:10px">'+colTasks.length+'</span>';
+    colDiv.appendChild(hdr);
+    const body=document.createElement('div');body.className='kcol-body';
+    colTasks.forEach((task,ti)=>{
+      if(kDragOverCol===ci&&kDragOverId===null&&kDragOverPos==='before'&&ti===0){const ln=document.createElement('div');ln.className='drop-line';body.appendChild(ln);}
+      const card=document.createElement('div');
+      const isPri1=ti===0&&task.col!==3,isPri2=ti===1&&task.col!==3;
+      card.className='ktask'+(isPri1?' priority-1':isPri2?' priority-2':'');
+      card.draggable=true;card.dataset.id=task.id;
+      const priIcon=isPri1?'<i class="ti ti-arrow-up" style="font-size:11px;color:#e24b4a;margin-right:3px"></i>':isPri2?'<i class="ti ti-arrow-up" style="font-size:11px;color:#ef9f27;margin-right:3px"></i>':'';
+      card.innerHTML='<div class="ktask-header"><div class="ktask-title">'+priIcon+task.title+'</div><button class="btn-icon" data-del="'+task.id+'" aria-label="Delete"><i class="ti ti-trash" style="font-size:13px"></i></button></div><div class="ktask-desc">'+task.desc+'</div><div class="ktask-meta"><i class="ti ti-user"></i>'+task.assignee+'</div>';
+      card.querySelector('[data-del]').addEventListener('click',e=>{e.stopPropagation();kTasks=kTasks.filter(t=>t.id!==task.id);renderKanban();});
+      card.addEventListener('dragstart',e=>{kDragId=task.id;kDragOverId=null;kDragOverCol=null;setTimeout(()=>card.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
+      card.addEventListener('dragend',()=>{kDragId=null;kDragOverId=null;kDragOverCol=null;renderKanban();});
+      card.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();if(kDragId===task.id)return;const rect=card.getBoundingClientRect();kDragOverId=task.id;kDragOverCol=ci;kDragOverPos=e.clientY<rect.top+rect.height/2?'before':'after';renderKanban();});
+      if(kDragOverId===task.id&&kDragOverPos==='after'){body.appendChild(card);const ln=document.createElement('div');ln.className='drop-line';body.appendChild(ln);}
+      else if(kDragOverId===task.id&&kDragOverPos==='before'){const ln=document.createElement('div');ln.className='drop-line';body.appendChild(ln);body.appendChild(card);}
+      else{body.appendChild(card);}
+    });
+    colDiv.appendChild(body);
+    colDiv.addEventListener('dragover',e=>{e.preventDefault();if(kDragOverCol!==ci){kDragOverCol=ci;kDragOverId=null;renderKanban();}});
+    colDiv.addEventListener('drop',e=>{
+      e.preventDefault();
+      if(!kDragId)return;
+      const dragged=kTasks.find(t=>t.id===kDragId);if(!dragged)return;
+      dragged.col=ci;
+      if(kDragOverId){const target=kTasks.find(t=>t.id===kDragOverId);const colT=kGetCol(ci).filter(t=>t.id!==kDragId);const tIdx=colT.findIndex(t=>t.id===kDragOverId);const ins=kDragOverPos==='after'?tIdx+1:tIdx;colT.splice(ins,0,dragged);colT.forEach((t,i)=>t.order=i);}
+      else{const colT=kGetCol(ci).filter(t=>t.id!==kDragId);colT.unshift(dragged);colT.forEach((t,i)=>t.order=i);}
+      kDragId=null;kDragOverId=null;kDragOverCol=null;renderKanban();
+    });
+    kb.appendChild(colDiv);
+  });
+}
+function openTaskModal(){document.getElementById('task-modal-wrap').classList.add('open');setTimeout(()=>document.getElementById('m-title').focus(),50);}
+function closeTaskModal(){document.getElementById('task-modal-wrap').classList.remove('open');['m-title','m-desc','m-assignee'].forEach(id=>document.getElementById(id).value='');document.getElementById('m-col').value='0';}
+function addTask(){const title=document.getElementById('m-title').value.trim();if(!title)return;const col=parseInt(document.getElementById('m-col').value);const colT=kGetCol(col);kTasks.push({id:'t'+kIdCounter++,col,order:colT.length,title,desc:document.getElementById('m-desc').value.trim()||'No description',assignee:document.getElementById('m-assignee').value.trim()||'Unassigned'});closeTaskModal();renderKanban();}
+document.getElementById('task-modal-wrap').addEventListener('click',function(e){if(e.target===this)closeTaskModal();});
+renderKanban();
 
 function showContract(){
   document.getElementById('contracts-list').style.display='none';
