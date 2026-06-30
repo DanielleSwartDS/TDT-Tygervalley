@@ -183,6 +183,8 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
     <div class="nav-section">Forms</div>
     <div class="nav-item" onclick="nav('leaveform',this)"><i class="ti ti-calendar-off"></i>Leave Request</div>
     <div class="nav-item" onclick="nav('eodform',this)"><i class="ti ti-clipboard-text"></i>End of Day Report</div>
+    <div class="nav-section">Analytics</div>
+    <div class="nav-item" onclick="nav('eodanalytics',this)"><i class="ti ti-chart-bar"></i>EOD Analytics</div>
     <div class="nav-section">Operations</div>
     <div class="nav-item" onclick="nav('tasks',this)"><i class="ti ti-clipboard-list"></i>Tasks</div>
     <div class="nav-item" onclick="nav('contracts',this)"><i class="ti ti-file-text"></i>Contracts</div>
@@ -477,6 +479,57 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
       </form>
     </div>
 
+
+    <!-- EOD ANALYTICS -->
+    <div class="page" id="page-eodanalytics">
+      <div class="pg-hdr">
+        <div class="pg-sub">Summary of End of Day Reports — figures pulled live from submitted reports.</div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+          <div class="form-field" style="width:auto">
+            <label>Range</label>
+            <select id="ean-range" onchange="onRangeChange()">
+              <option value="today">Today</option>
+              <option value="week" selected>This week</option>
+              <option value="month">This month</option>
+              <option value="custom">Custom range</option>
+            </select>
+          </div>
+          <div class="form-field" id="ean-custom-from-wrap" style="display:none;width:auto"><label>From</label><input type="date" id="ean-custom-from"></div>
+          <div class="form-field" id="ean-custom-to-wrap" style="display:none;width:auto"><label>To</label><input type="date" id="ean-custom-to"></div>
+          <button class="btn btn-primary btn-sm" onclick="loadEodAnalytics()"><i class="ti ti-refresh"></i>Refresh</button>
+        </div>
+      </div>
+
+      <div id="ean-loading" style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Loading reports...</div>
+
+      <div id="ean-content" style="display:none">
+        <div class="grid-3" id="ean-summary-cards" style="grid-template-columns:repeat(4,minmax(0,1fr))"></div>
+
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:14px 18px 0"><div class="card-title" style="margin-bottom:10px">Reports in range</div></div>
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:10%">Date</th>
+              <th style="width:9%">Deliveries</th>
+              <th style="width:7%">Fails</th>
+              <th style="width:10%">Scheduled</th>
+              <th style="width:9%">Orders</th>
+              <th style="width:8%">Lates</th>
+              <th style="width:10%">Doorbells</th>
+              <th style="width:10%">Food fails</th>
+              <th style="width:13%">Bookout/Ontime</th>
+              <th style="width:14%"></th>
+            </tr></thead>
+            <tbody id="ean-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ean-empty" style="display:none" class="card" style="text-align:center;color:var(--text-muted)">No EOD reports found for this range.</div>
+    </div>
+
     <!-- VEHICLES -->
     <div class="page" id="page-vehicles">
       <div class="pg-hdr"><div class="pg-sub">18 vehicles in fleet</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Add vehicle</button></div>
@@ -621,7 +674,7 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 </div>
 
 <script>
-const titles={dashboard:'Dashboard',drivers:'Drivers',onboarding:'Onboarding',vehicles:'Vehicles',uniforms:'Uniforms',leaveform:'Leave Request',eodform:'End of Day Report',tasks:'Tasks',contracts:'Contracts',compliance:'Compliance records',sops:'SOPs',policies:'Policies'};
+const titles={dashboard:'Dashboard',drivers:'Drivers',onboarding:'Onboarding',vehicles:'Vehicles',uniforms:'Uniforms',leaveform:'Leave Request',eodform:'End of Day Report',eodanalytics:'EOD Analytics',tasks:'Tasks',contracts:'Contracts',compliance:'Compliance records',sops:'SOPs',policies:'Policies'};
 
 function nav(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -732,7 +785,7 @@ renderKanban();
 
 /* ===== SUPABASE + EMAILJS CONFIG ===== */
 const SUPABASE_URL = "https://hldppztnzvtnctovwvhq.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZHBwenRuenZ0bmN0b3Z3dmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3ODc4NDEsImV4cCI6MjA5ODM2Mzg0MX0.G6JLKQR16JLOCFt2NfJvHIxjRNI_5H_hlpa0hmNwY00";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const EMAILJS_SERVICE_ID = "service_hz5ta8n";
@@ -889,6 +942,161 @@ function showContract(){
   document.getElementById('contracts-list').style.display='none';
   document.getElementById('contract-detail').style.display='';
 }
+
+/* ===== EOD ANALYTICS ===== */
+function onRangeChange(){
+  const val=document.getElementById('ean-range').value;
+  const showCustom = val==='custom';
+  document.getElementById('ean-custom-from-wrap').style.display = showCustom ? '' : 'none';
+  document.getElementById('ean-custom-to-wrap').style.display = showCustom ? '' : 'none';
+  if(!showCustom) loadEodAnalytics();
+}
+
+function getDateRange(){
+  const val=document.getElementById('ean-range').value;
+  const now=new Date();
+  let from,to;
+  to=new Date(now); to.setHours(23,59,59,999);
+  if(val==='today'){
+    from=new Date(now); from.setHours(0,0,0,0);
+  } else if(val==='week'){
+    from=new Date(now);
+    const day=from.getDay();
+    const diff=(day===0?-6:1)-day;
+    from.setDate(from.getDate()+diff);
+    from.setHours(0,0,0,0);
+  } else if(val==='month'){
+    from=new Date(now.getFullYear(), now.getMonth(), 1);
+  } else {
+    const fromVal=document.getElementById('ean-custom-from').value;
+    const toVal=document.getElementById('ean-custom-to').value;
+    from=fromVal?new Date(fromVal):new Date(now.getFullYear(),now.getMonth(),1);
+    to=toVal?new Date(toVal):now;
+    to.setHours(23,59,59,999);
+  }
+  return {from: from.toISOString().slice(0,10), to: to.toISOString().slice(0,10)};
+}
+
+async function loadEodAnalytics(){
+  document.getElementById('ean-loading').style.display='';
+  document.getElementById('ean-content').style.display='none';
+  document.getElementById('ean-empty').style.display='none';
+
+  const {from,to}=getDateRange();
+
+  try{
+    const { data, error } = await supabaseClient
+      .from('eod_reports')
+      .select('*')
+      .gte('report_date', from)
+      .lte('report_date', to)
+      .order('report_date', {ascending:false});
+
+    if(error) throw error;
+
+    document.getElementById('ean-loading').style.display='none';
+
+    if(!data || data.length===0){
+      document.getElementById('ean-empty').style.display='';
+      return;
+    }
+
+    document.getElementById('ean-content').style.display='';
+    renderEanCards(data);
+    renderEanTable(data);
+
+  }catch(err){
+    document.getElementById('ean-loading').textContent='Error loading reports: '+(err.message||err);
+    console.error(err);
+  }
+}
+
+function sumField(data, field){
+  return data.reduce((acc,r)=>acc+(parseInt(r[field])||0),0);
+}
+
+function renderEanCards(data){
+  const fields=[
+    {key:'deliveries',label:'Deliveries'},
+    {key:'fails',label:'Fails'},
+    {key:'scheduled_tomorrow',label:'Scheduled (next day)'},
+    {key:'food_orders',label:'Food orders'},
+    {key:'food_lates',label:'Food lates'},
+    {key:'doorbells',label:'Doorbells'},
+    {key:'food_fails',label:'Food fails'},
+    {key:'reports',label:'Reports submitted'}
+  ];
+  const container=document.getElementById('ean-summary-cards');
+  container.innerHTML='';
+  fields.forEach(f=>{
+    const val = f.key==='reports' ? data.length : sumField(data,f.key);
+    const card=document.createElement('div');
+    card.className='metric-card';
+    card.innerHTML=`<div class="metric-label">${f.label}</div><div class="metric-value">${val}</div><div class="metric-sub">Total in range</div>`;
+    container.appendChild(card);
+  });
+}
+
+function renderEanTable(data){
+  const tbody=document.getElementById('ean-table-body');
+  tbody.innerHTML='';
+  data.forEach(r=>{
+    const tr=document.createElement('tr');
+    const bookoutBadge = r.bookout_before_8 ? '<span class="badge badge-success">Bookout OK</span>' : '<span class="badge badge-danger">Bookout late</span>';
+    const ontimeBadge = r.staff_ontime ? '<span class="badge badge-success">On time</span>' : '<span class="badge badge-warning">Lates</span>';
+    tr.innerHTML=`
+      <td>${r.report_date}</td>
+      <td>${r.deliveries??0}</td>
+      <td>${r.fails??0}</td>
+      <td>${r.scheduled_tomorrow??0}</td>
+      <td>${r.food_orders??0}</td>
+      <td>${r.food_lates??0}</td>
+      <td>${r.doorbells??0}</td>
+      <td>${r.food_fails??0}</td>
+      <td>${bookoutBadge} ${ontimeBadge}</td>
+      <td><button class="btn btn-sm" onclick='showEodDetail(${JSON.stringify(r).replace(/'/g,"&apos;")})'>View full</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function showEodDetail(r){
+  let earlyLates='None';
+  try{
+    const arr = typeof r.early_or_lates==='string' ? JSON.parse(r.early_or_lates) : r.early_or_lates;
+    if(arr && arr.length) earlyLates = arr.map(x=>`MDX ${x.mdx}: ${x.reason} (email sent: ${x.email_sent})`).join('\\n');
+  }catch(e){}
+  let dfd='None';
+  try{
+    const arr = typeof r.food_to_office==='string' ? JSON.parse(r.food_to_office) : r.food_to_office;
+    if(arr && arr.length) dfd = arr.join(', ');
+  }catch(e){}
+
+  alert(
+    'EOD Report — '+r.report_date+'\\n\\n'+
+    'EXPRESS\\n'+
+    'Bookout before 08:00: '+(r.bookout_before_8?'Yes':'No '+(r.bookout_reason?'('+r.bookout_reason+')':''))+'\\n'+
+    'All staff on time: '+(r.staff_ontime?'Yes':'No '+(r.staff_ontime_reason?'('+r.staff_ontime_reason+')':''))+'\\n'+
+    'Deliveries: '+r.deliveries+' | Fails: '+r.fails+' | Scheduled tomorrow: '+r.scheduled_tomorrow+'\\n'+
+    'Early/Lates: '+earlyLates+'\\n'+
+    'Warehouse emails actioned: '+(r.warehouse_emails_actioned?'Yes':'No '+(r.warehouse_emails_reason?'('+r.warehouse_emails_reason+')':''))+'\\n'+
+    'Problems: '+(r.any_problems||'None')+'\\n\\n'+
+    'FOOD\\n'+
+    'Orders: '+r.food_orders+' | Lates: '+r.food_lates+' | Doorbells: '+r.doorbells+' | Food fails: '+r.food_fails+'\\n'+
+    'Forecast drivers met: '+(r.forecast_drivers_met?'Yes':'No '+(r.forecast_drivers_detail?'('+r.forecast_drivers_detail+')':''))+'\\n'+
+    'Food to office (DFD): '+dfd+'\\n'+
+    'Problems: '+(r.food_problems||'None')
+  );
+}
+
+// Load analytics when the page is first viewed
+const _origNav = nav;
+nav = function(id, el){
+  _origNav(id, el);
+  if(id==='eodanalytics'){
+    loadEodAnalytics();
+  }
+};
+
 </script>
 </body>
 </html>
