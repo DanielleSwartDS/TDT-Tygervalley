@@ -165,6 +165,26 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 .check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:12px}
 .check-row input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--accent)}
 
+/* LOGIN SCREEN */
+.login-wrap{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;width:380px;max-width:92vw}
+.login-logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;margin-bottom:24px}
+.login-logo i{font-size:22px}
+.login-title{font-weight:600;font-size:15px;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--text-muted);margin-bottom:20px}
+.login-error{background:var(--danger-bg);color:var(--danger-text);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;margin-bottom:12px;display:none}
+.login-field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.login-field label{font-size:11px;color:var(--text-muted);font-weight:500}
+.login-field input{font-size:13px;padding:8px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none}
+.login-field input:focus{border-color:var(--text)}
+.qr-wrap{text-align:center;margin:14px 0}
+.qr-wrap img{border-radius:var(--radius-md);border:1px solid var(--border)}
+.qr-sub{font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.6}
+.mfa-digits{display:flex;gap:8px;justify-content:center;margin:14px 0}
+.mfa-digits input{width:40px;height:48px;text-align:center;font-size:18px;font-weight:600;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif}
+.mfa-digits input:focus{border-color:var(--text);outline:none}
+.user-badge{font-size:11px;color:var(--text-muted);margin-bottom:16px;background:var(--bg);padding:6px 10px;border-radius:var(--radius-md);display:flex;align-items:center;gap:5px}
+
 /* MISC */
 .pg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .pg-sub{font-size:12px;color:var(--text-muted)}
@@ -172,6 +192,42 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-wrap" class="login-wrap">
+  <!-- STEP 1: Email + Password -->
+  <div class="login-card" id="login-step-password">
+    <div class="login-logo"><i class="ti ti-steering-wheel"></i>TDT Tygervalley Portal</div>
+    <div class="login-title">Sign in</div>
+    <div class="login-sub">Enter your email and password to continue.</div>
+    <div class="login-error" id="pw-error"></div>
+    <div class="login-field"><label>Email address</label><input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="login-field" style="margin-bottom:20px"><label>Password</label><input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')signIn()"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" id="login-btn" onclick="signIn()"><i class="ti ti-login"></i>Sign in</button>
+  </div>
+
+  <!-- STEP 2a: MFA Enrollment (first time) -->
+  <div class="login-card" id="login-step-enroll" style="display:none">
+    <div class="login-logo"><i class="ti ti-shield-lock"></i>Set up two-factor auth</div>
+    <div class="login-sub">Scan the QR code below with <strong>Google Authenticator</strong> or <strong>Authy</strong>, then enter the 6-digit code to confirm.</div>
+    <div class="user-badge" id="enroll-user-badge"><i class="ti ti-user"></i><span id="enroll-email-display"></span></div>
+    <div class="qr-wrap"><img id="enroll-qr" src="" width="180" height="180" alt="QR code"><div class="qr-sub">Can't scan? Enter this code manually:<br><strong id="enroll-secret"></strong></div></div>
+    <div class="login-error" id="enroll-error"></div>
+    <div class="login-field"><label>Enter the 6-digit code from your app</label><input type="text" id="enroll-code" maxlength="6" placeholder="123456" inputmode="numeric" onkeydown="if(event.key==='Enter')verifyEnrollment()"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" id="enroll-btn" onclick="verifyEnrollment()"><i class="ti ti-check"></i>Confirm &amp; activate</button>
+  </div>
+
+  <!-- STEP 2b: MFA Verification (returning user) -->
+  <div class="login-card" id="login-step-verify" style="display:none">
+    <div class="login-logo"><i class="ti ti-shield-check"></i>Two-factor verification</div>
+    <div class="login-sub">Enter the 6-digit code from your authenticator app.</div>
+    <div class="user-badge" id="verify-user-badge"><i class="ti ti-user"></i><span id="verify-email-display"></span></div>
+    <div class="login-error" id="verify-error"></div>
+    <div class="login-field"><label>6-digit code</label><input type="text" id="verify-code" maxlength="6" placeholder="123456" inputmode="numeric" onkeydown="if(event.key==='Enter')verifyMfa()"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" id="verify-btn" onclick="verifyMfa()"><i class="ti ti-lock-open"></i>Verify</button>
+    <div style="margin-top:10px;text-align:center"><button class="btn btn-sm" onclick="signOut()" style="font-size:11px;color:var(--text-muted);border:none;background:none;cursor:pointer">Sign in with a different account</button></div>
+  </div>
+</div>
 <div class="app">
 
 <!-- SIDEBAR -->
@@ -201,7 +257,7 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
   </nav>
   <div class="sidebar-footer">
     <div class="nav-item"><i class="ti ti-settings"></i>Settings</div>
-    <div class="nav-item"><i class="ti ti-logout"></i>Sign out</div>
+    <div class="nav-item" onclick="signOut()"><i class="ti ti-logout"></i>Sign out</div>
   </div>
 </div>
 
@@ -210,7 +266,7 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
   <div class="topbar">
     <div class="topbar-title" id="page-title">Dashboard</div>
     <div class="topbar-right">
-      <span style="font-size:12px;color:var(--text-muted)">Fleet Manager</span>
+      <span style="font-size:12px;color:var(--text-muted)" id="topbar-user"></span>
       <div class="avatar">FM</div>
     </div>
   </div>
@@ -841,6 +897,152 @@ renderKanban();
 const SUPABASE_URL = "https://hldppztnzvtnctovwvhq.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsZHBwenRuenZ0bmN0b3Z3dmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3ODc4NDEsImV4cCI6MjA5ODM2Mzg0MX0.G6JLKQR16JLOCFt2NfJvHIxjRNI_5H_hlpa0hmNwY00";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ===== AUTH STATE ===== */
+let currentUser = null;
+let mfaFactorId = null;
+let mfaChallengeId = null;
+let enrollFactorId = null;
+
+function showLoginStep(step){
+  ['login-step-password','login-step-enroll','login-step-verify'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById('login-step-'+step).style.display='';
+}
+
+function showError(id, msg){
+  const el=document.getElementById(id);
+  el.textContent=msg;
+  el.style.display='';
+}
+
+function hideError(id){ document.getElementById(id).style.display='none'; }
+
+function setLoading(btnId, loading, defaultHtml){
+  const btn=document.getElementById(btnId);
+  btn.disabled=loading;
+  btn.innerHTML=loading?'<i class="ti ti-loader-2"></i>Please wait...':defaultHtml;
+}
+
+async function signIn(){
+  hideError('pw-error');
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  if(!email||!password){showError('pw-error','Please enter your email and password.');return;}
+  setLoading('login-btn',true,'<i class="ti ti-login"></i>Sign in');
+  try{
+    const { data, error } = await supabaseClient.auth.signInWithPassword({email, password});
+    if(error) throw error;
+    currentUser=data.user;
+    await checkMfaStatus(email);
+  }catch(err){
+    showError('pw-error', err.message==='Invalid login credentials'?'Incorrect email or password. Please try again.':err.message);
+  }finally{
+    setLoading('login-btn',false,'<i class="ti ti-login"></i>Sign in');
+  }
+}
+
+async function checkMfaStatus(email){
+  const { data, error } = await supabaseClient.auth.mfa.listFactors();
+  if(error) throw error;
+  const totpFactors = data.totp || [];
+  const verified = totpFactors.filter(f=>f.status==='verified');
+
+  if(verified.length===0){
+    await startEnrollment(email);
+  } else {
+    mfaFactorId=verified[0].id;
+    await startChallenge(email);
+  }
+}
+
+async function startEnrollment(email){
+  const { data, error } = await supabaseClient.auth.mfa.enroll({ factorType:'totp', friendlyName:'TDT Portal' });
+  if(error) throw error;
+  enrollFactorId=data.id;
+  document.getElementById('enroll-qr').src=data.totp.qr_code;
+  document.getElementById('enroll-secret').textContent=data.totp.secret;
+  document.getElementById('enroll-email-display').textContent=email;
+  showLoginStep('enroll');
+}
+
+async function verifyEnrollment(){
+  hideError('enroll-error');
+  const code=document.getElementById('enroll-code').value.trim();
+  if(code.length!==6){showError('enroll-error','Please enter the 6-digit code from your app.');return;}
+  setLoading('enroll-btn',true,'<i class="ti ti-check"></i>Confirm & activate');
+  try{
+    const { data: challengeData, error: cErr } = await supabaseClient.auth.mfa.challenge({ factorId: enrollFactorId });
+    if(cErr) throw cErr;
+    const { error: vErr } = await supabaseClient.auth.mfa.verify({ factorId: enrollFactorId, challengeId: challengeData.id, code });
+    if(vErr) throw vErr;
+    unlockPortal();
+  }catch(err){
+    showError('enroll-error','Invalid code. Please check your authenticator app and try again.');
+  }finally{
+    setLoading('enroll-btn',false,'<i class="ti ti-check"></i>Confirm & activate');
+  }
+}
+
+async function startChallenge(email){
+  const { data, error } = await supabaseClient.auth.mfa.challenge({ factorId: mfaFactorId });
+  if(error) throw error;
+  mfaChallengeId=data.id;
+  document.getElementById('verify-email-display').textContent=email;
+  showLoginStep('verify');
+  setTimeout(()=>document.getElementById('verify-code').focus(),100);
+}
+
+async function verifyMfa(){
+  hideError('verify-error');
+  const code=document.getElementById('verify-code').value.trim();
+  if(code.length!==6){showError('verify-error','Please enter the 6-digit code from your authenticator app.');return;}
+  setLoading('verify-btn',true,'<i class="ti ti-lock-open"></i>Verify');
+  try{
+    const { error } = await supabaseClient.auth.mfa.verify({ factorId: mfaFactorId, challengeId: mfaChallengeId, code });
+    if(error) throw error;
+    unlockPortal();
+  }catch(err){
+    showError('verify-error','Invalid code. Please try again — codes expire after 30 seconds.');
+    document.getElementById('verify-code').value='';
+  }finally{
+    setLoading('verify-btn',false,'<i class="ti ti-lock-open"></i>Verify');
+  }
+}
+
+function unlockPortal(){
+  document.getElementById('login-wrap').style.display='none';
+  document.getElementById('topbar-user').textContent=currentUser?.email||'';
+}
+
+async function signOut(){
+  await supabaseClient.auth.signOut();
+  currentUser=null;
+  mfaFactorId=null;
+  mfaChallengeId=null;
+  enrollFactorId=null;
+  document.getElementById('login-wrap').style.display='flex';
+  showLoginStep('password');
+  document.getElementById('login-email').value='';
+  document.getElementById('login-password').value='';
+  document.getElementById('verify-code').value='';
+}
+
+// Check for existing session on page load
+(async()=>{
+  const { data } = await supabaseClient.auth.getSession();
+  if(data?.session){
+    const { data: aalData } = await supabaseClient.auth.mfa.getAuthenticatorAssuranceLevel();
+    if(aalData?.currentLevel==='aal2'){
+      currentUser=data.session.user;
+      unlockPortal();
+      return;
+    }
+  }
+  document.getElementById('login-wrap').style.display='flex';
+  showLoginStep('password');
+})();
 
 const EMAILJS_SERVICE_ID = "service_hz5ta8n";
 const EMAILJS_TEMPLATE_LEAVE = "template_oncceye";
