@@ -185,6 +185,31 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 .mfa-digits input:focus{border-color:var(--text);outline:none}
 .user-badge{font-size:11px;color:var(--text-muted);margin-bottom:16px;background:var(--bg);padding:6px 10px;border-radius:var(--radius-md);display:flex;align-items:center;gap:5px}
 
+/* ADMIN CENTRE */
+.admin-detail-wrap{display:none;position:fixed;top:0;right:0;bottom:0;width:680px;max-width:95vw;background:var(--surface);border-left:1px solid var(--border);z-index:100;display:flex;flex-direction:column;box-shadow:-4px 0 24px rgba(0,0,0,0.08)}
+.admin-detail-wrap.open{display:flex}
+.admin-detail-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.admin-detail-body{flex:1;overflow-y:auto;padding:20px}
+.admin-detail-title{font-weight:600;font-size:14px}
+.side-by-side{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.side-col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.side-col-title.actual{color:var(--success-text)}
+.actual-field{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}
+.actual-field label{font-size:10px;color:var(--text-muted);font-weight:500}
+.actual-field input{font-size:12px;padding:5px 8px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none}
+.actual-field input:focus{border-color:var(--text)}
+.actual-field .read-val{font-size:12px;padding:5px 0;color:var(--text)}
+.att-link{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:var(--radius-md);border:1px solid var(--border);font-size:11px;color:var(--text);text-decoration:none;margin:3px 3px 3px 0;background:var(--surface)}
+.att-link:hover{background:#f0efeb}
+.att-img-preview{width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--border);margin-top:6px;cursor:pointer}
+.status-select{font-size:12px;padding:5px 8px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none}
+.copy-btn{font-size:11px;padding:4px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:#f0efeb;cursor:pointer;font-family:'Inter',sans-serif;color:var(--text);display:inline-flex;align-items:center;gap:4px}
+.copy-btn:hover{background:var(--border)}
+.updated-by-note{font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic}
+.filter-bar{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.overlay-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.2);z-index:99}
+.overlay-bg.open{display:block}
+
 /* MISC */
 .pg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .pg-sub{font-size:12px;color:var(--text-muted)}
@@ -245,6 +270,10 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
     <div class="nav-section">Forms</div>
     <div class="nav-item" onclick="nav('leaveform',this)"><i class="ti ti-calendar-off"></i>Leave Request</div>
     <div class="nav-item" onclick="nav('eodform',this)"><i class="ti ti-clipboard-text"></i>End of Day Report</div>
+    <div class="nav-section">Admin</div>
+    <div class="nav-item" onclick="nav('admin-eod',this)"><i class="ti ti-report"></i>EOD Reports</div>
+    <div class="nav-item" onclick="nav('admin-leave',this)"><i class="ti ti-calendar-off"></i>Leave Requests</div>
+    <div class="nav-item" onclick="nav('admin-docs',this)"><i class="ti ti-files"></i>Documents</div>
     <div class="nav-section">Analytics</div>
     <div class="nav-item" onclick="nav('eodanalytics',this)"><i class="ti ti-chart-bar"></i>EOD Analytics</div>
     <div class="nav-section">Operations</div>
@@ -590,6 +619,186 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
     </div>
 
 
+
+    <!-- OVERLAY -->
+    <div class="overlay-bg" id="overlay-bg" onclick="closeAdminDetail()"></div>
+
+    <!-- ADMIN EOD REPORTS -->
+    <div class="page" id="page-admin-eod">
+      <div class="filter-bar">
+        <div class="form-field" style="width:auto"><label>From</label><input type="date" id="aeod-from" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none"></div>
+        <div class="form-field" style="width:auto"><label>To</label><input type="date" id="aeod-to" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none"></div>
+        <button class="btn btn-primary btn-sm" onclick="loadAdminEod()"><i class="ti ti-refresh"></i>Load</button>
+      </div>
+      <div id="aeod-loading" class="pg-sub">Select a date range and click Load.</div>
+      <div id="aeod-empty" style="display:none" class="pg-sub">No reports found for this range.</div>
+      <div id="aeod-table-wrap" style="display:none">
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:11%">Date</th>
+              <th style="width:9%">Deliveries</th>
+              <th style="width:7%">Fails</th>
+              <th style="width:9%">Orders</th>
+              <th style="width:7%">Food fails</th>
+              <th style="width:10%">Actuals</th>
+              <th style="width:12%">Attachments</th>
+              <th style="width:10%"></th>
+            </tr></thead>
+            <tbody id="aeod-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN EOD DETAIL PANEL -->
+    <div class="admin-detail-wrap" id="aeod-detail-panel">
+      <div class="admin-detail-header">
+        <div class="admin-detail-title" id="aeod-detail-title">EOD Report</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-primary btn-sm" onclick="saveActuals()"><i class="ti ti-device-floppy"></i>Save actuals</button>
+          <button class="btn-icon" onclick="closeAdminDetail()" aria-label="Close"><i class="ti ti-x" style="font-size:16px"></i></button>
+        </div>
+      </div>
+      <div class="admin-detail-body">
+        <button class="copy-btn" style="margin-bottom:16px" onclick="copySubmittedToActuals()"><i class="ti ti-copy"></i>Copy all submitted values to actuals</button>
+
+        <div style="font-weight:600;font-size:12px;margin-bottom:10px">Express figures</div>
+        <div class="side-by-side">
+          <div>
+            <div class="side-col-title">Submitted</div>
+            <div class="actual-field"><label>Deliveries</label><div class="read-val" id="av-s-deliveries"></div></div>
+            <div class="actual-field"><label>Fails</label><div class="read-val" id="av-s-fails"></div></div>
+            <div class="actual-field"><label>Scheduled tomorrow</label><div class="read-val" id="av-s-scheduled"></div></div>
+          </div>
+          <div>
+            <div class="side-col-title actual">Actual</div>
+            <div class="actual-field"><label>Deliveries</label><input type="number" id="av-a-deliveries"></div>
+            <div class="actual-field"><label>Fails</label><input type="number" id="av-a-fails"></div>
+            <div class="actual-field"><label>Scheduled tomorrow</label><input type="number" id="av-a-scheduled"></div>
+          </div>
+        </div>
+
+        <div style="font-weight:600;font-size:12px;margin-bottom:10px">Food figures</div>
+        <div class="side-by-side">
+          <div>
+            <div class="side-col-title">Submitted</div>
+            <div class="actual-field"><label>Orders</label><div class="read-val" id="av-s-orders"></div></div>
+            <div class="actual-field"><label>Lates</label><div class="read-val" id="av-s-foodlates"></div></div>
+            <div class="actual-field"><label>Doorbells</label><div class="read-val" id="av-s-doorbells"></div></div>
+            <div class="actual-field"><label>Food fails</label><div class="read-val" id="av-s-foodfails"></div></div>
+          </div>
+          <div>
+            <div class="side-col-title actual">Actual</div>
+            <div class="actual-field"><label>Orders</label><input type="number" id="av-a-orders"></div>
+            <div class="actual-field"><label>Lates</label><input type="number" id="av-a-foodlates"></div>
+            <div class="actual-field"><label>Doorbells</label><input type="number" id="av-a-doorbells"></div>
+            <div class="actual-field"><label>Food fails</label><input type="number" id="av-a-foodfails"></div>
+          </div>
+        </div>
+
+        <div class="actual-field" style="margin-bottom:16px">
+          <label>Note on corrections</label>
+          <input type="text" id="av-a-note" placeholder="e.g. Driver dash figures corrected after system sync">
+        </div>
+
+        <div id="av-updated-note" class="updated-by-note" style="display:none"></div>
+
+        <div style="font-weight:600;font-size:12px;margin:16px 0 10px">Full submitted report</div>
+        <div id="aeod-full-detail" style="font-size:12px;line-height:1.9;color:var(--text-muted)"></div>
+
+        <div style="font-weight:600;font-size:12px;margin:16px 0 10px">Attachments</div>
+        <div id="aeod-attachments"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN LEAVE REQUESTS -->
+    <div class="page" id="page-admin-leave">
+      <div class="filter-bar">
+        <div class="form-field" style="width:auto"><label>From</label><input type="date" id="alv-from" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none"></div>
+        <div class="form-field" style="width:auto"><label>To</label><input type="date" id="alv-to" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none"></div>
+        <button class="btn btn-primary btn-sm" onclick="loadAdminLeave()"><i class="ti ti-refresh"></i>Load</button>
+      </div>
+      <div id="alv-loading" class="pg-sub">Select a date range and click Load.</div>
+      <div id="alv-empty" style="display:none" class="pg-sub">No leave requests found for this range.</div>
+      <div id="alv-table-wrap" style="display:none">
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:20%">Name</th>
+              <th style="width:15%">Type</th>
+              <th style="width:12%">Start</th>
+              <th style="width:12%">End</th>
+              <th style="width:15%">Status</th>
+              <th style="width:10%">Sick note</th>
+              <th style="width:16%"></th>
+            </tr></thead>
+            <tbody id="alv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN LEAVE DETAIL PANEL -->
+    <div class="admin-detail-wrap" id="alv-detail-panel">
+      <div class="admin-detail-header">
+        <div class="admin-detail-title" id="alv-detail-title">Leave Request</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-primary btn-sm" onclick="saveLeaveStatus()"><i class="ti ti-device-floppy"></i>Save decision</button>
+          <button class="btn-icon" onclick="closeAdminDetail()" aria-label="Close"><i class="ti ti-x" style="font-size:16px"></i></button>
+        </div>
+      </div>
+      <div class="admin-detail-body">
+        <div class="form-grid" style="margin-bottom:14px">
+          <div class="field-group"><div class="field-label">Name &amp; Surname</div><div class="field-value" id="alv-d-name"></div></div>
+          <div class="field-group"><div class="field-label">Leave type</div><div class="field-value" id="alv-d-type"></div></div>
+          <div class="field-group"><div class="field-label">Start date</div><div class="field-value" id="alv-d-start"></div></div>
+          <div class="field-group"><div class="field-label">End date</div><div class="field-value" id="alv-d-end"></div></div>
+        </div>
+        <div class="field-group" style="margin-bottom:14px"><div class="field-label">Reason</div><div class="field-value" id="alv-d-reason"></div></div>
+        <div id="alv-d-sicknote-wrap" style="display:none;margin-bottom:14px">
+          <div class="field-label">Sick note</div>
+          <div id="alv-d-sicknote"></div>
+        </div>
+        <hr class="divider">
+        <div style="font-weight:600;font-size:12px;margin-bottom:10px">Decision</div>
+        <div class="actual-field" style="margin-bottom:10px">
+          <label>Status</label>
+          <select id="alv-d-status" class="status-select" style="width:200px">
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="actual-field" style="margin-bottom:10px">
+          <label>Note to employee</label>
+          <input type="text" id="alv-d-note" placeholder="e.g. Approved — please ensure handover is completed">
+        </div>
+        <div id="alv-updated-note" class="updated-by-note" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN DOCUMENTS -->
+    <div class="page" id="page-admin-docs">
+      <div class="filter-bar">
+        <div class="form-field" style="width:auto">
+          <label>Filter by type</label>
+          <select id="adoc-filter" onchange="loadAdminDocs()" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none">
+            <option value="all">All documents</option>
+            <option value="sick-notes">Sick notes</option>
+            <option value="eod-excel">EOD Excel sheets</option>
+            <option value="eod-images">EOD Images</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="loadAdminDocs()"><i class="ti ti-refresh"></i>Load</button>
+      </div>
+      <div id="adoc-loading" class="pg-sub">Click Load to view documents.</div>
+      <div id="adoc-empty" style="display:none" class="pg-sub">No documents found.</div>
+      <div id="adoc-list" style="display:none">
+        <div class="card" id="adoc-inner"></div>
+      </div>
+    </div>
+
     <!-- EOD ANALYTICS -->
     <div class="page" id="page-eodanalytics">
       <div class="pg-hdr">
@@ -784,7 +993,7 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 </div>
 
 <script>
-const titles={dashboard:'Dashboard',drivers:'Drivers',onboarding:'Onboarding',vehicles:'Vehicles',uniforms:'Uniforms',leaveform:'Leave Request',eodform:'End of Day Report',eodanalytics:'EOD Analytics',tasks:'Tasks',contracts:'Contracts',compliance:'Compliance records',sops:'SOPs',policies:'Policies'};
+const titles={dashboard:'Dashboard',drivers:'Drivers',onboarding:'Onboarding',vehicles:'Vehicles',uniforms:'Uniforms',leaveform:'Leave Request',eodform:'End of Day Report','admin-eod':'Admin — EOD Reports','admin-leave':'Admin — Leave Requests','admin-docs':'Admin — Documents',eodanalytics:'EOD Analytics',tasks:'Tasks',contracts:'Contracts',compliance:'Compliance records',sops:'SOPs',policies:'Policies'};
 
 function nav(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1407,6 +1616,336 @@ nav = function(id, el){
   if(id==='eodanalytics'){
     loadEodAnalytics();
   }
+};
+
+
+/* ===== ADMIN CENTRE ===== */
+let currentEodRecord = null;
+let currentLeaveRecord = null;
+
+function closeAdminDetail(){
+  document.getElementById('aeod-detail-panel').classList.remove('open');
+  document.getElementById('alv-detail-panel').classList.remove('open');
+  document.getElementById('overlay-bg').classList.remove('open');
+}
+
+/* ---- EOD REPORTS ---- */
+async function loadAdminEod(){
+  const from = document.getElementById('aeod-from').value;
+  const to = document.getElementById('aeod-to').value;
+  if(!from || !to){ alert('Please select a date range.'); return; }
+  document.getElementById('aeod-loading').textContent='Loading...';
+  document.getElementById('aeod-loading').style.display='';
+  document.getElementById('aeod-table-wrap').style.display='none';
+  document.getElementById('aeod-empty').style.display='none';
+
+  try{
+    const { data, error } = await supabaseClient
+      .from('eod_reports')
+      .select('*')
+      .gte('report_date', from)
+      .lte('report_date', to)
+      .order('report_date', { ascending: false });
+    if(error) throw error;
+
+    document.getElementById('aeod-loading').style.display='none';
+    if(!data || data.length===0){ document.getElementById('aeod-empty').style.display=''; return; }
+
+    const tbody = document.getElementById('aeod-tbody');
+    tbody.innerHTML='';
+    data.forEach(r=>{
+      const hasActuals = r.actual_deliveries !== null;
+      const attCount = ['food_complaints_url','express_url','cashup_url','cod_dash_xlsx_url','driver_dash_xlsx_url','active_dash_img_url','cod_dash_img_url','driver_dash_img_url'].filter(k=>r[k]).length;
+      const tr = document.createElement('tr');
+      tr.innerHTML=`
+        <td>${r.report_date}</td>
+        <td>${r.deliveries??0}</td>
+        <td>${r.fails??0}</td>
+        <td>${r.food_orders??0}</td>
+        <td>${r.food_fails??0}</td>
+        <td>${hasActuals?'<span class="badge badge-success">Updated</span>':'<span class="badge badge-gray">Submitted only</span>'}</td>
+        <td>${attCount?'<span class="badge badge-info">'+attCount+' file'+(attCount>1?'s':'')+'</span>':'<span class="badge badge-gray">None</span>'}</td>
+        <td><button class="btn btn-sm" onclick="openEodDetail(${JSON.stringify(r).replace(/"/g,'&quot;')})"><i class="ti ti-edit"></i>Edit</button></td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('aeod-table-wrap').style.display='';
+  }catch(err){
+    document.getElementById('aeod-loading').textContent='Error: '+(err.message||err);
+  }
+}
+
+function openEodDetail(r){
+  currentEodRecord = r;
+  document.getElementById('aeod-detail-title').textContent='EOD Report — '+r.report_date;
+
+  // Submitted values
+  document.getElementById('av-s-deliveries').textContent = r.deliveries??0;
+  document.getElementById('av-s-fails').textContent = r.fails??0;
+  document.getElementById('av-s-scheduled').textContent = r.scheduled_tomorrow??0;
+  document.getElementById('av-s-orders').textContent = r.food_orders??0;
+  document.getElementById('av-s-foodlates').textContent = r.food_lates??0;
+  document.getElementById('av-s-doorbells').textContent = r.doorbells??0;
+  document.getElementById('av-s-foodfails').textContent = r.food_fails??0;
+
+  // Actual values (pre-fill if already saved)
+  document.getElementById('av-a-deliveries').value = r.actual_deliveries??'';
+  document.getElementById('av-a-fails').value = r.actual_fails??'';
+  document.getElementById('av-a-scheduled').value = r.actual_scheduled_tomorrow??'';
+  document.getElementById('av-a-orders').value = r.actual_food_orders??'';
+  document.getElementById('av-a-foodlates').value = r.actual_food_lates??'';
+  document.getElementById('av-a-doorbells').value = r.actual_doorbells??'';
+  document.getElementById('av-a-foodfails').value = r.actual_food_fails??'';
+  document.getElementById('av-a-note').value = r.actuals_note??'';
+
+  // Updated by note
+  const note = document.getElementById('av-updated-note');
+  if(r.actuals_updated_by){
+    note.textContent='Last updated by '+r.actuals_updated_by+' on '+new Date(r.actuals_updated_at).toLocaleString('en-ZA');
+    note.style.display='';
+  } else { note.style.display='none'; }
+
+  // Full detail text
+  let earlyLates='None';
+  try{ const arr=typeof r.early_or_lates==='string'?JSON.parse(r.early_or_lates):r.early_or_lates; if(arr&&arr.length) earlyLates=arr.map(x=>`MDX ${x.mdx}: ${x.reason} (email sent: ${x.email_sent})`).join(', '); }catch(e){}
+  let dfd='None';
+  try{ const arr=typeof r.food_to_office==='string'?JSON.parse(r.food_to_office):r.food_to_office; if(arr&&arr.length) dfd=arr.join(', '); }catch(e){}
+
+  document.getElementById('aeod-full-detail').innerHTML=`
+    <strong>EXPRESS</strong><br>
+    Bookout before 08:00: ${r.bookout_before_8?'Yes':'No'} ${r.bookout_reason?'('+r.bookout_reason+')':''}<br>
+    All staff on time: ${r.staff_ontime?'Yes':'No'} ${r.staff_ontime_reason?'('+r.staff_ontime_reason+')':''}<br>
+    Early/lates: ${earlyLates}<br>
+    Warehouse emails actioned: ${r.warehouse_emails_actioned?'Yes':'No'} ${r.warehouse_emails_reason?'('+r.warehouse_emails_reason+')':''}<br>
+    Problems: ${r.any_problems||'None'}<br><br>
+    <strong>FOOD</strong><br>
+    Forecast drivers met: ${r.forecast_drivers_met?'Yes':'No'} ${r.forecast_drivers_detail?'('+r.forecast_drivers_detail+')':''}<br>
+    Food to office (DFD): ${dfd}<br>
+    Problems: ${r.food_problems||'None'}`;
+
+  // Attachments
+  const attFields=[
+    {key:'food_complaints_url',label:'Food complaints'},
+    {key:'express_url',label:'Express'},
+    {key:'cashup_url',label:'Cash up'},
+    {key:'cod_dash_xlsx_url',label:'COD dash (Excel)'},
+    {key:'driver_dash_xlsx_url',label:'Driver dash (Excel)'},
+    {key:'active_dash_img_url',label:'Active Dash'},
+    {key:'cod_dash_img_url',label:'COD Dash'},
+    {key:'driver_dash_img_url',label:'Driver Dash'}
+  ];
+  const attWrap=document.getElementById('aeod-attachments');
+  attWrap.innerHTML='';
+  const imgKeys=['active_dash_img_url','cod_dash_img_url','driver_dash_img_url'];
+  attFields.forEach(f=>{
+    if(!r[f.key]) return;
+    if(imgKeys.includes(f.key)){
+      const div=document.createElement('div');
+      div.style.marginBottom='10px';
+      div.innerHTML=`<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">${f.label}</div><img src="${r[f.key]}" class="att-img-preview" onclick="window.open('${r[f.key]}','_blank')" alt="${f.label}">`;
+      attWrap.appendChild(div);
+    } else {
+      const a=document.createElement('a');
+      a.href=r[f.key]; a.target='_blank'; a.className='att-link';
+      a.innerHTML=`<i class="ti ti-file-spreadsheet" style="font-size:13px"></i>${f.label}`;
+      attWrap.appendChild(a);
+    }
+  });
+  if(attWrap.innerHTML==='') attWrap.textContent='No attachments for this report.';
+
+  document.getElementById('aeod-detail-panel').classList.add('open');
+  document.getElementById('overlay-bg').classList.add('open');
+}
+
+function copySubmittedToActuals(){
+  const r=currentEodRecord;
+  document.getElementById('av-a-deliveries').value=r.deliveries??0;
+  document.getElementById('av-a-fails').value=r.fails??0;
+  document.getElementById('av-a-scheduled').value=r.scheduled_tomorrow??0;
+  document.getElementById('av-a-orders').value=r.food_orders??0;
+  document.getElementById('av-a-foodlates').value=r.food_lates??0;
+  document.getElementById('av-a-doorbells').value=r.doorbells??0;
+  document.getElementById('av-a-foodfails').value=r.food_fails??0;
+}
+
+async function saveActuals(){
+  if(!currentEodRecord) return;
+  try{
+    const now=new Date().toISOString();
+    const updates={
+      actual_deliveries: parseInt(document.getElementById('av-a-deliveries').value)||null,
+      actual_fails: parseInt(document.getElementById('av-a-fails').value)||null,
+      actual_scheduled_tomorrow: parseInt(document.getElementById('av-a-scheduled').value)||null,
+      actual_food_orders: parseInt(document.getElementById('av-a-orders').value)||null,
+      actual_food_lates: parseInt(document.getElementById('av-a-foodlates').value)||null,
+      actual_doorbells: parseInt(document.getElementById('av-a-doorbells').value)||null,
+      actual_food_fails: parseInt(document.getElementById('av-a-foodfails').value)||null,
+      actuals_note: document.getElementById('av-a-note').value,
+      actuals_updated_by: currentUser?.email||'unknown',
+      actuals_updated_at: now
+    };
+    const { error } = await supabaseClient.from('eod_reports').update(updates).eq('id', currentEodRecord.id);
+    if(error) throw error;
+    const note=document.getElementById('av-updated-note');
+    note.textContent='Last updated by '+updates.actuals_updated_by+' on '+new Date(now).toLocaleString('en-ZA');
+    note.style.display='';
+    Object.assign(currentEodRecord, updates);
+    alert('Actuals saved successfully.');
+    loadAdminEod();
+  }catch(err){
+    alert('Error saving actuals: '+(err.message||err));
+  }
+}
+
+/* ---- LEAVE REQUESTS ---- */
+async function loadAdminLeave(){
+  const from=document.getElementById('alv-from').value;
+  const to=document.getElementById('alv-to').value;
+  if(!from||!to){ alert('Please select a date range.'); return; }
+  document.getElementById('alv-loading').textContent='Loading...';
+  document.getElementById('alv-loading').style.display='';
+  document.getElementById('alv-table-wrap').style.display='none';
+  document.getElementById('alv-empty').style.display='none';
+
+  try{
+    const { data, error } = await supabaseClient
+      .from('leave_requests')
+      .select('*')
+      .gte('start_date', from)
+      .lte('start_date', to)
+      .order('start_date', { ascending: false });
+    if(error) throw error;
+
+    document.getElementById('alv-loading').style.display='none';
+    if(!data||data.length===0){ document.getElementById('alv-empty').style.display=''; return; }
+
+    const tbody=document.getElementById('alv-tbody');
+    tbody.innerHTML='';
+    data.forEach(r=>{
+      const statusBadge={'Approved':'badge-success','Rejected':'badge-danger','Pending':'badge-warning'}[r.status||'Pending']||'badge-gray';
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td>${r.name_surname}</td>
+        <td>${r.leave_type}</td>
+        <td>${r.start_date}</td>
+        <td>${r.end_date}</td>
+        <td><span class="badge ${statusBadge}">${r.status||'Pending'}</span></td>
+        <td>${r.sicknote_url?'<span class="badge badge-info">Attached</span>':'—'}</td>
+        <td><button class="btn btn-sm" onclick="openLeaveDetail(${JSON.stringify(r).replace(/"/g,'&quot;')})"><i class="ti ti-eye"></i>View</button></td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('alv-table-wrap').style.display='';
+  }catch(err){
+    document.getElementById('alv-loading').textContent='Error: '+(err.message||err);
+  }
+}
+
+function openLeaveDetail(r){
+  currentLeaveRecord=r;
+  document.getElementById('alv-detail-title').textContent='Leave — '+r.name_surname;
+  document.getElementById('alv-d-name').textContent=r.name_surname;
+  document.getElementById('alv-d-type').textContent=r.leave_type;
+  document.getElementById('alv-d-start').textContent=r.start_date;
+  document.getElementById('alv-d-end').textContent=r.end_date;
+  document.getElementById('alv-d-reason').textContent=r.reason||'—';
+  document.getElementById('alv-d-status').value=r.status||'Pending';
+  document.getElementById('alv-d-note').value=r.decision_note||'';
+
+  const snWrap=document.getElementById('alv-d-sicknote-wrap');
+  if(r.sicknote_url){
+    snWrap.style.display='';
+    document.getElementById('alv-d-sicknote').innerHTML=`<a href="${r.sicknote_url}" target="_blank" class="att-link"><i class="ti ti-file-type-pdf" style="font-size:13px"></i>View sick note</a>`;
+  } else { snWrap.style.display='none'; }
+
+  const note=document.getElementById('alv-updated-note');
+  if(r.decision_updated_by){
+    note.textContent='Decision by '+r.decision_updated_by+' on '+new Date(r.decision_updated_at).toLocaleString('en-ZA');
+    note.style.display='';
+  } else { note.style.display='none'; }
+
+  document.getElementById('alv-detail-panel').classList.add('open');
+  document.getElementById('overlay-bg').classList.add('open');
+}
+
+async function saveLeaveStatus(){
+  if(!currentLeaveRecord) return;
+  try{
+    const now=new Date().toISOString();
+    const updates={
+      status: document.getElementById('alv-d-status').value,
+      decision_note: document.getElementById('alv-d-note').value,
+      decision_updated_by: currentUser?.email||'unknown',
+      decision_updated_at: now
+    };
+    const { error } = await supabaseClient.from('leave_requests').update(updates).eq('id', currentLeaveRecord.id);
+    if(error) throw error;
+    const note=document.getElementById('alv-updated-note');
+    note.textContent='Decision by '+updates.decision_updated_by+' on '+new Date(now).toLocaleString('en-ZA');
+    note.style.display='';
+    alert('Leave request updated successfully.');
+    loadAdminLeave();
+  }catch(err){
+    alert('Error saving decision: '+(err.message||err));
+  }
+}
+
+/* ---- DOCUMENTS ---- */
+async function loadAdminDocs(){
+  const filter=document.getElementById('adoc-filter').value;
+  document.getElementById('adoc-loading').textContent='Loading...';
+  document.getElementById('adoc-loading').style.display='';
+  document.getElementById('adoc-list').style.display='none';
+  document.getElementById('adoc-empty').style.display='none';
+
+  try{
+    const folderMap={
+      'sick-notes':['sick-notes'],
+      'eod-excel':['eod/food-complaints','eod/express','eod/cashup','eod/cod-dash-xlsx','eod/driver-dash-xlsx'],
+      'eod-images':['eod/active-dash-img','eod/cod-dash-img','eod/driver-dash-img'],
+      'all':['sick-notes','eod/food-complaints','eod/express','eod/cashup','eod/cod-dash-xlsx','eod/driver-dash-xlsx','eod/active-dash-img','eod/cod-dash-img','eod/driver-dash-img']
+    };
+    const folders=folderMap[filter]||folderMap['all'];
+    const allFiles=[];
+
+    for(const folder of folders){
+      const { data, error } = await supabaseClient.storage.from('attachments').list(folder, { sortBy:{ column:'created_at', order:'desc' }});
+      if(error) continue;
+      if(data) data.forEach(f=>{ if(f.name!=='.emptyFolderPlaceholder') allFiles.push({...f, folder, url: supabaseClient.storage.from('attachments').getPublicUrl(folder+'/'+f.name).data.publicUrl}); });
+    }
+
+    document.getElementById('adoc-loading').style.display='none';
+    if(allFiles.length===0){ document.getElementById('adoc-empty').style.display=''; return; }
+
+    const inner=document.getElementById('adoc-inner');
+    inner.innerHTML='';
+    const imgExts=['.png','.jpg','.jpeg'];
+    allFiles.forEach(f=>{
+      const isImg=imgExts.some(ext=>f.name.toLowerCase().endsWith(ext));
+      const labelMap={'sick-notes':'Sick note','eod/food-complaints':'Food complaints','eod/express':'Express','eod/cashup':'Cash up','eod/cod-dash-xlsx':'COD dash (Excel)','eod/driver-dash-xlsx':'Driver dash (Excel)','eod/active-dash-img':'Active Dash','eod/cod-dash-img':'COD Dash','eod/driver-dash-img':'Driver Dash'};
+      const typeLabel=labelMap[f.folder]||f.folder;
+      const uploaded=f.created_at?new Date(f.created_at).toLocaleString('en-ZA'):'—';
+      const row=document.createElement('div');
+      row.className='doc-row';
+      row.innerHTML=`
+        <div class="doc-icon"><i class="ti ti-${isImg?'photo':'file-spreadsheet'}" style="font-size:15px;color:var(--info-text)"></i></div>
+        <div style="flex:1">
+          <div style="font-weight:500">${f.name}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${typeLabel} · Uploaded ${uploaded}</div>
+        </div>
+        ${isImg?`<img src="${f.url}" style="width:48px;height:48px;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--border);cursor:pointer" onclick="window.open('${f.url}','_blank')" alt="${f.name}">`:'' }
+        <a href="${f.url}" target="_blank" class="btn btn-sm"><i class="ti ti-download"></i>Download</a>`;
+      inner.appendChild(row);
+    });
+    document.getElementById('adoc-list').style.display='';
+  }catch(err){
+    document.getElementById('adoc-loading').textContent='Error: '+(err.message||err);
+  }
+}
+
+// Hook nav to load admin sections
+const _navWithAdmin=nav;
+nav=function(id,el){
+  _navWithAdmin(id,el);
+  closeAdminDetail();
 };
 
 </script>
