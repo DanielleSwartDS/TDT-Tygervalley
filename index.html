@@ -210,6 +210,11 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
 .overlay-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.2);z-index:99}
 .overlay-bg.open{display:block}
 
+.public-form-wrap{display:none;min-height:100vh;background:var(--bg);padding:24px 16px;align-items:flex-start;justify-content:center}
+.public-form-wrap.active{display:flex}
+.public-form-header{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;margin-bottom:20px;color:var(--text)}
+.public-form-header i{font-size:20px}
+
 /* MISC */
 .pg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .pg-sub{font-size:12px;color:var(--text-muted)}
@@ -253,7 +258,151 @@ body{font-family:'Inter',sans-serif;font-size:13px;color:var(--text);background:
     <div style="margin-top:10px;text-align:center"><button class="btn btn-sm" onclick="signOut()" style="font-size:11px;color:var(--text-muted);border:none;background:none;cursor:pointer">Sign in with a different account</button></div>
   </div>
 </div>
-<div class="app">
+
+<!-- PUBLIC: LEAVE REQUEST FORM -->
+<div class="public-form-wrap" id="public-leave-wrap">
+  <div style="width:100%;max-width:560px">
+    <div class="public-form-header"><i class="ti ti-steering-wheel"></i>TDT Tygervalley Portal</div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:4px">Leave Request</div>
+      <div class="pg-sub" style="margin-bottom:16px">Submit your leave request — it will be sent to the Director and Ops Manager for approval.</div>
+      <div id="public-leave-success" style="display:none;background:var(--success-bg);color:var(--success-text);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;margin-bottom:14px"><i class="ti ti-circle-check"></i> Leave request submitted successfully. You will be notified of the outcome.</div>
+      <form id="public-leave-form" onsubmit="submitPublicLeave(event)">
+        <div class="form-grid">
+          <div class="form-field" style="grid-column:1/-1"><label>Name &amp; Surname *</label><input type="text" id="plf-name" required></div>
+          <div class="form-field"><label>Leave type *</label>
+            <select id="plf-type" required onchange="togglePublicSickNote()">
+              <option value="">Select...</option>
+              <option>Annual</option><option>Sick</option><option>Maternity</option>
+              <option>Family Responsibility</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-field"><label>&nbsp;</label></div>
+          <div class="form-field"><label>Start date *</label><input type="date" id="plf-start" required></div>
+          <div class="form-field"><label>End date *</label><input type="date" id="plf-end" required></div>
+        </div>
+        <div class="form-field" id="plf-sicknote-wrap" style="display:none;margin-bottom:12px">
+          <label>Sick note (required for sick leave)</label>
+          <input type="file" id="plf-sicknote" accept=".pdf,.jpg,.jpeg,.png">
+        </div>
+        <div class="form-field" style="margin-bottom:16px"><label>Reason *</label>
+          <textarea id="plf-reason" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:70px"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" id="plf-btn"><i class="ti ti-send"></i>Submit leave request</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLIC: EOD REPORT FORM -->
+<div class="public-form-wrap" id="public-eod-wrap">
+  <div style="width:100%;max-width:680px;padding-bottom:40px">
+    <div class="public-form-header"><i class="ti ti-steering-wheel"></i>TDT Tygervalley Portal</div>
+    <div id="public-eod-success" style="display:none;background:var(--success-bg);color:var(--success-text);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;margin-bottom:14px"><i class="ti ti-circle-check"></i> End of Day Report submitted successfully.</div>
+    <form id="public-eod-form" onsubmit="submitPublicEod(event)">
+      <div class="card">
+        <div class="card-title">Express</div>
+        <div class="cond-group">
+          <div class="form-field"><label>Bookout before 08:00? *</label>
+            <select id="peod-bookout" required onchange="togglePublicReason('peod-bookout','peod-bookout-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="peod-bookout-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason</label><input type="text" id="peod-bookout-reason"></div>
+          </div>
+        </div>
+        <div class="cond-group">
+          <div class="form-field"><label>All staff on time for shift? *</label>
+            <select id="peod-ontime" required onchange="togglePublicReason('peod-ontime','peod-ontime-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="peod-ontime-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason</label><input type="text" id="peod-ontime-reason"></div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field"><label>Deliveries *</label><input type="number" id="peod-deliveries" required></div>
+          <div class="form-field"><label>Fails *</label><input type="number" id="peod-fails" required></div>
+          <div class="form-field"><label>Scheduled for tomorrow *</label><input type="number" id="peod-scheduled"></div>
+          <div class="form-field"><label>Any early or lates? *</label>
+            <select id="peod-earlylate" required onchange="togglePublicEarlyLate()">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+        </div>
+        <div id="peod-earlylate-rows" class="cond-reason" style="display:none;margin-bottom:14px">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px"><i class="ti ti-corner-down-right"></i> Early / late entries</label>
+          <div id="peod-earlylate-list"></div>
+          <button type="button" class="btn btn-sm" onclick="addPublicEarlyLateRow()"><i class="ti ti-plus"></i>Add another</button>
+        </div>
+        <div class="cond-group">
+          <div class="form-field"><label>All warehouse emails answered &amp; actioned? *</label>
+            <select id="peod-emails" required onchange="togglePublicReason('peod-emails','peod-emails-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="peod-emails-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason &amp; note for next manager</label><input type="text" id="peod-emails-reason"></div>
+            <div class="consent-box" style="margin-top:8px;margin-bottom:0"><i class="ti ti-alert-triangle" style="color:#854f0b;margin-right:5px"></i>Adrian Van Wyk will be flagged in the email since warehouse emails were not fully actioned.</div>
+          </div>
+        </div>
+        <div class="form-field" style="margin-bottom:0;margin-top:14px"><label>Any problems (drivers, warehouse, etc.)</label>
+          <textarea id="peod-problems" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Food</div>
+        <div class="form-grid">
+          <div class="form-field"><label>Orders *</label><input type="number" id="peod-orders" required></div>
+          <div class="form-field"><label>Lates *</label><input type="number" id="peod-foodlates" required></div>
+          <div class="form-field"><label>Doorbells *</label><input type="number" id="peod-doorbells" required></div>
+          <div class="form-field"><label>Food fails *</label><input type="number" id="peod-foodfails" required></div>
+        </div>
+        <div class="cond-group">
+          <div class="form-field"><label>Forecasted drivers reached per 30 mins? *</label>
+            <select id="peod-forecast" required onchange="togglePublicReason('peod-forecast','peod-forecast-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="peod-forecast-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Timeslot &amp; reason</label><input type="text" id="peod-forecast-reason"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:14px;margin-top:6px">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px">Food to office (DFD numbers)</label>
+          <div id="peod-dfd-list"></div>
+          <button type="button" class="btn btn-sm" onclick="addPublicDfdRow()"><i class="ti ti-plus"></i>Add another</button>
+        </div>
+        <div class="form-field" style="margin-bottom:14px"><label>Any problems (drivers, etc.)</label>
+          <textarea id="peod-foodproblems" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Attachments <span style="font-weight:400;font-size:12px;color:var(--text-muted)">— all optional</span></div>
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Excel sheets</div>
+        <div class="form-grid" style="margin-bottom:6px">
+          <div class="form-field"><label>Food complaints</label><input type="file" id="patt-food-complaints" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Express</label><input type="file" id="patt-express" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Cash up</label><input type="file" id="patt-cashup" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>COD dash</label><input type="file" id="patt-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Driver dash</label><input type="file" id="patt-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 8px">Images</div>
+        <div class="form-grid">
+          <div class="form-field"><label>Active Dash</label><input type="file" id="patt-active-dash" accept=".png,.jpg,.jpeg"></div>
+          <div class="form-field"><label>COD Dash</label><input type="file" id="patt-cod-dash-img" accept=".png,.jpg,.jpeg"></div>
+          <div class="form-field"><label>Driver Dash</label><input type="file" id="patt-driver-dash-img" accept=".png,.jpg,.jpeg"></div>
+        </div>
+        <div id="peod-attach-status" style="font-size:11px;color:var(--text-muted);margin-top:10px"></div>
+      </div>
+      <button class="btn btn-primary" type="submit" id="peod-btn" style="margin-bottom:24px"><i class="ti ti-send"></i>Submit End of Day Report</button>
+    </form>
+  </div>
+</div>
+
+<div class="app" id="main-app">
 
 <!-- SIDEBAR -->
 <div class="sidebar">
@@ -1222,6 +1371,7 @@ async function verifyMfa(){
 
 function unlockPortal(){
   document.getElementById('login-wrap').style.display='none';
+  document.getElementById('main-app').style.display='flex';
   document.getElementById('topbar-user').textContent=currentUser?.email||'';
 }
 
@@ -1231,6 +1381,7 @@ async function signOut(){
   mfaFactorId=null;
   mfaChallengeId=null;
   enrollFactorId=null;
+  document.getElementById('main-app').style.display='none';
   document.getElementById('login-wrap').style.display='flex';
   showLoginStep('password');
   document.getElementById('login-email').value='';
@@ -1238,8 +1389,46 @@ async function signOut(){
   document.getElementById('verify-code').value='';
 }
 
+// ===== ROUTE HANDLER =====
+function handleRoute(){
+  const hash = window.location.hash;
+  const publicLeave = document.getElementById('public-leave-wrap');
+  const publicEod = document.getElementById('public-eod-wrap');
+  const loginWrap = document.getElementById('login-wrap');
+  const mainApp = document.getElementById('main-app');
+
+  // Hide everything first
+  publicLeave.classList.remove('active');
+  publicEod.classList.remove('active');
+
+  if(hash==='#leave'){
+    loginWrap.style.display='none';
+    mainApp.style.display='none';
+    publicLeave.classList.add('active');
+    return true; // public route — no auth needed
+  }
+  if(hash==='#eod'){
+    loginWrap.style.display='none';
+    mainApp.style.display='none';
+    publicEod.classList.add('active');
+    // Init dynamic rows if empty
+    if(document.getElementById('peod-dfd-list').children.length===0) addPublicDfdRow();
+    return true; // public route — no auth needed
+  }
+  return false; // not a public route
+}
+
+window.addEventListener('hashchange', handleRoute);
+
 // Check for existing session on page load
 (async()=>{
+  // Hide main app by default until auth confirmed
+  document.getElementById('main-app').style.display='none';
+
+  // Check for public route first
+  if(handleRoute()) return;
+
+  // Not a public route — check auth
   const { data } = await supabaseClient.auth.getSession();
   if(data?.session){
     const { data: aalData } = await supabaseClient.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -1947,6 +2136,171 @@ nav=function(id,el){
   _navWithAdmin(id,el);
   closeAdminDetail();
 };
+
+
+/* ===== PUBLIC FORMS ===== */
+function togglePublicSickNote(){
+  const isSick=document.getElementById('plf-type').value==='Sick';
+  document.getElementById('plf-sicknote-wrap').style.display=isSick?'':'none';
+}
+
+function togglePublicReason(selectId, wrapId){
+  document.getElementById(wrapId).style.display=
+    document.getElementById(selectId).value==='No'?'':'none';
+}
+
+function togglePublicEarlyLate(){
+  const val=document.getElementById('peod-earlylate').value;
+  const wrap=document.getElementById('peod-earlylate-rows');
+  if(val==='Yes'){
+    wrap.style.display='';
+    if(document.getElementById('peod-earlylate-list').children.length===0) addPublicEarlyLateRow();
+  } else { wrap.style.display='none'; }
+}
+
+let pElCount=0;
+function addPublicEarlyLateRow(){
+  pElCount++;
+  const id='pel-'+pElCount;
+  const div=document.createElement('div');
+  div.id=id;
+  div.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  div.innerHTML=`
+    <div class="form-field"><label>MDX</label><input type="text" class="el-mdx"></div>
+    <div class="form-field"><label>Reason</label><input type="text" class="el-reason"></div>
+    <div class="form-field"><label>Email sent?</label><select class="el-emailsent"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
+    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" style="margin-bottom:2px" aria-label="Remove"><i class="ti ti-trash"></i></button>`;
+  document.getElementById('peod-earlylate-list').appendChild(div);
+}
+
+let pDfdCount=0;
+function addPublicDfdRow(){
+  pDfdCount++;
+  const id='pdfd-'+pDfdCount;
+  const div=document.createElement('div');
+  div.id=id;
+  div.style.cssText='display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  div.innerHTML=`
+    <div class="form-field"><label>DFD number</label><input type="text" class="dfd-number" placeholder="e.g. DFD12345"></div>
+    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" style="margin-bottom:2px" aria-label="Remove"><i class="ti ti-trash"></i></button>`;
+  document.getElementById('peod-dfd-list').appendChild(div);
+}
+
+/* PUBLIC LEAVE SUBMIT */
+async function submitPublicLeave(e){
+  e.preventDefault();
+  const btn=document.getElementById('plf-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Submitting...';
+  try{
+    let sicknote_url=null;
+    const sickInput=document.getElementById('plf-sicknote');
+    if(sickInput.files&&sickInput.files[0]){
+      sicknote_url=await uploadFile(sickInput,'sick-notes');
+    }
+    const data={
+      name_surname: document.getElementById('plf-name').value,
+      leave_type: document.getElementById('plf-type').value,
+      start_date: document.getElementById('plf-start').value,
+      end_date: document.getElementById('plf-end').value,
+      reason: document.getElementById('plf-reason').value,
+      sicknote_url
+    };
+    const { error } = await supabaseClient.from('leave_requests').insert([data]);
+    if(error) throw error;
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_LEAVE, {...data, sicknote_url: sicknote_url||'None attached'});
+    document.getElementById('public-leave-form').style.display='none';
+    document.getElementById('public-leave-success').style.display='';
+  }catch(err){
+    alert('There was a problem submitting. Please try again.\n\n'+(err.message||err));
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-send"></i>Submit leave request';
+  }
+}
+
+/* PUBLIC EOD SUBMIT */
+async function submitPublicEod(e){
+  e.preventDefault();
+  const btn=document.getElementById('peod-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Submitting...';
+  try{
+    const attachStatus=document.getElementById('peod-attach-status');
+    attachStatus.textContent='Uploading attachments...';
+    const attachmentFields=[
+      {id:'patt-food-complaints',key:'food_complaints_url',folder:'eod/food-complaints'},
+      {id:'patt-express',key:'express_url',folder:'eod/express'},
+      {id:'patt-cashup',key:'cashup_url',folder:'eod/cashup'},
+      {id:'patt-cod-dash-xlsx',key:'cod_dash_xlsx_url',folder:'eod/cod-dash-xlsx'},
+      {id:'patt-driver-dash-xlsx',key:'driver_dash_xlsx_url',folder:'eod/driver-dash-xlsx'},
+      {id:'patt-active-dash',key:'active_dash_img_url',folder:'eod/active-dash-img'},
+      {id:'patt-cod-dash-img',key:'cod_dash_img_url',folder:'eod/cod-dash-img'},
+      {id:'patt-driver-dash-img',key:'driver_dash_img_url',folder:'eod/driver-dash-img'}
+    ];
+    const attachments={};
+    for(const f of attachmentFields){
+      const input=document.getElementById(f.id);
+      attachments[f.key]=await uploadFile(input,f.folder);
+    }
+    attachStatus.textContent='';
+
+    const earlyLates=[...document.querySelectorAll('#peod-earlylate-list > div')].map(row=>({
+      mdx:row.querySelector('.el-mdx').value,
+      reason:row.querySelector('.el-reason').value,
+      email_sent:row.querySelector('.el-emailsent').value
+    }));
+    const dfdNumbers=[...document.querySelectorAll('#peod-dfd-list > div')].map(row=>row.querySelector('.dfd-number').value).filter(v=>v);
+
+    const data={
+      report_date: new Date().toISOString().slice(0,10),
+      bookout_before_8: document.getElementById('peod-bookout').value==='Yes',
+      bookout_reason: document.getElementById('peod-bookout-reason').value,
+      staff_ontime: document.getElementById('peod-ontime').value==='Yes',
+      staff_ontime_reason: document.getElementById('peod-ontime-reason').value,
+      deliveries: parseInt(document.getElementById('peod-deliveries').value)||0,
+      fails: parseInt(document.getElementById('peod-fails').value)||0,
+      early_or_lates: earlyLates,
+      scheduled_tomorrow: parseInt(document.getElementById('peod-scheduled').value)||0,
+      warehouse_emails_actioned: document.getElementById('peod-emails').value==='Yes',
+      warehouse_emails_reason: document.getElementById('peod-emails-reason').value,
+      any_problems: document.getElementById('peod-problems').value,
+      food_orders: parseInt(document.getElementById('peod-orders').value)||0,
+      food_lates: parseInt(document.getElementById('peod-foodlates').value)||0,
+      doorbells: parseInt(document.getElementById('peod-doorbells').value)||0,
+      forecast_drivers_met: document.getElementById('peod-forecast').value==='Yes',
+      forecast_drivers_detail: document.getElementById('peod-forecast-reason').value,
+      food_fails: parseInt(document.getElementById('peod-foodfails').value)||0,
+      food_to_office: dfdNumbers,
+      food_problems: document.getElementById('peod-foodproblems').value,
+      ...attachments
+    };
+
+    const { error } = await supabaseClient.from('eod_reports').insert([data]);
+    if(error) throw error;
+
+    const attachmentLines=attachmentFields.filter(f=>attachments[f.key]).map(f=>f.key.replace('_url','').replace(/_/g,' ')+': '+attachments[f.key]).join('\n');
+    const emailData={
+      ...data,
+      bookout_before_8: data.bookout_before_8?'Yes':'No',
+      staff_ontime: data.staff_ontime?'Yes':'No',
+      warehouse_emails_actioned: data.warehouse_emails_actioned?'Yes':'No',
+      forecast_drivers_met: data.forecast_drivers_met?'Yes':'No',
+      early_or_lates: earlyLates.length?earlyLates.map(r=>`MDX: ${r.mdx}, Reason: ${r.reason}, Email sent: ${r.email_sent}`).join(' | '):'None',
+      food_to_office: dfdNumbers.length?dfdNumbers.join(', '):'None',
+      attachments: attachmentLines||'None attached'
+    };
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_EOD, emailData);
+
+    document.getElementById('public-eod-form').style.display='none';
+    document.getElementById('public-eod-success').style.display='';
+  }catch(err){
+    alert('There was a problem submitting. Please try again.\n\n'+(err.message||err));
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-send"></i>Submit End of Day Report';
+  }
+}
 
 </script>
 </body>
