@@ -511,11 +511,10 @@ body.public-mode{overflow-y:auto;height:auto}
           <div class="card" style="padding:0;overflow:hidden">
             <table class="tbl">
               <thead><tr>
-                <th style="width:35%">Full name</th>
-                <th style="width:18%">Driver group</th>
-                <th style="width:18%">Vehicle type</th>
-                <th style="width:17%">Uniform size</th>
-                <th style="width:12%"></th>
+                <th style="width:40%">Full name</th>
+                <th style="width:22%">Driver group</th>
+                <th style="width:22%">Vehicle type</th>
+                <th style="width:16%"></th>
               </tr></thead>
               <tbody id="drv-tbody"></tbody>
             </table>
@@ -1056,17 +1055,56 @@ body.public-mode{overflow-y:auto;height:auto}
 
     <!-- UNIFORMS -->
     <div class="page" id="page-uniforms">
-      <div class="pg-hdr"><div class="pg-sub">Uniform register — staff code allocation</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Allocate uniform</button></div>
-      <div class="card" style="padding:0;overflow:hidden">
-        <table class="tbl">
-          <thead><tr><th style="width:20%">Driver</th><th style="width:12%">Staff code</th><th style="width:12%">Shirt</th><th style="width:12%">Trousers</th><th style="width:10%">Jacket</th><th style="width:10%">Boots</th><th style="width:12%">Allocated</th><th style="width:12%">Status</th></tr></thead>
-          <tbody>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">JM</div>J. Molefe</div></td><td><span class="mono">DRV-001</span></td><td>3 × L</td><td>2 × 32</td><td>XL</td><td>10</td><td style="color:var(--text-muted)">12 Jan 2025</td><td><span class="badge badge-success">Full kit</span></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">SD</div>S. Dlamini</div></td><td><span class="mono">DRV-002</span></td><td>3 × XL</td><td>2 × 34</td><td>XXL</td><td>11</td><td style="color:var(--text-muted)">12 Jan 2025</td><td><span class="badge badge-success">Full kit</span></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">FN</div>F. Naidoo</div></td><td><span class="mono">DRV-003</span></td><td>3 × S</td><td>2 × 28</td><td>—</td><td>6</td><td style="color:var(--text-muted)">15 Mar 2025</td><td><span class="badge badge-warning">Incomplete</span></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">TP</div>T. Pretorius</div></td><td><span class="mono">DRV-004</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td style="color:var(--text-muted)">Pending</td><td><span class="badge badge-danger">Not issued</span></td></tr>
-          </tbody>
-        </table>
+      <!-- Tab switcher -->
+      <div class="steps-bar" style="margin-bottom:16px">
+        <div class="step active" id="uni-tab-stock" onclick="uniSwitchTab('stock')">Stock levels</div>
+        <div class="step" id="uni-tab-alloc" onclick="uniSwitchTab('alloc')">Driver allocations</div>
+      </div>
+
+      <!-- STOCK TAB -->
+      <div id="uni-stock-panel">
+        <div id="uni-stock-loading" class="pg-sub">Loading stock...</div>
+        <div id="uni-stock-content" style="display:none"></div>
+      </div>
+
+      <!-- ALLOCATIONS TAB -->
+      <div id="uni-alloc-panel" style="display:none">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+          <input type="text" id="uni-alloc-search" placeholder="Search by driver name..." oninput="uniAllocRender()" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none;width:220px">
+          <select id="uni-alloc-item" onchange="uniAllocRender()" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none">
+            <option value="">All items</option>
+            <option>Biker Jacket</option>
+            <option>Biker Pants</option>
+            <option>Reflective Body Warmer</option>
+            <option>Beanie</option>
+            <option>Short Sleeve Shirt</option>
+            <option>Long Sleeve Shirt</option>
+            <option>Softshell Jacket</option>
+            <option>Cap</option>
+            <option>Food Bag</option>
+          </select>
+          <div id="uni-alloc-count" class="pg-sub"></div>
+        </div>
+        <div id="uni-alloc-loading" class="pg-sub">Loading allocations...</div>
+        <div id="uni-alloc-content" style="display:none">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="tbl">
+              <thead><tr>
+                <th style="width:30%">Driver</th>
+                <th style="width:25%">Item</th>
+                <th style="width:15%">Size</th>
+                <th style="width:10%">Qty</th>
+                <th style="width:20%">Issued date</th>
+              </tr></thead>
+              <tbody id="uni-alloc-tbody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+            <button class="btn btn-sm" id="uni-alloc-prev" onclick="uniAllocChangePage(-1)"><i class="ti ti-arrow-left"></i>Previous</button>
+            <div id="uni-alloc-page-info" style="font-size:12px;color:var(--text-muted)"></div>
+            <button class="btn btn-sm" id="uni-alloc-next" onclick="uniAllocChangePage(1)">Next <i class="ti ti-arrow-right"></i></button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2183,6 +2221,7 @@ nav=function(id,el){
   _navWithAdmin(id,el);
   closeAdminDetail();
   if(id==='drivers' && drvAllDrivers.length===0) loadDrivers();
+  if(id==='uniforms' && !uniStockLoaded) loadUniStock();
 };
 
 
@@ -2435,7 +2474,6 @@ function drvRender(){
       <td><div style="display:flex;align-items:center;gap:8px"><div class="init">${initials}</div>${d.full_name}</div></td>
       <td>${groupBadge}</td>
       <td>${vehicleBadge}</td>
-      <td>${d.uniform_size||'—'}</td>
       <td><button class="btn btn-sm" onclick="event.stopPropagation();openDriverDetail(${d.id})"><i class="ti ti-eye"></i>View</button></td>`;
     tr.onclick = () => openDriverDetail(d.id);
     tbody.appendChild(tr);
@@ -2507,6 +2545,149 @@ async function openDriverDetail(id){
   }
 }
 
+
+
+/* ===== UNIFORMS ===== */
+let uniStockLoaded = false;
+let uniAllocAll = [];
+let uniAllocFiltered = [];
+let uniAllocPage = 1;
+const UNI_ALLOC_PER_PAGE = 40;
+
+function uniSwitchTab(tab){
+  const isStock = tab==='stock';
+  document.getElementById('uni-stock-panel').style.display = isStock ? '' : 'none';
+  document.getElementById('uni-alloc-panel').style.display = isStock ? 'none' : '';
+  document.getElementById('uni-tab-stock').className = 'step'+(isStock?' active':'');
+  document.getElementById('uni-tab-alloc').className = 'step'+(!isStock?' active':'');
+  if(isStock && !uniStockLoaded) loadUniStock();
+  if(!isStock && uniAllocAll.length===0) loadUniAlloc();
+}
+
+/* ---- STOCK ---- */
+async function loadUniStock(){
+  try{
+    const { data, error } = await supabaseClient
+      .from('uniform_stock')
+      .select('*')
+      .order('item_name')
+      .order('size');
+    if(error) throw error;
+
+    document.getElementById('uni-stock-loading').style.display='none';
+    uniStockLoaded = true;
+
+    // Group by item_name
+    const grouped = {};
+    (data||[]).forEach(r=>{
+      if(!grouped[r.item_name]) grouped[r.item_name]=[];
+      grouped[r.item_name].push(r);
+    });
+
+    const container = document.getElementById('uni-stock-content');
+    container.innerHTML='';
+
+    Object.keys(grouped).sort().forEach(itemName=>{
+      const rows = grouped[itemName];
+      const total = rows.reduce((s,r)=>s+(r.quantity||0),0);
+
+      const card = document.createElement('div');
+      card.className='card';
+      card.style.marginBottom='12px';
+
+      let tableRows = rows.map(r=>{
+        const qty = r.quantity||0;
+        const badge = qty===0 ? 'badge-danger' : qty<=5 ? 'badge-warning' : 'badge-success';
+        return `<tr>
+          <td>${r.size||'—'}</td>
+          <td><span class="badge ${badge}">${qty}</span></td>
+          <td style="color:var(--text-muted);font-size:11px">${r.snapshot_date||'—'}</td>
+        </tr>`;
+      }).join('');
+
+      card.innerHTML=`
+        <div class="card-title">
+          <span>${itemName}</span>
+          <span class="badge badge-gray">Total: ${total}</span>
+        </div>
+        <table class="tbl">
+          <thead><tr>
+            <th style="width:30%">Size</th>
+            <th style="width:30%">Qty in stock</th>
+            <th style="width:40%">Snapshot date</th>
+          </tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>`;
+      container.appendChild(card);
+    });
+
+    document.getElementById('uni-stock-content').style.display='';
+  }catch(err){
+    document.getElementById('uni-stock-loading').textContent='Error: '+(err.message||err);
+  }
+}
+
+/* ---- ALLOCATIONS ---- */
+async function loadUniAlloc(){
+  document.getElementById('uni-alloc-loading').style.display='';
+  try{
+    const { data, error } = await supabaseClient
+      .from('uniform_allocations')
+      .select('*, drivers(full_name)')
+      .order('item_name');
+    if(error) throw error;
+    uniAllocAll = data||[];
+    document.getElementById('uni-alloc-loading').style.display='none';
+    document.getElementById('uni-alloc-content').style.display='';
+    uniAllocRender();
+  }catch(err){
+    document.getElementById('uni-alloc-loading').textContent='Error: '+(err.message||err);
+  }
+}
+
+function uniAllocRender(){
+  const search=(document.getElementById('uni-alloc-search').value||'').toLowerCase();
+  const item=document.getElementById('uni-alloc-item').value;
+
+  uniAllocFiltered=uniAllocAll.filter(a=>{
+    const name=(a.drivers?.full_name||'').toLowerCase();
+    const matchName=!search||name.includes(search);
+    const matchItem=!item||a.item_name===item;
+    return matchName&&matchItem;
+  });
+
+  const total=uniAllocFiltered.length;
+  const totalPages=Math.ceil(total/UNI_ALLOC_PER_PAGE)||1;
+  if(uniAllocPage>totalPages) uniAllocPage=1;
+
+  const start=(uniAllocPage-1)*UNI_ALLOC_PER_PAGE;
+  const page=uniAllocFiltered.slice(start,start+UNI_ALLOC_PER_PAGE);
+
+  const tbody=document.getElementById('uni-alloc-tbody');
+  tbody.innerHTML='';
+  page.forEach(a=>{
+    const name=a.drivers?.full_name||'Unknown';
+    const initials=name.split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div style="display:flex;align-items:center;gap:7px"><div class="init">${initials}</div>${name}</div></td>
+      <td>${a.item_name}</td>
+      <td>${a.size||'—'}</td>
+      <td>${a.quantity}</td>
+      <td>${a.issued_date||'—'}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('uni-alloc-count').textContent=`${total} allocation${total!==1?'s':''}`;
+  document.getElementById('uni-alloc-page-info').textContent=`Page ${uniAllocPage} of ${totalPages}`;
+  document.getElementById('uni-alloc-prev').disabled=uniAllocPage<=1;
+  document.getElementById('uni-alloc-next').disabled=uniAllocPage>=totalPages;
+}
+
+function uniAllocChangePage(dir){
+  uniAllocPage+=dir;
+  uniAllocRender();
+}
 
 </script>
 </body>
