@@ -490,47 +490,82 @@ body.public-mode{overflow-y:auto;height:auto}
     <!-- DRIVERS -->
     <div class="page" id="page-drivers">
       <div id="drivers-list">
-        <div class="pg-hdr"><div class="pg-sub">24 drivers registered</div><button class="btn btn-primary btn-sm" onclick="nav('onboarding',document.querySelectorAll('.nav-item')[2])"><i class="ti ti-plus"></i>Add driver</button></div>
-        <div class="card" style="padding:0;overflow:hidden">
-          <table class="tbl">
-            <thead><tr><th style="width:22%">Driver</th><th style="width:13%">Staff code</th><th style="width:11%">License</th><th style="width:14%">License expiry</th><th style="width:14%">PDP expiry</th><th style="width:13%">Status</th><th style="width:13%"></th></tr></thead>
-            <tbody>
-              <tr class="clickable" onclick="showDriver('JM','James Molefe','DRV-001','Code 10','james.m@fleet.co.za','+27 82 555 0101','Cape Town','badge-danger','8 days','badge-success','14 months','badge-success','Active')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">JM</div>James Molefe</div></td><td><span class="mono">DRV-001</span></td><td>Code 10</td><td><span class="badge badge-danger">8 days</span></td><td><span class="badge badge-success">14 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('JM','James Molefe','DRV-001','Code 10','james.m@fleet.co.za','+27 82 555 0101','Cape Town','badge-danger','8 days','badge-success','14 months','badge-success','Active')">View</button></td></tr>
-              <tr class="clickable" onclick="showDriver('SD','Sipho Dlamini','DRV-002','Code 14','sipho.d@fleet.co.za','+27 83 555 0202','Johannesburg','badge-success','11 months','badge-warning','31 days','badge-success','Active')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">SD</div>Sipho Dlamini</div></td><td><span class="mono">DRV-002</span></td><td>Code 14</td><td><span class="badge badge-success">11 months</span></td><td><span class="badge badge-warning">31 days</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('SD','Sipho Dlamini','DRV-002','Code 14','sipho.d@fleet.co.za','+27 83 555 0202','Johannesburg','badge-success','11 months','badge-warning','31 days','badge-success','Active')">View</button></td></tr>
-              <tr class="clickable" onclick="showDriver('FN','Fatima Naidoo','DRV-003','Code 10','fatima.n@fleet.co.za','+27 84 555 0303','Durban','badge-success','8 months','badge-success','9 months','badge-success','Active')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">FN</div>Fatima Naidoo</div></td><td><span class="mono">DRV-003</span></td><td>Code 10</td><td><span class="badge badge-success">8 months</span></td><td><span class="badge badge-success">9 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('FN','Fatima Naidoo','DRV-003','Code 10','fatima.n@fleet.co.za','+27 84 555 0303','Durban','badge-success','8 months','badge-success','9 months','badge-success','Active')">View</button></td></tr>
-              <tr class="clickable" onclick="showDriver('TP','Thabo Pretorius','DRV-004','Code 08','thabo.p@fleet.co.za','+27 85 555 0404','Pretoria','badge-success','5 months','badge-gray','N/A','badge-gray','On leave')"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td><span class="mono">DRV-004</span></td><td>Code 08</td><td><span class="badge badge-success">5 months</span></td><td>—</td><td><span class="badge badge-gray">On leave</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showDriver('TP','Thabo Pretorius','DRV-004','Code 08','thabo.p@fleet.co.za','+27 85 555 0404','Pretoria','badge-success','5 months','badge-gray','N/A','badge-gray','On leave')">View</button></td></tr>
-            </tbody>
-          </table>
+        <div class="pg-hdr">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="text" id="drv-search" placeholder="Search by name..." oninput="drvRender()" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none;width:200px">
+            <select id="drv-group" onchange="drvRender()" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none">
+              <option value="">All groups</option>
+              <option value="TYG">TYG</option>
+              <option value="Green">Green</option>
+              <option value="MIA">MIA</option>
+            </select>
+            <select id="drv-perpage" onchange="drvRender()" style="font-size:12px;padding:6px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;outline:none">
+              <option value="30">30 per page</option>
+              <option value="40">40 per page</option>
+            </select>
+            <div id="drv-count" class="pg-sub"></div>
+          </div>
+        </div>
+        <div id="drv-loading" class="pg-sub" style="margin-bottom:14px">Loading drivers...</div>
+        <div id="drv-table-wrap" style="display:none">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="tbl">
+              <thead><tr>
+                <th style="width:35%">Full name</th>
+                <th style="width:18%">Driver group</th>
+                <th style="width:18%">Vehicle type</th>
+                <th style="width:17%">Uniform size</th>
+                <th style="width:12%"></th>
+              </tr></thead>
+              <tbody id="drv-tbody"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px" id="drv-pagination">
+            <button class="btn btn-sm" id="drv-prev" onclick="drvChangePage(-1)"><i class="ti ti-arrow-left"></i>Previous</button>
+            <div id="drv-page-info" style="font-size:12px;color:var(--text-muted)"></div>
+            <button class="btn btn-sm" id="drv-next" onclick="drvChangePage(1)">Next <i class="ti ti-arrow-right"></i></button>
+          </div>
         </div>
       </div>
+
+      <!-- DRIVER DETAIL -->
       <div id="driver-detail" style="display:none">
         <div class="back-btn" onclick="document.getElementById('drivers-list').style.display='';document.getElementById('driver-detail').style.display='none'"><i class="ti ti-arrow-left"></i>Back to drivers</div>
         <div class="card">
           <div class="detail-header">
             <div class="detail-avatar" id="d-init"></div>
-            <div><div style="font-weight:600;font-size:15px" id="d-name"></div><div style="font-size:12px;color:var(--text-muted)" id="d-code"></div></div>
-            <div style="margin-left:auto" id="d-status-badge"></div>
+            <div>
+              <div style="font-weight:600;font-size:15px" id="d-name"></div>
+              <div style="font-size:12px;color:var(--text-muted)" id="d-group"></div>
+            </div>
+            <div style="margin-left:auto" id="d-vehicle-badge"></div>
           </div>
           <hr class="divider">
           <div class="form-grid">
-            <div class="field-group"><div class="field-label">License type</div><div class="field-value" id="d-license"></div></div>
-            <div class="field-group"><div class="field-label">Email</div><div class="field-value" id="d-email"></div></div>
-            <div class="field-group"><div class="field-label">Phone</div><div class="field-value" id="d-phone"></div></div>
-            <div class="field-group"><div class="field-label">Location</div><div class="field-value" id="d-location"></div></div>
-            <div class="field-group"><div class="field-label">License expiry</div><div class="field-value" id="d-lic-exp"></div></div>
-            <div class="field-group"><div class="field-label">PDP expiry</div><div class="field-value" id="d-pdp-exp"></div></div>
+            <div class="field-group"><div class="field-label">Vehicle type</div><div class="field-value" id="d-vehicle"></div></div>
+            <div class="field-group"><div class="field-label">Uniform size</div><div class="field-value" id="d-unisize"></div></div>
+            <div class="field-group"><div class="field-label">Driver group</div><div class="field-value" id="d-groupval"></div></div>
+            <div class="field-group"><div class="field-label">Notes</div><div class="field-value" id="d-notes"></div></div>
           </div>
           <hr class="divider">
-          <div style="font-weight:600;font-size:12px;margin-bottom:10px">Documents on file</div>
-          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Driver's license</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">ID document</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Proof of address</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Vehicle license</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 12 Jan 2025</div></div><span class="badge badge-success">Verified</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+          <div style="font-weight:600;font-size:12px;margin-bottom:12px">Uniform allocations</div>
+          <div id="d-allocations-loading" class="pg-sub">Loading allocations...</div>
+          <div id="d-allocations-empty" style="display:none" class="pg-sub">No uniform allocations on record.</div>
+          <table class="tbl" id="d-allocations-table" style="display:none">
+            <thead><tr>
+              <th style="width:35%">Item</th>
+              <th style="width:20%">Size</th>
+              <th style="width:15%">Qty</th>
+              <th style="width:30%">Issued date</th>
+            </tr></thead>
+            <tbody id="d-allocations-tbody"></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- ONBOARDING -->
+
+        <!-- ONBOARDING -->
     <div class="page" id="page-onboarding">
       <div id="ob-list">
         <div class="pg-hdr"><div class="pg-sub">Onboarding journeys are started from a driver's profile.</div><button class="btn btn-primary btn-sm" onclick="showOb()"><i class="ti ti-plus"></i>Start onboarding</button></div>
@@ -2147,6 +2182,7 @@ const _navWithAdmin=nav;
 nav=function(id,el){
   _navWithAdmin(id,el);
   closeAdminDetail();
+  if(id==='drivers' && drvAllDrivers.length===0) loadDrivers();
 };
 
 
@@ -2336,6 +2372,141 @@ async function submitPublicEod(e){
     btn.innerHTML='<i class="ti ti-send"></i>Submit End of Day Report';
   }
 }
+
+
+/* ===== DRIVERS — LIVE FROM SUPABASE ===== */
+let drvAllDrivers = [];
+let drvFiltered = [];
+let drvPage = 1;
+
+async function loadDrivers(){
+  try{
+    const { data, error } = await supabaseClient
+      .from('drivers')
+      .select('*')
+      .order('full_name', { ascending: true });
+    if(error) throw error;
+    drvAllDrivers = data || [];
+    document.getElementById('drv-loading').style.display='none';
+    document.getElementById('drv-table-wrap').style.display='';
+    drvRender();
+  }catch(err){
+    document.getElementById('drv-loading').textContent='Error loading drivers: '+(err.message||err);
+  }
+}
+
+function drvGetInitials(name){
+  if(!name) return '?';
+  const parts = name.trim().split(' ');
+  if(parts.length===1) return parts[0][0].toUpperCase();
+  return (parts[0][0]+parts[parts.length-1][0]).toUpperCase();
+}
+
+function drvRender(){
+  const search = (document.getElementById('drv-search').value||'').toLowerCase();
+  const group = document.getElementById('drv-group').value;
+  const perPage = parseInt(document.getElementById('drv-perpage').value)||30;
+
+  drvFiltered = drvAllDrivers.filter(d=>{
+    const matchName = !search || d.full_name.toLowerCase().includes(search);
+    const matchGroup = !group || (d.driver_group||'').toLowerCase()===group.toLowerCase();
+    return matchName && matchGroup;
+  });
+
+  const totalPages = Math.ceil(drvFiltered.length / perPage);
+  if(drvPage > totalPages) drvPage = 1;
+
+  const start = (drvPage-1)*perPage;
+  const pageDrivers = drvFiltered.slice(start, start+perPage);
+
+  const tbody = document.getElementById('drv-tbody');
+  tbody.innerHTML='';
+  pageDrivers.forEach(d=>{
+    const initials = drvGetInitials(d.full_name);
+    const groupBadge = d.driver_group
+      ? `<span class="badge badge-info">${d.driver_group}</span>`
+      : '<span class="badge badge-gray">—</span>';
+    const vehicleBadge = d.vehicle_type
+      ? `<span class="badge badge-gray">${d.vehicle_type}</span>`
+      : '—';
+    const tr = document.createElement('tr');
+    tr.className='clickable';
+    tr.innerHTML=`
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="init">${initials}</div>${d.full_name}</div></td>
+      <td>${groupBadge}</td>
+      <td>${vehicleBadge}</td>
+      <td>${d.uniform_size||'—'}</td>
+      <td><button class="btn btn-sm" onclick="event.stopPropagation();openDriverDetail(${d.id})"><i class="ti ti-eye"></i>View</button></td>`;
+    tr.onclick = () => openDriverDetail(d.id);
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('drv-count').textContent = `${drvFiltered.length} driver${drvFiltered.length!==1?'s':''}`;
+  document.getElementById('drv-page-info').textContent = `Page ${drvPage} of ${totalPages||1}`;
+  document.getElementById('drv-prev').disabled = drvPage<=1;
+  document.getElementById('drv-next').disabled = drvPage>=totalPages;
+}
+
+function drvChangePage(dir){
+  drvPage += dir;
+  drvRender();
+}
+
+async function openDriverDetail(id){
+  const driver = drvAllDrivers.find(d=>d.id===id);
+  if(!driver) return;
+
+  document.getElementById('drivers-list').style.display='none';
+  document.getElementById('driver-detail').style.display='';
+
+  const initials = drvGetInitials(driver.full_name);
+  document.getElementById('d-init').textContent=initials;
+  document.getElementById('d-name').textContent=driver.full_name;
+  document.getElementById('d-group').textContent=driver.driver_group ? `Group: ${driver.driver_group}` : 'No group assigned';
+  document.getElementById('d-vehicle').textContent=driver.vehicle_type||'—';
+  document.getElementById('d-unisize').textContent=driver.uniform_size||'—';
+  document.getElementById('d-groupval').textContent=driver.driver_group||'—';
+  document.getElementById('d-notes').textContent=driver.notes||'—';
+  document.getElementById('d-vehicle-badge').innerHTML=driver.vehicle_type
+    ? `<span class="badge badge-info">${driver.vehicle_type}</span>` : '';
+
+  // Load allocations
+  document.getElementById('d-allocations-loading').style.display='';
+  document.getElementById('d-allocations-empty').style.display='none';
+  document.getElementById('d-allocations-table').style.display='none';
+
+  try{
+    const { data, error } = await supabaseClient
+      .from('uniform_allocations')
+      .select('*')
+      .eq('driver_id', id)
+      .order('item_name', { ascending: true });
+    if(error) throw error;
+
+    document.getElementById('d-allocations-loading').style.display='none';
+
+    if(!data || data.length===0){
+      document.getElementById('d-allocations-empty').style.display='';
+      return;
+    }
+
+    const tbody = document.getElementById('d-allocations-tbody');
+    tbody.innerHTML='';
+    data.forEach(a=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML=`
+        <td>${a.item_name}</td>
+        <td>${a.size||'—'}</td>
+        <td>${a.quantity}</td>
+        <td>${a.issued_date||'—'}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('d-allocations-table').style.display='';
+  }catch(err){
+    document.getElementById('d-allocations-loading').textContent='Error loading allocations: '+(err.message||err);
+  }
+}
+
 
 </script>
 </body>
