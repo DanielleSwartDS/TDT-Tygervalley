@@ -1527,7 +1527,7 @@ function addEarlyLateRow(){
     <div class="form-field"><label>MDX</label><input type="text" class="el-mdx"></div>
     <div class="form-field"><label>Reason</label><input type="text" class="el-reason"></div>
     <div class="form-field"><label>Email sent?</label><select class="el-emailsent"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
-    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>`;
   document.getElementById('eod-earlylate-list').appendChild(wrap);
 }
 function toggleEarlyLateRows(){
@@ -1550,7 +1550,7 @@ function addDfdRow(){
   wrap.style.cssText='display:grid;grid-template-columns:1fr 36px;gap:8px;margin-bottom:8px;align-items:end';
   wrap.innerHTML=`
     <div class="form-field"><label>DFD number</label><input type="text" class="dfd-number" placeholder="e.g. DFD12345"></div>
-    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>`;
   document.getElementById('eod-dfd-list').appendChild(wrap);
 }
 
@@ -2162,7 +2162,7 @@ function addBookoutRow(listId, prefix){
   div.innerHTML=`
     <div class="form-field"><label>MDX</label><input type="text" class="bo-mdx" placeholder="MDX number"></div>
     <div class="form-field"><label>Reason</label><input type="text" class="bo-reason" placeholder="Reason for late bookout"></div>
-    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>`;
   document.getElementById(listId).appendChild(div);
 }
 
@@ -2200,7 +2200,7 @@ function addPublicEarlyLateRow(){
     <div class="form-field"><label>MDX</label><input type="text" class="el-mdx"></div>
     <div class="form-field"><label>Reason</label><input type="text" class="el-reason"></div>
     <div class="form-field"><label>Email sent?</label><select class="el-emailsent"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
-    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>`;
   document.getElementById('peod-earlylate-list').appendChild(div);
 }
 
@@ -2213,7 +2213,7 @@ function addPublicDfdRow(){
   div.style.cssText='display:grid;grid-template-columns:1fr 36px;gap:8px;margin-bottom:8px;align-items:end';
   div.innerHTML=`
     <div class="form-field"><label>DFD number</label><input type="text" class="dfd-number" placeholder="e.g. DFD12345"></div>
-    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>`;
   document.getElementById('peod-dfd-list').appendChild(div);
 }
 
