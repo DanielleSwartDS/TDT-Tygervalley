@@ -310,7 +310,9 @@ body.public-mode{overflow-y:auto;height:auto}
             </select>
           </div>
           <div class="cond-reason" id="peod-bookout-reason-wrap" style="display:none">
-            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason</label><input type="text" id="peod-bookout-reason"></div>
+            <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px"><i class="ti ti-corner-down-right"></i> MDX &amp; reason entries</label>
+            <div id="peod-bookout-list"></div>
+            <button type="button" class="btn btn-sm" onclick="addBookoutRow('peod-bookout-list','peod-bo')"><i class="ti ti-plus"></i>Add another</button>
           </div>
         </div>
         <div class="cond-group">
@@ -384,17 +386,17 @@ body.public-mode{overflow-y:auto;height:auto}
         <div class="card-title">Attachments <span style="font-weight:400;font-size:12px;color:var(--text-muted)">— all optional</span></div>
         <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Excel sheets</div>
         <div class="form-grid" style="margin-bottom:6px">
-          <div class="form-field"><label>Food complaints</label><input type="file" id="patt-food-complaints" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>Express</label><input type="file" id="patt-express" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>Cash up</label><input type="file" id="patt-cashup" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>COD dash</label><input type="file" id="patt-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>Driver dash</label><input type="file" id="patt-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Food Complaints &amp; Doorbells (Excel)</label><input type="file" id="patt-food-complaints" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Express COD (Excel)</label><input type="file" id="patt-express" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Cash Up (Excel)</label><input type="file" id="patt-cashup" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Food COD (Excel)</label><input type="file" id="patt-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Midnight (Excel)</label><input type="file" id="patt-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
         </div>
         <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 8px">Images</div>
         <div class="form-grid">
-          <div class="form-field"><label>Active Dash</label><input type="file" id="patt-active-dash" accept=".png,.jpg,.jpeg"></div>
+          <div class="form-field"><label>Driver Dash</label><input type="file" id="patt-active-dash" accept=".png,.jpg,.jpeg"></div>
           <div class="form-field"><label>COD Dash</label><input type="file" id="patt-cod-dash-img" accept=".png,.jpg,.jpeg"></div>
-          <div class="form-field"><label>Driver Dash</label><input type="file" id="patt-driver-dash-img" accept=".png,.jpg,.jpeg"></div>
+          <div class="form-field"><label>Food Dash</label><input type="file" id="patt-driver-dash-img" accept=".png,.jpg,.jpeg"></div>
         </div>
         <div id="peod-attach-status" style="font-size:11px;color:var(--text-muted);margin-top:10px"></div>
       </div>
@@ -667,7 +669,9 @@ body.public-mode{overflow-y:auto;height:auto}
               </select>
             </div>
             <div class="cond-reason" id="eod-bookout-reason-wrap" style="display:none">
-              <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Reason</label><input type="text" id="eod-bookout-reason"></div>
+              <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px"><i class="ti ti-corner-down-right"></i> MDX &amp; reason entries</label>
+              <div id="eod-bookout-list"></div>
+              <button type="button" class="btn btn-sm" onclick="addBookoutRow('eod-bookout-list','eod-bo')"><i class="ti ti-plus"></i>Add another</button>
             </div>
           </div>
 
@@ -749,17 +753,17 @@ body.public-mode{overflow-y:auto;height:auto}
           <div class="pg-sub" style="margin-bottom:12px">Upload the relevant dashboards/sheets for today. All fields optional — attach what's available.</div>
           <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Excel sheets</div>
           <div class="form-grid" style="margin-bottom:6px">
-            <div class="form-field"><label>Food complaints</label><input type="file" id="att-food-complaints" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>Express</label><input type="file" id="att-express" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>Cash up</label><input type="file" id="att-cashup" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>COD dash</label><input type="file" id="att-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>Driver dash</label><input type="file" id="att-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Food Complaints &amp; Doorbells (Excel)</label><input type="file" id="att-food-complaints" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Express COD (Excel)</label><input type="file" id="att-express" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Cash Up (Excel)</label><input type="file" id="att-cashup" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Food COD (Excel)</label><input type="file" id="att-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Midnight (Excel)</label><input type="file" id="att-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
           </div>
           <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 8px">Images</div>
           <div class="form-grid">
-            <div class="form-field"><label>Active Dash</label><input type="file" id="att-active-dash" accept=".png,.jpg,.jpeg"></div>
+            <div class="form-field"><label>Driver Dash</label><input type="file" id="att-active-dash" accept=".png,.jpg,.jpeg"></div>
             <div class="form-field"><label>COD Dash</label><input type="file" id="att-cod-dash-img" accept=".png,.jpg,.jpeg"></div>
-            <div class="form-field"><label>Driver Dash</label><input type="file" id="att-driver-dash-img" accept=".png,.jpg,.jpeg"></div>
+            <div class="form-field"><label>Food Dash</label><input type="file" id="att-driver-dash-img" accept=".png,.jpg,.jpeg"></div>
           </div>
           <div id="eod-attach-status" style="font-size:11px;color:var(--text-muted);margin-top:10px"></div>
         </div>
@@ -1571,6 +1575,11 @@ async function submitEodForm(e){
     email_sent: row.querySelector('.el-emailsent').value
   }));
 
+  const bookoutEntries=[...document.querySelectorAll('#eod-bookout-list > div')].map(row=>({
+    mdx: row.querySelector('.bo-mdx').value,
+    reason: row.querySelector('.bo-reason').value
+  }));
+
   const dfdNumbers=[...document.querySelectorAll('#eod-dfd-list > div')].map(row=>row.querySelector('.dfd-number').value).filter(v=>v);
 
   try{
@@ -1598,7 +1607,7 @@ async function submitEodForm(e){
     const data={
       report_date: new Date().toISOString().slice(0,10),
       bookout_before_8: document.getElementById('eod-bookout').value==='Yes',
-      bookout_reason: document.getElementById('eod-bookout-reason').value,
+      bookout_reason: bookoutEntries.length ? bookoutEntries.map(r=>`MDX: ${r.mdx} — ${r.reason}`).join(' | ') : '',
       staff_ontime: document.getElementById('eod-ontime').value==='Yes',
       staff_ontime_reason: document.getElementById('eod-ontime-reason').value,
       deliveries: parseInt(document.getElementById('eod-deliveries').value)||0,
@@ -1916,14 +1925,14 @@ function openEodDetail(r){
 
   // Attachments
   const attFields=[
-    {key:'food_complaints_url',label:'Food complaints'},
-    {key:'express_url',label:'Express'},
+    {key:'food_complaints_url',label:'Food Complaints & Doorbells'},
+    {key:'express_url',label:'Express COD'},
     {key:'cashup_url',label:'Cash up'},
-    {key:'cod_dash_xlsx_url',label:'COD dash (Excel)'},
-    {key:'driver_dash_xlsx_url',label:'Driver dash (Excel)'},
-    {key:'active_dash_img_url',label:'Active Dash'},
+    {key:'cod_dash_xlsx_url',label:'Food COD'},
+    {key:'driver_dash_xlsx_url',label:'Midnight'},
+    {key:'active_dash_img_url',label:'Driver Dash'},
     {key:'cod_dash_img_url',label:'COD Dash'},
-    {key:'driver_dash_img_url',label:'Driver Dash'}
+    {key:'driver_dash_img_url',label:'Food Dash'}
   ];
   const attWrap=document.getElementById('aeod-attachments');
   attWrap.innerHTML='';
@@ -2142,6 +2151,21 @@ nav=function(id,el){
 
 
 /* ===== PUBLIC FORMS ===== */
+/* ===== BOOKOUT MDX ROWS ===== */
+let bookoutRowCount=0;
+function addBookoutRow(listId, prefix){
+  bookoutRowCount++;
+  const id=prefix+'-'+bookoutRowCount;
+  const div=document.createElement('div');
+  div.id=id;
+  div.style.cssText='display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  div.innerHTML=`
+    <div class="form-field"><label>MDX</label><input type="text" class="bo-mdx" placeholder="MDX number"></div>
+    <div class="form-field"><label>Reason</label><input type="text" class="bo-reason" placeholder="Reason for late bookout"></div>
+    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" style="margin-bottom:2px" aria-label="Remove"><i class="ti ti-trash"></i></button>`;
+  document.getElementById(listId).appendChild(div);
+}
+
 function togglePublicSickNote(){
   const isSick=document.getElementById('plf-type').value==='Sick';
   document.getElementById('plf-sicknote-wrap').style.display=isSick?'':'none';
@@ -2150,6 +2174,10 @@ function togglePublicSickNote(){
 function togglePublicReason(selectId, wrapId){
   document.getElementById(wrapId).style.display=
     document.getElementById(selectId).value==='No'?'':'none';
+  if(selectId==='peod-bookout' && document.getElementById(selectId).value==='No'){
+    const list=document.getElementById('peod-bookout-list');
+    if(list && list.children.length===0) addBookoutRow('peod-bookout-list','peod-bo');
+  }
 }
 
 function togglePublicEarlyLate(){
@@ -2253,12 +2281,16 @@ async function submitPublicEod(e){
       reason:row.querySelector('.el-reason').value,
       email_sent:row.querySelector('.el-emailsent').value
     }));
+    const bookoutEntries=[...document.querySelectorAll('#peod-bookout-list > div')].map(row=>({
+      mdx:row.querySelector('.bo-mdx').value,
+      reason:row.querySelector('.bo-reason').value
+    }));
     const dfdNumbers=[...document.querySelectorAll('#peod-dfd-list > div')].map(row=>row.querySelector('.dfd-number').value).filter(v=>v);
 
     const data={
       report_date: new Date().toISOString().slice(0,10),
       bookout_before_8: document.getElementById('peod-bookout').value==='Yes',
-      bookout_reason: document.getElementById('peod-bookout-reason').value,
+      bookout_reason: bookoutEntries.length ? bookoutEntries.map(r=>`MDX: ${r.mdx} — ${r.reason}`).join(' | ') : '',
       staff_ontime: document.getElementById('peod-ontime').value==='Yes',
       staff_ontime_reason: document.getElementById('peod-ontime-reason').value,
       deliveries: parseInt(document.getElementById('peod-deliveries').value)||0,
