@@ -386,11 +386,11 @@ body.public-mode{overflow-y:auto;height:auto}
         <div class="card-title">Attachments <span style="font-weight:400;font-size:12px;color:var(--text-muted)">— all optional</span></div>
         <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Excel sheets</div>
         <div class="form-grid" style="margin-bottom:6px">
-          <div class="form-field"><label>Food Complaints &amp; Doorbells (Excel)</label><input type="file" id="patt-food-complaints" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>Express COD (Excel)</label><input type="file" id="patt-express" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>Cash Up (Excel)</label><input type="file" id="patt-cashup" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>Food COD (Excel)</label><input type="file" id="patt-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
-          <div class="form-field"><label>Midnight (Excel)</label><input type="file" id="patt-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Food Complaints &amp; Doorbells</label><input type="file" id="patt-food-complaints" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Express COD</label><input type="file" id="patt-express" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Cash Up</label><input type="file" id="patt-cashup" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Food COD</label><input type="file" id="patt-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+          <div class="form-field"><label>Midnight</label><input type="file" id="patt-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
         </div>
         <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 8px">Images</div>
         <div class="form-grid">
@@ -753,11 +753,11 @@ body.public-mode{overflow-y:auto;height:auto}
           <div class="pg-sub" style="margin-bottom:12px">Upload the relevant dashboards/sheets for today. All fields optional — attach what's available.</div>
           <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Excel sheets</div>
           <div class="form-grid" style="margin-bottom:6px">
-            <div class="form-field"><label>Food Complaints &amp; Doorbells (Excel)</label><input type="file" id="att-food-complaints" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>Express COD (Excel)</label><input type="file" id="att-express" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>Cash Up (Excel)</label><input type="file" id="att-cashup" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>Food COD (Excel)</label><input type="file" id="att-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
-            <div class="form-field"><label>Midnight (Excel)</label><input type="file" id="att-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Food Complaints &amp; Doorbells</label><input type="file" id="att-food-complaints" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Express COD</label><input type="file" id="att-express" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Cash Up</label><input type="file" id="att-cashup" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Food COD</label><input type="file" id="att-cod-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
+            <div class="form-field"><label>Midnight</label><input type="file" id="att-driver-dash-xlsx" accept=".xlsx,.xls,.csv"></div>
           </div>
           <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin:14px 0 8px">Images</div>
           <div class="form-grid">
@@ -1522,12 +1522,12 @@ function addEarlyLateRow(){
   const id='el-'+earlyLateRowCount;
   const wrap=document.createElement('div');
   wrap.id=id;
-  wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:8px;margin-bottom:8px;align-items:end';
   wrap.innerHTML=`
     <div class="form-field"><label>MDX</label><input type="text" class="el-mdx"></div>
     <div class="form-field"><label>Reason</label><input type="text" class="el-reason"></div>
     <div class="form-field"><label>Email sent?</label><select class="el-emailsent"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
-    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="margin-bottom:2px"><i class="ti ti-trash"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
   document.getElementById('eod-earlylate-list').appendChild(wrap);
 }
 function toggleEarlyLateRows(){
@@ -1547,10 +1547,10 @@ function addDfdRow(){
   const id='dfd-'+dfdRowCount;
   const wrap=document.createElement('div');
   wrap.id=id;
-  wrap.style.cssText='display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  wrap.style.cssText='display:grid;grid-template-columns:1fr 36px;gap:8px;margin-bottom:8px;align-items:end';
   wrap.innerHTML=`
     <div class="form-field"><label>DFD number</label><input type="text" class="dfd-number" placeholder="e.g. DFD12345"></div>
-    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="margin-bottom:2px"><i class="ti ti-trash"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove row" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
   document.getElementById('eod-dfd-list').appendChild(wrap);
 }
 
@@ -2121,7 +2121,7 @@ async function loadAdminDocs(){
     const imgExts=['.png','.jpg','.jpeg'];
     allFiles.forEach(f=>{
       const isImg=imgExts.some(ext=>f.name.toLowerCase().endsWith(ext));
-      const labelMap={'sick-notes':'Sick note','eod/food-complaints':'Food complaints','eod/express':'Express','eod/cashup':'Cash up','eod/cod-dash-xlsx':'COD dash (Excel)','eod/driver-dash-xlsx':'Driver dash (Excel)','eod/active-dash-img':'Active Dash','eod/cod-dash-img':'COD Dash','eod/driver-dash-img':'Driver Dash'};
+      const labelMap={'sick-notes':'Sick note','eod/food-complaints':'Food Complaints & Doorbells','eod/express':'Express COD','eod/cashup':'Cash Up','eod/cod-dash-xlsx':'Food COD','eod/driver-dash-xlsx':'Midnight','eod/active-dash-img':'Driver Dash','eod/cod-dash-img':'COD Dash','eod/driver-dash-img':'Food Dash'};
       const typeLabel=labelMap[f.folder]||f.folder;
       const uploaded=f.created_at?new Date(f.created_at).toLocaleString('en-ZA'):'—';
       const row=document.createElement('div');
@@ -2158,11 +2158,11 @@ function addBookoutRow(listId, prefix){
   const id=prefix+'-'+bookoutRowCount;
   const div=document.createElement('div');
   div.id=id;
-  div.style.cssText='display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  div.style.cssText='display:grid;grid-template-columns:1fr 1fr 36px;gap:8px;margin-bottom:8px;align-items:end';
   div.innerHTML=`
     <div class="form-field"><label>MDX</label><input type="text" class="bo-mdx" placeholder="MDX number"></div>
     <div class="form-field"><label>Reason</label><input type="text" class="bo-reason" placeholder="Reason for late bookout"></div>
-    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" style="margin-bottom:2px" aria-label="Remove"><i class="ti ti-trash"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
   document.getElementById(listId).appendChild(div);
 }
 
@@ -2195,12 +2195,12 @@ function addPublicEarlyLateRow(){
   const id='pel-'+pElCount;
   const div=document.createElement('div');
   div.id=id;
-  div.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  div.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:8px;margin-bottom:8px;align-items:end';
   div.innerHTML=`
     <div class="form-field"><label>MDX</label><input type="text" class="el-mdx"></div>
     <div class="form-field"><label>Reason</label><input type="text" class="el-reason"></div>
     <div class="form-field"><label>Email sent?</label><select class="el-emailsent"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
-    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" style="margin-bottom:2px" aria-label="Remove"><i class="ti ti-trash"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
   document.getElementById('peod-earlylate-list').appendChild(div);
 }
 
@@ -2210,10 +2210,10 @@ function addPublicDfdRow(){
   const id='pdfd-'+pDfdCount;
   const div=document.createElement('div');
   div.id=id;
-  div.style.cssText='display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px;align-items:end';
+  div.style.cssText='display:grid;grid-template-columns:1fr 36px;gap:8px;margin-bottom:8px;align-items:end';
   div.innerHTML=`
     <div class="form-field"><label>DFD number</label><input type="text" class="dfd-number" placeholder="e.g. DFD12345"></div>
-    <button type="button" class="btn-icon" onclick="document.getElementById('${id}').remove()" style="margin-bottom:2px" aria-label="Remove"><i class="ti ti-trash"></i></button>`;
+    <button type="button" onclick="document.getElementById('${id}').remove()" aria-label="Remove" style="height:34px;width:34px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);cursor:pointer;color:var(--danger-text);flex-shrink:0"><i class="ti ti-trash" style="font-size:15px"></i></button>`;
   document.getElementById('peod-dfd-list').appendChild(div);
 }
 
