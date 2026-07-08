@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -456,33 +457,25 @@ body.public-mode{overflow-y:auto;height:auto}
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="grid-3">
-        <div class="metric-card"><div class="metric-label">Active drivers</div><div class="metric-value">24</div><div class="metric-sub">2 on leave</div></div>
-        <div class="metric-card"><div class="metric-label">Vehicles</div><div class="metric-value">18</div><div class="metric-sub">3 in maintenance</div></div>
-        <div class="metric-card"><div class="metric-label">Open tasks</div><div class="metric-value">9</div><div class="metric-sub">3 overdue</div></div>
+        <div class="metric-card"><div class="metric-label">Drivers</div><div class="metric-value" id="dash-driver-count">—</div><div class="metric-sub" id="dash-driver-sub">Loading...</div></div>
+        <div class="metric-card"><div class="metric-label">Vehicles</div><div class="metric-value" id="dash-vehicle-count">—</div><div class="metric-sub">Manage in Vehicles</div></div>
+        <div class="metric-card"><div class="metric-label">Open tasks</div><div class="metric-value" id="dash-task-count">—</div><div class="metric-sub">Manage in Tasks</div></div>
       </div>
       <div class="grid-2">
         <div class="card">
           <div class="card-title"><span><i class="ti ti-alert-triangle" style="color:#854f0b;margin-right:5px"></i>Expiry alerts</span><span class="badge badge-danger">4 urgent</span></div>
-          <div class="alert-row"><i class="ti ti-id" style="color:#a32d2d"></i><div style="flex:1"><div>James Molefe — driver license</div><div style="font-size:11px;color:var(--text-muted)">Expires in 8 days</div></div><span class="badge badge-danger">Urgent</span></div>
-          <div class="alert-row"><i class="ti ti-truck" style="color:#a32d2d"></i><div style="flex:1"><div>CA 123-456 — roadworthy</div><div style="font-size:11px;color:var(--text-muted)">Expires in 12 days</div></div><span class="badge badge-danger">Urgent</span></div>
-          <div class="alert-row"><i class="ti ti-id" style="color:#854f0b"></i><div style="flex:1"><div>Sipho Dlamini — PDP</div><div style="font-size:11px;color:var(--text-muted)">Expires in 31 days</div></div><span class="badge badge-warning">Soon</span></div>
-          <div class="alert-row"><i class="ti ti-truck" style="color:#854f0b"></i><div style="flex:1"><div>WC 789-012 — license disc</div><div style="font-size:11px;color:var(--text-muted)">Expires in 45 days</div></div><span class="badge badge-warning">Soon</span></div>
+          <div class="pg-sub" style="padding:8px 0">No expiry alerts — add vehicles and license data to see alerts here.</div>
         </div>
         <div class="card">
           <div class="card-title"><span><i class="ti ti-clipboard-list" style="margin-right:5px"></i>Recent tasks</span><span class="badge badge-info">9 open</span></div>
-          <div class="alert-row"><i class="ti ti-circle" style="color:#a32d2d"></i><div style="flex:1"><div>License renewal — J. Molefe</div><div style="font-size:11px;color:var(--text-muted)">Allocated → HR</div></div><span class="badge badge-danger">Overdue</span></div>
-          <div class="alert-row"><i class="ti ti-circle" style="color:#854f0b"></i><div style="flex:1"><div>Vehicle inspection CA 123-456</div><div style="font-size:11px;color:var(--text-muted)">In progress → Tech</div></div><span class="badge badge-warning">In progress</span></div>
-          <div class="alert-row"><i class="ti ti-circle" style="color:#185fa5"></i><div style="flex:1"><div>Uniform allocation — 3 new drivers</div><div style="font-size:11px;color:var(--text-muted)">Initialised</div></div><span class="badge badge-gray">New</span></div>
-          <div class="alert-row"><i class="ti ti-circle-check" style="color:#3b6d11"></i><div style="flex:1"><div>SOP sign-off — F. Naidoo</div><div style="font-size:11px;color:var(--text-muted)">Completed yesterday</div></div><span class="badge badge-success">Done</span></div>
+          <div class="pg-sub" style="padding:8px 0">No tasks yet — add tasks in the Tasks section.</div>
         </div>
       </div>
       <div class="card">
         <div class="card-title"><span><i class="ti ti-clipboard-check" style="margin-right:5px"></i>Onboarding in progress</span><span class="badge badge-info">3 active</span></div>
         <table class="tbl"><thead><tr><th style="width:22%">Name</th><th style="width:28%">Email</th><th style="width:16%">Status</th><th style="width:18%">Current step</th><th style="width:16%">Started</th></tr></thead>
         <tbody>
-          <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td>thabo.p@fleet.co.za</td><td><span class="badge badge-info">In progress</span></td><td>Uploads</td><td>8 May 2025</td></tr>
-          <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="init">NK</div>Nomsa Khumalo</div></td><td>nomsa.k@fleet.co.za</td><td><span class="badge badge-warning">Awaiting docs</span></td><td>Financial</td><td>10 May 2025</td></tr>
-          <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="init">RS</div>Ruan Smith</div></td><td>ruan.s@fleet.co.za</td><td><span class="badge badge-gray">Not started</span></td><td>Personal details</td><td>13 May 2025</td></tr>
+            <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-muted)">No onboarding journeys in progress.</td></tr>
         </tbody></table>
       </div>
     </div>
@@ -530,35 +523,78 @@ body.public-mode{overflow-y:auto;height:auto}
       <!-- DRIVER DETAIL -->
       <div id="driver-detail" style="display:none">
         <div class="back-btn" onclick="document.getElementById('drivers-list').style.display='';document.getElementById('driver-detail').style.display='none'"><i class="ti ti-arrow-left"></i>Back to drivers</div>
-        <div class="card">
-          <div class="detail-header">
-            <div class="detail-avatar" id="d-init"></div>
-            <div>
-              <div style="font-weight:600;font-size:15px" id="d-name"></div>
-              <div style="font-size:12px;color:var(--text-muted)" id="d-group"></div>
+
+        <!-- VIEW MODE -->
+        <div id="drv-view-mode">
+          <div class="card">
+            <div class="detail-header">
+              <div class="detail-avatar" id="d-init"></div>
+              <div>
+                <div style="font-weight:600;font-size:15px" id="d-name"></div>
+                <div style="font-size:12px;color:var(--text-muted)" id="d-group"></div>
+              </div>
+              <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+                <div id="d-vehicle-badge"></div>
+                <button class="btn btn-sm" onclick="startEditDriver()"><i class="ti ti-edit"></i>Edit</button>
+                <button class="btn btn-primary btn-sm" onclick="openAllocModal()"><i class="ti ti-shirt"></i>Allocate uniform</button>
+              </div>
             </div>
-            <div style="margin-left:auto" id="d-vehicle-badge"></div>
+            <hr class="divider">
+            <div class="form-grid">
+              <div class="field-group"><div class="field-label">Vehicle type</div><div class="field-value" id="d-vehicle"></div></div>
+              <div class="field-group"><div class="field-label">Uniform size</div><div class="field-value" id="d-unisize"></div></div>
+              <div class="field-group"><div class="field-label">Driver group</div><div class="field-value" id="d-groupval"></div></div>
+              <div class="field-group"><div class="field-label">Notes</div><div class="field-value" id="d-notes"></div></div>
+            </div>
+            <hr class="divider">
+            <div style="font-weight:600;font-size:12px;margin-bottom:12px">Uniform allocations</div>
+            <div id="d-allocations-loading" class="pg-sub">Loading allocations...</div>
+            <div id="d-allocations-empty" style="display:none" class="pg-sub">No uniform allocations on record.</div>
+            <table class="tbl" id="d-allocations-table" style="display:none">
+              <thead><tr>
+                <th style="width:35%">Item</th>
+                <th style="width:20%">Size</th>
+                <th style="width:15%">Qty</th>
+                <th style="width:30%">Issued date</th>
+              </tr></thead>
+              <tbody id="d-allocations-tbody"></tbody>
+            </table>
           </div>
-          <hr class="divider">
-          <div class="form-grid">
-            <div class="field-group"><div class="field-label">Vehicle type</div><div class="field-value" id="d-vehicle"></div></div>
-            <div class="field-group"><div class="field-label">Uniform size</div><div class="field-value" id="d-unisize"></div></div>
-            <div class="field-group"><div class="field-label">Driver group</div><div class="field-value" id="d-groupval"></div></div>
-            <div class="field-group"><div class="field-label">Notes</div><div class="field-value" id="d-notes"></div></div>
+        </div>
+
+        <!-- EDIT MODE -->
+        <div id="drv-edit-mode" style="display:none">
+          <div class="card" style="max-width:560px">
+            <div class="card-title">Edit driver profile</div>
+            <div class="form-grid">
+              <div class="form-field" style="grid-column:1/-1"><label>Full name *</label><input type="text" id="edit-fullname"></div>
+              <div class="form-field"><label>Driver group</label>
+                <select id="edit-group">
+                  <option value="">— None —</option>
+                  <option value="TYG">TYG</option>
+                  <option value="Green">Green</option>
+                  <option value="MIA">MIA</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Vehicle type</label>
+                <select id="edit-vehicle">
+                  <option value="">— None —</option>
+                  <option value="Bike">Bike</option>
+                  <option value="Car">Car</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Uniform size</label><input type="text" id="edit-unisize" placeholder="e.g. M, L, XL"></div>
+              <div class="form-field"><label>&nbsp;</label></div>
+            </div>
+            <div class="form-field" style="margin-bottom:16px"><label>Notes</label>
+              <textarea id="edit-notes" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+            </div>
+            <div id="edit-error" style="display:none;color:var(--danger-text);font-size:12px;margin-bottom:10px"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="cancelEditDriver()">Cancel</button>
+              <button class="btn btn-primary" id="edit-save-btn" onclick="saveDriverEdit()"><i class="ti ti-device-floppy"></i>Save changes</button>
+            </div>
           </div>
-          <hr class="divider">
-          <div style="font-weight:600;font-size:12px;margin-bottom:12px">Uniform allocations</div>
-          <div id="d-allocations-loading" class="pg-sub">Loading allocations...</div>
-          <div id="d-allocations-empty" style="display:none" class="pg-sub">No uniform allocations on record.</div>
-          <table class="tbl" id="d-allocations-table" style="display:none">
-            <thead><tr>
-              <th style="width:35%">Item</th>
-              <th style="width:20%">Size</th>
-              <th style="width:15%">Qty</th>
-              <th style="width:30%">Issued date</th>
-            </tr></thead>
-            <tbody id="d-allocations-tbody"></tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -572,10 +608,7 @@ body.public-mode{overflow-y:auto;height:auto}
           <table class="tbl">
             <thead><tr><th style="width:22%">Name</th><th style="width:28%">Email</th><th style="width:16%">Status</th><th style="width:18%">Current step</th><th style="width:16%">Started</th></tr></thead>
             <tbody>
-              <tr class="clickable" onclick="showOb(3)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">JM</div>James Molefe</div></td><td>james.m@fleet.co.za</td><td><span class="badge badge-success">Complete</span></td><td>Data protection</td><td>12 Jan 2025</td></tr>
-              <tr class="clickable" onclick="showOb(1)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td>thabo.p@fleet.co.za</td><td><span class="badge badge-info">In progress</span></td><td>Uploads</td><td>8 May 2025</td></tr>
-              <tr class="clickable" onclick="showOb(2)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">NK</div>Nomsa Khumalo</div></td><td>nomsa.k@fleet.co.za</td><td><span class="badge badge-warning">Awaiting docs</span></td><td>Financial</td><td>10 May 2025</td></tr>
-              <tr class="clickable" onclick="showOb(0)"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">RS</div>Ruan Smith</div></td><td>ruan.s@fleet.co.za</td><td><span class="badge badge-gray">Not started</span></td><td>Personal details</td><td>13 May 2025</td></tr>
+              <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted)">No onboarding journeys started yet.</td></tr>
             </tbody>
           </table>
         </div>
@@ -809,6 +842,76 @@ body.public-mode{overflow-y:auto;height:auto}
 
 
     <!-- OVERLAY -->
+
+    <!-- ALLOCATE UNIFORM MODAL -->
+    <div class="task-modal-wrap" id="alloc-modal-wrap">
+      <div class="task-modal" style="width:420px">
+        <div class="task-modal-title">Allocate uniform item <button class="btn-icon" onclick="closeAllocModal()" aria-label="Close"><i class="ti ti-x" style="font-size:16px"></i></button></div>
+        <div class="pg-sub" style="margin-bottom:14px" id="alloc-modal-driver-name"></div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500">Item *</label>
+          <select id="alloc-item" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            <option value="">Select item...</option>
+            <option>Biker Jacket</option>
+            <option>Biker Pants</option>
+            <option>Reflective Body Warmer</option>
+            <option>Beanie</option>
+            <option>Short Sleeve Shirt</option>
+            <option>Long Sleeve Shirt</option>
+            <option>Softshell Jacket</option>
+            <option>Cap</option>
+            <option>Food Bag</option>
+          </select>
+        </div>
+        <div class="form-grid" style="margin-bottom:12px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;color:var(--text-muted);font-weight:500">Size</label>
+            <input type="text" id="alloc-size" placeholder="e.g. M, L, XL, 32" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <label style="font-size:11px;color:var(--text-muted);font-weight:500">Quantity *</label>
+            <input type="number" id="alloc-qty" min="1" value="1" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500">Issued date *</label>
+          <input type="date" id="alloc-date" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+        </div>
+        <div id="alloc-error" style="display:none;color:var(--danger-text);font-size:12px;margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn" onclick="closeAllocModal()">Cancel</button>
+          <button class="btn btn-primary" id="alloc-save-btn" onclick="saveAllocation()"><i class="ti ti-check"></i>Allocate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOCK UPLOAD MODAL -->
+    <div class="task-modal-wrap" id="stock-upload-wrap">
+      <div class="task-modal" style="width:520px">
+        <div class="task-modal-title">Upload new stock sheet <button class="btn-icon" onclick="closeStockUpload()" aria-label="Close"><i class="ti ti-x" style="font-size:16px"></i></button></div>
+        <div class="pg-sub" style="margin-bottom:14px">Upload your updated uniform stock Excel file. The new quantities will be saved as a new snapshot — previous stock records are kept for history.</div>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500">Select Excel file (.xlsx or .xls)</label>
+          <input type="file" id="stock-file-input" accept=".xlsx,.xls" onchange="previewStockUpload()">
+        </div>
+        <div id="stock-preview-wrap" style="display:none">
+          <div style="font-weight:500;font-size:12px;margin-bottom:8px">Preview <span id="stock-preview-count"></span></div>
+          <div style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-md)">
+            <table class="tbl">
+              <thead><tr><th>Item</th><th>Size</th><th>Qty</th></tr></thead>
+              <tbody id="stock-preview-tbody"></tbody>
+            </table>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:8px" id="stock-snapshot-note"></div>
+        </div>
+        <div id="stock-upload-error" style="display:none;color:var(--danger-text);font-size:12px;margin:10px 0"></div>
+        <div id="stock-upload-success" style="display:none;background:var(--success-bg);color:var(--success-text);border-radius:var(--radius-md);padding:8px 12px;font-size:12px;margin:10px 0"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+          <button class="btn" onclick="closeStockUpload()">Cancel</button>
+          <button class="btn btn-primary" id="stock-confirm-btn" style="display:none" onclick="confirmStockUpload()"><i class="ti ti-upload"></i>Confirm upload</button>
+        </div>
+      </div>
+    </div>
     <div class="overlay-bg" id="overlay-bg" onclick="closeAdminDetail()"></div>
 
     <!-- ADMIN EOD REPORTS -->
@@ -1039,15 +1142,12 @@ body.public-mode{overflow-y:auto;height:auto}
 
     <!-- VEHICLES -->
     <div class="page" id="page-vehicles">
-      <div class="pg-hdr"><div class="pg-sub">18 vehicles in fleet</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Add vehicle</button></div>
+      <div class="pg-hdr"><div class="pg-sub" id="veh-count">No vehicles yet</div><button class="btn btn-primary btn-sm"><i class="ti ti-plus"></i>Add vehicle</button></div>
       <div class="card" style="padding:0;overflow:hidden">
         <table class="tbl">
           <thead><tr><th style="width:14%">Registration</th><th style="width:22%">Type / make</th><th style="width:18%">Assigned driver</th><th style="width:14%">License disc</th><th style="width:14%">Roadworthy</th><th style="width:10%">Status</th><th style="width:8%"></th></tr></thead>
           <tbody>
-            <tr><td><span class="mono">CA 123-456</span></td><td>Rigid truck — Hino 300</td><td>James Molefe</td><td><span class="badge badge-success">6 months</span></td><td><span class="badge badge-danger">12 days</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
-            <tr><td><span class="mono">WC 789-012</span></td><td>Panel van — Sprinter</td><td>Fatima Naidoo</td><td><span class="badge badge-warning">45 days</span></td><td><span class="badge badge-success">8 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
-            <tr><td><span class="mono">GP 345-678</span></td><td>Tautliner — Freightliner</td><td>Sipho Dlamini</td><td><span class="badge badge-success">10 months</span></td><td><span class="badge badge-success">4 months</span></td><td><span class="badge badge-gray">Maintenance</span></td><td><button class="btn btn-sm">View</button></td></tr>
-            <tr><td><span class="mono">NL 901-234</span></td><td>Tipper — Volvo FMX</td><td>Thabo Pretorius</td><td><span class="badge badge-success">7 months</span></td><td><span class="badge badge-success">11 months</span></td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm">View</button></td></tr>
+            <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted)">No vehicles added yet — click Add vehicle to get started.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1063,7 +1163,10 @@ body.public-mode{overflow-y:auto;height:auto}
 
       <!-- STOCK TAB -->
       <div id="uni-stock-panel">
-        <div id="uni-stock-loading" class="pg-sub">Loading stock...</div>
+        <div class="pg-hdr" style="margin-bottom:12px">
+          <div id="uni-stock-loading" class="pg-sub">Loading stock...</div>
+          <button class="btn btn-primary btn-sm" onclick="openStockUpload()"><i class="ti ti-upload"></i>Upload new stock sheet</button>
+        </div>
         <div id="uni-stock-content" style="display:none"></div>
       </div>
 
@@ -1148,29 +1251,14 @@ body.public-mode{overflow-y:auto;height:auto}
           <table class="tbl">
             <thead><tr><th style="width:22%">Driver</th><th style="width:24%">Contract type</th><th style="width:14%">Start date</th><th style="width:14%">End date</th><th style="width:14%">Status</th><th style="width:12%"></th></tr></thead>
             <tbody>
-              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">JM</div>James Molefe</div></td><td>Permanent employment</td><td>1 Feb 2024</td><td>—</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
-              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">SD</div>Sipho Dlamini</div></td><td>Fixed term — 12 months</td><td>1 Mar 2025</td><td>28 Feb 2026</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
-              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">FN</div>Fatima Naidoo</div></td><td>Permanent employment</td><td>15 Apr 2023</td><td>—</td><td><span class="badge badge-success">Active</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
-              <tr class="clickable" onclick="showContract()"><td><div style="display:flex;align-items:center;gap:8px"><div class="init">TP</div>Thabo Pretorius</div></td><td>Fixed term — 6 months</td><td>1 Dec 2024</td><td>31 May 2025</td><td><span class="badge badge-warning">Expiring soon</span></td><td><button class="btn btn-sm" onclick="event.stopPropagation();showContract()">View</button></td></tr>
+              <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">No contracts added yet.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
       <div id="contract-detail" style="display:none">
         <div class="back-btn" onclick="document.getElementById('contracts-list').style.display='';document.getElementById('contract-detail').style.display='none'"><i class="ti ti-arrow-left"></i>Back to contracts</div>
-        <div class="card">
-          <div class="detail-header"><div class="detail-avatar">JM</div><div><div style="font-weight:600;font-size:15px">James Molefe</div><div style="font-size:12px;color:var(--text-muted)">Permanent employment contract</div></div><span class="badge badge-success" style="margin-left:auto">Active</span></div>
-          <hr class="divider">
-          <div class="form-grid">
-            <div class="field-group"><div class="field-label">Contract type</div><div class="field-value">Permanent employment</div></div>
-            <div class="field-group"><div class="field-label">Start date</div><div class="field-value">1 February 2024</div></div>
-            <div class="field-group"><div class="field-label">End date</div><div class="field-value">—</div></div>
-            <div class="field-group"><div class="field-label">Signed date</div><div class="field-value">28 January 2024</div></div>
-          </div>
-          <hr class="divider">
-          <div style="font-weight:600;font-size:12px;margin-bottom:10px">Attached documents</div>
-          <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Signed employment contract</div><div style="font-size:11px;color:var(--text-muted)">Uploaded 28 Jan 2024 · 8 pages</div></div><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        </div>
+        <div class="pg-sub">Contract detail coming soon.</div>
       </div>
     </div>
 
@@ -1181,12 +1269,7 @@ body.public-mode{overflow-y:auto;height:auto}
         <table class="tbl">
           <thead><tr><th style="width:18%">Driver</th><th style="width:30%">Document</th><th style="width:14%">Type</th><th style="width:16%">Signed date</th><th style="width:12%">Status</th><th style="width:10%"></th></tr></thead>
           <tbody>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">JM</div>J. Molefe</div></td><td>Code of conduct acknowledgement</td><td><span class="tag">Policy</span></td><td>12 Jan 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">JM</div>J. Molefe</div></td><td>Vehicle pre-trip SOP sign-off</td><td><span class="tag">SOP</span></td><td>12 Jan 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">FN</div>F. Naidoo</div></td><td>Data protection consent (POPIA)</td><td><span class="tag">Consent</span></td><td>15 Mar 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">FN</div>F. Naidoo</div></td><td>Loading SOP acknowledgement</td><td><span class="tag">SOP</span></td><td>14 May 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">SD</div>S. Dlamini</div></td><td>Code of conduct acknowledgement</td><td><span class="tag">Policy</span></td><td>1 Mar 2025</td><td><span class="badge badge-success">On record</span></td><td><button class="btn btn-sm"><i class="ti ti-download"></i></button></td></tr>
-            <tr><td><div style="display:flex;align-items:center;gap:7px"><div class="init">TP</div>T. Pretorius</div></td><td>Code of conduct acknowledgement</td><td><span class="tag">Policy</span></td><td>—</td><td><span class="badge badge-danger">Outstanding</span></td><td><button class="btn btn-sm"><i class="ti ti-send"></i></button></td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">No compliance records yet — add records as documents are signed.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1196,10 +1279,7 @@ body.public-mode{overflow-y:auto;height:auto}
     <div class="page" id="page-sops">
       <div class="pg-hdr"><div class="pg-sub">Standard operating procedures library</div><button class="btn btn-primary btn-sm"><i class="ti ti-upload"></i>Upload SOP</button></div>
       <div class="card">
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Loading and unloading procedure</div><div style="font-size:11px;color:var(--text-muted)">Version 3.1 · Updated 2 Apr 2025 · 12 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Driver safety and conduct</div><div style="font-size:11px;color:var(--text-muted)">Version 2.0 · Updated 10 Jan 2025 · 8 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Vehicle pre-trip inspection checklist</div><div style="font-size:11px;color:var(--text-muted)">Version 1.4 · Updated 5 Mar 2025 · 4 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Hazardous materials handling</div><div style="font-size:11px;color:var(--text-muted)">Version 1.0 · Updated 22 Feb 2025 · 18 pages</div></div><span class="badge badge-warning">Under review</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="pg-sub" style="padding:8px 0">No SOPs uploaded yet — click Upload SOP to add documents.</div>
       </div>
     </div>
 
@@ -1207,11 +1287,7 @@ body.public-mode{overflow-y:auto;height:auto}
     <div class="page" id="page-policies">
       <div class="pg-hdr"><div class="pg-sub">Company policies and governance documents</div><button class="btn btn-primary btn-sm"><i class="ti ti-upload"></i>Upload policy</button></div>
       <div class="card">
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Code of conduct</div><div style="font-size:11px;color:var(--text-muted)">Version 2.1 · Updated 1 Jan 2025 · 6 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Data protection policy (POPIA)</div><div style="font-size:11px;color:var(--text-muted)">Version 1.3 · Updated 15 Feb 2025 · 10 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Leave and attendance policy</div><div style="font-size:11px;color:var(--text-muted)">Version 1.0 · Updated 1 Jan 2025 · 4 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Disciplinary and grievance procedure</div><div style="font-size:11px;color:var(--text-muted)">Version 2.0 · Updated 10 Mar 2025 · 14 pages</div></div><span class="badge badge-success">Active</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
-        <div class="doc-row"><div class="doc-icon"><i class="ti ti-file-type-pdf"></i></div><div style="flex:1"><div style="font-weight:500">Health and safety policy</div><div style="font-size:11px;color:var(--text-muted)">Version 1.2 · Updated 20 Apr 2025 · 8 pages</div></div><span class="badge badge-warning">Under review</span><button class="btn btn-sm"><i class="ti ti-download"></i>Download</button></div>
+        <div class="pg-sub" style="padding:8px 0">No policies uploaded yet — click Upload policy to add documents.</div>
       </div>
     </div>
 
@@ -1451,6 +1527,7 @@ function unlockPortal(){
   document.getElementById('login-wrap').style.display='none';
   document.getElementById('main-app').style.display='flex';
   document.getElementById('topbar-user').textContent=currentUser?.email||'';
+  loadDashboardStats();
 }
 
 async function signOut(){
@@ -2493,6 +2570,9 @@ function drvChangePage(dir){
 async function openDriverDetail(id){
   const driver = drvAllDrivers.find(d=>d.id===id);
   if(!driver) return;
+  currentDriverId = id;
+  document.getElementById('drv-view-mode').style.display='';
+  document.getElementById('drv-edit-mode').style.display='none';
 
   document.getElementById('drivers-list').style.display='none';
   document.getElementById('driver-detail').style.display='';
@@ -2631,12 +2711,24 @@ async function loadUniStock(){
 async function loadUniAlloc(){
   document.getElementById('uni-alloc-loading').style.display='';
   try{
-    const { data, error } = await supabaseClient
-      .from('uniform_allocations')
-      .select('*, drivers(full_name)')
-      .order('item_name');
-    if(error) throw error;
-    uniAllocAll = data||[];
+    // Fetch allocations and drivers separately then join in JS
+    const [allocRes, drvRes] = await Promise.all([
+      supabaseClient.from('uniform_allocations').select('*').order('item_name'),
+      supabaseClient.from('drivers').select('id, full_name')
+    ]);
+    if(allocRes.error) throw allocRes.error;
+    if(drvRes.error) throw drvRes.error;
+
+    // Build driver lookup map
+    const drvMap = {};
+    (drvRes.data||[]).forEach(d=>{ drvMap[d.id]=d.full_name; });
+
+    // Attach driver name to each allocation
+    uniAllocAll = (allocRes.data||[]).map(a=>({
+      ...a,
+      driver_name: drvMap[a.driver_id]||'Unknown'
+    }));
+
     document.getElementById('uni-alloc-loading').style.display='none';
     document.getElementById('uni-alloc-content').style.display='';
     uniAllocRender();
@@ -2650,7 +2742,7 @@ function uniAllocRender(){
   const item=document.getElementById('uni-alloc-item').value;
 
   uniAllocFiltered=uniAllocAll.filter(a=>{
-    const name=(a.drivers?.full_name||'').toLowerCase();
+    const name=(a.driver_name||'').toLowerCase();
     const matchName=!search||name.includes(search);
     const matchItem=!item||a.item_name===item;
     return matchName&&matchItem;
@@ -2666,7 +2758,7 @@ function uniAllocRender(){
   const tbody=document.getElementById('uni-alloc-tbody');
   tbody.innerHTML='';
   page.forEach(a=>{
-    const name=a.drivers?.full_name||'Unknown';
+    const name=a.driver_name||'Unknown';
     const initials=name.split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
     const tr=document.createElement('tr');
     tr.innerHTML=`
@@ -2687,6 +2779,257 @@ function uniAllocRender(){
 function uniAllocChangePage(dir){
   uniAllocPage+=dir;
   uniAllocRender();
+}
+
+
+/* ===== EDIT DRIVER PROFILE ===== */
+let currentDriverId = null;
+
+function startEditDriver(){
+  const d = drvAllDrivers.find(x=>x.id===currentDriverId);
+  if(!d) return;
+  document.getElementById('edit-fullname').value = d.full_name||'';
+  document.getElementById('edit-group').value = d.driver_group||'';
+  document.getElementById('edit-vehicle').value = d.vehicle_type||'';
+  document.getElementById('edit-unisize').value = d.uniform_size||'';
+  document.getElementById('edit-notes').value = d.notes||'';
+  document.getElementById('edit-error').style.display='none';
+  document.getElementById('drv-view-mode').style.display='none';
+  document.getElementById('drv-edit-mode').style.display='';
+}
+
+function cancelEditDriver(){
+  document.getElementById('drv-edit-mode').style.display='none';
+  document.getElementById('drv-view-mode').style.display='';
+}
+
+async function saveDriverEdit(){
+  const name = document.getElementById('edit-fullname').value.trim();
+  if(!name){
+    document.getElementById('edit-error').textContent='Full name is required.';
+    document.getElementById('edit-error').style.display='';
+    return;
+  }
+  const btn = document.getElementById('edit-save-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Saving...';
+  try{
+    const updates = {
+      full_name: name,
+      driver_group: document.getElementById('edit-group').value||null,
+      vehicle_type: document.getElementById('edit-vehicle').value||null,
+      uniform_size: document.getElementById('edit-unisize').value.trim()||null,
+      notes: document.getElementById('edit-notes').value.trim()||null
+    };
+    const { error } = await supabaseClient.from('drivers').update(updates).eq('id', currentDriverId);
+    if(error) throw error;
+    // Update local cache
+    const idx = drvAllDrivers.findIndex(x=>x.id===currentDriverId);
+    if(idx>-1) Object.assign(drvAllDrivers[idx], updates);
+    // Refresh detail view
+    cancelEditDriver();
+    openDriverDetail(currentDriverId);
+    drvRender();
+  }catch(err){
+    document.getElementById('edit-error').textContent='Error saving: '+(err.message||err);
+    document.getElementById('edit-error').style.display='';
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-device-floppy"></i>Save changes';
+  }
+}
+
+/* ===== ALLOCATE UNIFORM ===== */
+function openAllocModal(){
+  const d = drvAllDrivers.find(x=>x.id===currentDriverId);
+  document.getElementById('alloc-modal-driver-name').textContent = 'Allocating to: '+(d?.full_name||'Driver');
+  document.getElementById('alloc-item').value='';
+  document.getElementById('alloc-size').value='';
+  document.getElementById('alloc-qty').value='1';
+  document.getElementById('alloc-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('alloc-error').style.display='none';
+  document.getElementById('alloc-modal-wrap').classList.add('open');
+}
+
+function closeAllocModal(){
+  document.getElementById('alloc-modal-wrap').classList.remove('open');
+}
+
+async function saveAllocation(){
+  const item = document.getElementById('alloc-item').value;
+  const qty = parseInt(document.getElementById('alloc-qty').value)||0;
+  const date = document.getElementById('alloc-date').value;
+  if(!item || qty<1 || !date){
+    document.getElementById('alloc-error').textContent='Please fill in item, quantity and issued date.';
+    document.getElementById('alloc-error').style.display='';
+    return;
+  }
+  const btn = document.getElementById('alloc-save-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Saving...';
+  try{
+    const { error } = await supabaseClient.from('uniform_allocations').insert([{
+      driver_id: currentDriverId,
+      item_name: item,
+      size: document.getElementById('alloc-size').value.trim()||null,
+      quantity: qty,
+      issued_date: date
+    }]);
+    if(error) throw error;
+    closeAllocModal();
+    // Refresh allocations in detail view
+    const { data } = await supabaseClient.from('uniform_allocations').select('*').eq('driver_id',currentDriverId).order('item_name');
+    const tbody = document.getElementById('d-allocations-tbody');
+    tbody.innerHTML='';
+    (data||[]).forEach(a=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${a.item_name}</td><td>${a.size||'—'}</td><td>${a.quantity}</td><td>${a.issued_date||'—'}</td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('d-allocations-table').style.display=data?.length?'':'none';
+    document.getElementById('d-allocations-empty').style.display=data?.length?'none':'';
+    // Reset alloc cache so uniforms tab reloads
+    uniAllocAll=[];
+  }catch(err){
+    document.getElementById('alloc-error').textContent='Error: '+(err.message||err);
+    document.getElementById('alloc-error').style.display='';
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-check"></i>Allocate';
+  }
+}
+
+// Close alloc modal on backdrop click
+document.getElementById('alloc-modal-wrap').addEventListener('click',function(e){
+  if(e.target===this) closeAllocModal();
+});
+
+/* ===== STOCK UPLOAD ===== */
+let stockPreviewData = [];
+
+function openStockUpload(){
+  document.getElementById('stock-file-input').value='';
+  document.getElementById('stock-preview-wrap').style.display='none';
+  document.getElementById('stock-confirm-btn').style.display='none';
+  document.getElementById('stock-upload-error').style.display='none';
+  document.getElementById('stock-upload-success').style.display='none';
+  document.getElementById('stock-upload-wrap').classList.add('open');
+  stockPreviewData=[];
+}
+
+function closeStockUpload(){
+  document.getElementById('stock-upload-wrap').classList.remove('open');
+}
+
+function previewStockUpload(){
+  const file = document.getElementById('stock-file-input').files[0];
+  if(!file) return;
+  document.getElementById('stock-upload-error').style.display='none';
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      // Use first sheet
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+
+      stockPreviewData=[];
+      // Find header row (contains 'Item' or 'Items')
+      let headerRow = -1;
+      for(let i=0;i<rows.length;i++){
+        const r = rows[i].map(v=>String(v).toLowerCase().trim());
+        if(r.includes('item')||r.includes('items')){headerRow=i;break;}
+      }
+      if(headerRow===-1){
+        // No header found — try to parse as item/size/qty columns directly
+        for(let i=1;i<rows.length;i++){
+          const r=rows[i];
+          if(r[0]&&r[1]&&(r[2]||r[2]===0)){
+            const qty=parseInt(r[2]);
+            if(!isNaN(qty)){
+              stockPreviewData.push({item_name:String(r[0]).trim(),size:String(r[1]).trim(),quantity:qty});
+            }
+          }
+        }
+      } else {
+        for(let i=headerRow+1;i<rows.length;i++){
+          const r=rows[i];
+          if(r[0]&&r[1]&&(r[2]||r[2]===0)){
+            const qty=parseInt(r[2]);
+            if(!isNaN(qty)){
+              stockPreviewData.push({item_name:String(r[0]).trim(),size:String(r[1]).trim(),quantity:qty});
+            }
+          }
+        }
+      }
+
+      if(stockPreviewData.length===0){
+        document.getElementById('stock-upload-error').textContent='Could not read stock data from this file. Expected columns: Item, Size, Quantity.';
+        document.getElementById('stock-upload-error').style.display='';
+        return;
+      }
+
+      const tbody=document.getElementById('stock-preview-tbody');
+      tbody.innerHTML='';
+      stockPreviewData.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${r.item_name}</td><td>${r.size}</td><td>${r.quantity}</td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('stock-preview-count').textContent=`(${stockPreviewData.length} rows)`;
+      document.getElementById('stock-snapshot-note').textContent=`Snapshot date: ${new Date().toLocaleDateString('en-ZA')} — previous stock records will be kept.`;
+      document.getElementById('stock-preview-wrap').style.display='';
+      document.getElementById('stock-confirm-btn').style.display='';
+    }catch(err){
+      document.getElementById('stock-upload-error').textContent='Error reading file: '+(err.message||err);
+      document.getElementById('stock-upload-error').style.display='';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function confirmStockUpload(){
+  if(!stockPreviewData.length) return;
+  const btn=document.getElementById('stock-confirm-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Uploading...';
+  try{
+    const snapshotDate=new Date().toISOString().slice(0,10);
+    const rows=stockPreviewData.map(r=>({
+      item_name:r.item_name,
+      size:r.size,
+      quantity:r.quantity,
+      snapshot_date:snapshotDate
+    }));
+    const { error } = await supabaseClient.from('uniform_stock').insert(rows);
+    if(error) throw error;
+    document.getElementById('stock-upload-success').textContent=`${rows.length} stock records uploaded successfully for ${snapshotDate}.`;
+    document.getElementById('stock-upload-success').style.display='';
+    document.getElementById('stock-confirm-btn').style.display='none';
+    document.getElementById('stock-preview-wrap').style.display='none';
+    // Refresh stock view
+    uniStockLoaded=false;
+    loadUniStock();
+  }catch(err){
+    document.getElementById('stock-upload-error').textContent='Upload error: '+(err.message||err);
+    document.getElementById('stock-upload-error').style.display='';
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-upload"></i>Confirm upload';
+  }
+}
+
+document.getElementById('stock-upload-wrap').addEventListener('click',function(e){
+  if(e.target===this) closeStockUpload();
+});
+
+/* ===== DASHBOARD: load real driver count ===== */
+async function loadDashboardStats(){
+  try{
+    const { count } = await supabaseClient.from('drivers').select('*',{count:'exact',head:true});
+    document.getElementById('dash-driver-count').textContent=count||0;
+    document.getElementById('dash-driver-sub').textContent='Total registered';
+  }catch(e){}
 }
 
 </script>
