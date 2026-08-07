@@ -187,6 +187,44 @@ body.public-mode{overflow-y:auto;height:auto}
 .mfa-digits input:focus{border-color:var(--text);outline:none}
 .user-badge{font-size:11px;color:var(--text-muted);margin-bottom:16px;background:var(--bg);padding:6px 10px;border-radius:var(--radius-md);display:flex;align-items:center;gap:5px}
 
+
+/* DRIVER PROFILE */
+.profile-header{display:flex;align-items:flex-start;gap:20px;margin-bottom:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.profile-avatar-wrap{position:relative;flex-shrink:0}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:var(--info-bg);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;color:var(--info-text);overflow:hidden;border:2px solid var(--border)}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-avatar-upload{position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--surface)}
+.profile-avatar-upload svg{color:var(--surface);width:12px;height:12px}
+.profile-meta{flex:1}
+.profile-name{font-size:18px;font-weight:600;margin-bottom:4px}
+.profile-sub{font-size:12px;color:var(--text-muted);margin-bottom:10px}
+.profile-badges{display:flex;gap:6px;flex-wrap:wrap}
+.profile-actions{display:flex;gap:8px;align-items:flex-start;flex-shrink:0}
+.profile-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden}
+.profile-section-header{padding:12px 18px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:space-between;background:#f8f8f7}
+.profile-section-body{padding:16px 18px}
+.profile-field{display:flex;flex-direction:column;gap:3px;margin-bottom:12px}
+.profile-field label{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.profile-field .val{font-size:13px;font-weight:500}
+.profile-field .val.empty{color:var(--text-hint);font-weight:400;font-style:italic}
+.profile-field input,.profile-field select,.profile-field textarea{font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none}
+.profile-field input:focus,.profile-field select:focus,.profile-field textarea:focus{border-color:var(--text)}
+.profile-field .required{color:var(--danger-text)}
+.profile-grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.profile-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.compliance-table{width:100%;border-collapse:collapse;font-size:12px}
+.compliance-table th{text-align:left;padding:8px 10px;color:var(--text-muted);font-weight:500;border-bottom:1px solid var(--border);font-size:11px}
+.compliance-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.compliance-table tr:last-child td{border-bottom:none}
+.compliance-table tr:hover td{background:#f8f8f7}
+.doc-status-valid{color:var(--success-text);font-size:11px;font-weight:500}
+.doc-status-expiring{color:var(--warning-text);font-size:11px;font-weight:500}
+.doc-status-expired{color:var(--danger-text);font-size:11px;font-weight:500}
+.doc-status-missing{color:var(--text-hint);font-size:11px}
+.profile-edit-bar{display:none;position:sticky;top:0;z-index:10;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.profile-edit-bar.visible{display:flex}
+
+
 /* ADMIN CENTRE */
 .admin-detail-wrap{display:none;position:fixed;top:0;right:0;bottom:0;width:680px;max-width:95vw;background:var(--surface);border-left:1px solid var(--border);z-index:100;box-shadow:-4px 0 24px rgba(0,0,0,0.08)}
 .admin-detail-wrap.open{display:flex;flex-direction:column}
@@ -406,6 +444,92 @@ body.public-mode{overflow-y:auto;height:auto}
   </div>
 </div>
 
+<!-- PUBLIC: FOOD COMPLAINTS FORM -->
+<div class="public-form-wrap" id="public-complaint-wrap">
+  <div style="width:100%;max-width:620px;padding-bottom:40px">
+    <div class="public-form-header"><i class="ti ti-steering-wheel"></i>TDT Tygervalley Portal</div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title" style="margin-bottom:4px;font-size:16px">Food Complaints</div>
+      <div class="pg-sub" style="margin-bottom:20px">Please complete all required fields to ensure the investigation is complete.</div>
+      <div id="complaint-success" style="display:none;background:var(--success-bg);color:var(--success-text);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;margin-bottom:14px"><i class="ti ti-circle-check"></i> Complaint submitted successfully.</div>
+      <form id="complaint-form" onsubmit="submitComplaint(event)">
+
+        <div class="cond-group" style="margin-bottom:14px">
+          <div class="form-field"><label>1. Liability <span style="color:var(--danger-text)">*</span></label>
+            <select id="fc-liability" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+              <option value="">Select...</option>
+              <option>Driver Liable</option>
+              <option>Not Liable</option>
+              <option>Pending Investigation</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-field" style="margin-bottom:14px"><label>2. IC Name — Independent Contractor Name <span style="color:var(--danger-text)">*</span></label>
+          <input type="text" id="fc-ic_name" required placeholder="Full name of the Independent Contractor" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:6px">3. Description of Incident <span style="color:var(--danger-text)">*</span></label>
+          <textarea id="fc-description" required placeholder="Detailed explanation of what caused the deviation" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:80px;margin-bottom:8px"></textarea>
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:4px">Upload proof of incident (image, document or PDF)</label>
+          <input type="file" id="fc-incident-proof" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+        </div>
+
+        <div class="form-field" style="margin-bottom:14px"><label>4. Phone Check — Was the device inspected? <span style="color:var(--danger-text)">*</span></label>
+          <select id="fc-phone_check" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            <option value="">Select...</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+
+        <div class="form-field" style="margin-bottom:14px"><label>5. Request for Assistance — Did the IC ask for help during the delivery? <span style="color:var(--danger-text)">*</span></label>
+          <select id="fc-request_for_assistance" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            <option value="">Select...</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+
+        <div class="form-field" style="margin-bottom:14px"><label>6. History — When was the IC's last food complaint and what was the nature of it? <span style="color:var(--danger-text)">*</span></label>
+          <textarea id="fc-history" required placeholder="Date and nature of previous complaint, or 'No previous complaints'" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+        </div>
+
+        <div class="form-field" style="margin-bottom:14px"><label>7. Action Taken — Details of disciplinary or corrective action <span style="color:var(--danger-text)">*</span></label>
+          <textarea id="fc-action_taken" required placeholder="Describe the action taken" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+        </div>
+
+        <div class="form-field" style="margin-bottom:14px"><label>8. Training / Assistance — What specific training or assistance has been provided? <span style="color:var(--danger-text)">*</span></label>
+          <textarea id="fc-training_assistance" required placeholder="Describe training or assistance provided" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+        </div>
+
+        <div class="form-field" style="margin-bottom:14px"><label>9. Complaint Acknowledgment — Has the IC signed the complaint? <span style="color:var(--danger-text)">*</span></label>
+          <select id="fc-complaint_acknowledgment" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            <option value="">Select...</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:20px">
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:6px">10. Breach Acknowledgment — Has the IC signed the breach? <span style="color:var(--danger-text)">*</span></label>
+          <select id="fc-breach_acknowledgment" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;margin-bottom:8px">
+            <option value="">Select...</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+          <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:4px">Upload proof of signed breach (image, document or PDF)</label>
+          <input type="file" id="fc-breach-proof" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+        </div>
+
+        <div id="complaint-attach-status" style="font-size:11px;color:var(--text-muted);margin-bottom:10px"></div>
+        <button class="btn btn-primary" type="submit" id="fc-btn"><i class="ti ti-send"></i>Submit complaint</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="app" id="main-app">
 
 <!-- SIDEBAR -->
@@ -449,6 +573,10 @@ body.public-mode{overflow-y:auto;height:auto}
     <div class="topbar-title" id="page-title">Dashboard</div>
     <div class="topbar-right">
       <span style="font-size:12px;color:var(--text-muted)" id="topbar-user"></span>
+      <div style="position:relative;cursor:pointer" onclick="nav('admin-leave',document.querySelector('[onclick*=admin-leave]'))" title="Pending leave requests">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted)"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span id="leave-bell-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#e24b4a;color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:600;display:none;align-items:center;justify-content:center;line-height:1" id="leave-bell-badge"></span>
+      </div>
       <div class="avatar">FM</div>
     </div>
   </div>
@@ -520,84 +648,180 @@ body.public-mode{overflow-y:auto;height:auto}
         </div>
       </div>
 
-      <!-- DRIVER DETAIL -->
+      <!-- DRIVER DETAIL — FULL PROFILE -->
       <div id="driver-detail" style="display:none">
-        <div class="back-btn" onclick="document.getElementById('drivers-list').style.display='';document.getElementById('driver-detail').style.display='none'"><i class="ti ti-arrow-left"></i>Back to drivers</div>
+        <div class="back-btn" onclick="closeDriverDetail()"><i class="ti ti-arrow-left"></i>Back to drivers</div>
 
-        <!-- VIEW MODE -->
-        <div id="drv-view-mode">
-          <div class="card">
-            <div class="detail-header">
-              <div class="detail-avatar" id="d-init"></div>
-              <div>
-                <div style="font-weight:600;font-size:15px" id="d-name"></div>
-                <div style="font-size:12px;color:var(--text-muted)" id="d-group"></div>
-              </div>
-              <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-                <div id="d-vehicle-badge"></div>
-                <button class="btn btn-sm" onclick="startEditDriver()"><i class="ti ti-edit"></i>Edit</button>
-                <button class="btn btn-primary btn-sm" onclick="openAllocModal()"><i class="ti ti-shirt"></i>Allocate uniform</button>
+        <!-- EDIT BAR -->
+        <div class="profile-edit-bar" id="profile-edit-bar">
+          <div style="font-size:12px;font-weight:500">Editing driver profile</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" onclick="cancelProfileEdit()">Cancel</button>
+            <button class="btn btn-primary btn-sm" id="profile-save-btn" onclick="saveFullProfile()"><i class="ti ti-device-floppy"></i>Save all changes</button>
+          </div>
+        </div>
+
+        <!-- PROFILE HEADER -->
+        <div class="profile-header">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar" id="profile-avatar-display">
+              <span id="profile-avatar-initials"></span>
+              <img id="profile-avatar-img" src="" alt="" style="display:none">
+            </div>
+            <label class="profile-avatar-upload" for="profile-img-input" title="Upload photo">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            </label>
+            <input type="file" id="profile-img-input" accept="image/*" style="display:none" onchange="handleProfileImageUpload(this)">
+          </div>
+          <div class="profile-meta">
+            <div class="profile-name" id="profile-display-name">—</div>
+            <div class="profile-sub" id="profile-display-sub">—</div>
+            <div class="profile-badges" id="profile-display-badges"></div>
+          </div>
+          <div class="profile-actions">
+            <button class="btn btn-sm" id="profile-edit-toggle" onclick="startProfileEdit()"><i class="ti ti-edit"></i>Edit profile</button>
+            <button class="btn btn-primary btn-sm" onclick="openAllocModal()"><i class="ti ti-shirt"></i>Allocate uniform</button>
+          </div>
+        </div>
+
+        <!-- BASIC DETAILS -->
+        <div class="profile-section" id="section-basic">
+          <div class="profile-section-header">Basic details</div>
+          <div class="profile-section-body">
+            <div class="profile-grid-3">
+              <div class="profile-field"><label>First name <span class="required">*</span></label><div class="val" id="pv-first_name"></div><input id="pe-first_name" type="text" style="display:none"></div>
+              <div class="profile-field"><label>Middle name</label><div class="val" id="pv-middle_name"></div><input id="pe-middle_name" type="text" style="display:none"></div>
+              <div class="profile-field"><label>Nickname</label><div class="val" id="pv-nickname"></div><input id="pe-nickname" type="text" style="display:none"></div>
+              <div class="profile-field"><label>Last name <span class="required">*</span></label><div class="val" id="pv-last_name"></div><input id="pe-last_name" type="text" style="display:none"></div>
+              <div class="profile-field"><label>Employment type <span class="required">*</span></label><div class="val" id="pv-employment_type"></div><select id="pe-employment_type" style="display:none"><option value="">Select...</option><option>Full Time</option><option>Part Time</option></select></div>
+              <div class="profile-field"><label>Contract type <span class="required">*</span></label><div class="val" id="pv-contract_type"></div><select id="pe-contract_type" style="display:none"><option value="">Select...</option><option>Food</option><option>TDT</option><option>Franchise Contractor</option></select></div>
+              <div class="profile-field"><label>Gender <span class="required">*</span></label><div class="val" id="pv-gender"></div><select id="pe-gender" style="display:none"><option value="">Select...</option><option>Female</option><option>Male</option><option>Other</option></select></div>
+              <div class="profile-field"><label>Date of birth <span class="required">*</span></label><div class="val" id="pv-date_of_birth"></div><input id="pe-date_of_birth" type="date" style="display:none"></div>
+              <div class="profile-field"><label>Race <span class="required">*</span></label><div class="val" id="pv-race"></div><select id="pe-race" style="display:none"><option value="">Select...</option><option>African</option><option>Asian</option><option>Coloured</option><option>Indian</option><option>White</option><option>Other</option></select></div>
+              <div class="profile-field"><label>Nationality <span class="required">*</span></label><div class="val" id="pv-nationality"></div><input id="pe-nationality" type="text" style="display:none"></div>
+              <div class="profile-field"><label>National ID <span class="required">*</span></label><div class="val" id="pv-national_id"></div><input id="pe-national_id" type="text" style="display:none"></div>
+              <div class="profile-field"><label>Driver group</label><div class="val" id="pv-driver_group"></div><select id="pe-driver_group" style="display:none"><option value="">— None —</option><option>TYG</option><option>Green</option><option>MIA</option></select></div>
+            </div>
+            <div class="profile-grid-2" style="margin-top:4px">
+              <div class="profile-field"><label>Primary contact <span class="required">*</span></label><div class="val" id="pv-primary_contact"></div><input id="pe-primary_contact" type="tel" style="display:none"></div>
+              <div class="profile-field"><label>Secondary contact</label><div class="val" id="pv-secondary_contact"></div><input id="pe-secondary_contact" type="tel" style="display:none"></div>
+              <div class="profile-field"><label>Emergency contact name <span class="required">*</span></label><div class="val" id="pv-emergency_contact_name"></div><input id="pe-emergency_contact_name" type="text" style="display:none"></div>
+              <div class="profile-field"><label>Emergency contact number <span class="required">*</span></label><div class="val" id="pv-emergency_contact_number"></div><input id="pe-emergency_contact_number" type="tel" style="display:none"></div>
+              <div class="profile-field"><label>Email address <span class="required">*</span></label><div class="val" id="pv-email_address"></div><input id="pe-email_address" type="email" style="display:none"></div>
+            </div>
+            <div class="profile-field"><label>Physical address <span class="required">*</span></label><div class="val" id="pv-physical_address"></div><input id="pe-physical_address" type="text" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- CAPABILITIES -->
+        <div class="profile-section" id="section-capabilities">
+          <div class="profile-section-header">Capabilities</div>
+          <div class="profile-section-body">
+            <div class="profile-grid-2">
+              <div class="profile-field"><label>Ondemand COD (ONDMD COD) <span class="required">*</span></label><div class="val" id="pv-ondmd_cod"></div><select id="pe-ondmd_cod" style="display:none"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
+              <div class="profile-field"><label>Takealot COD (PLAN COD) <span class="required">*</span></label><div class="val" id="pv-takealot_cod"></div><select id="pe-takealot_cod" style="display:none"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VEHICLE -->
+        <div class="profile-section" id="section-vehicle">
+          <div class="profile-section-header">
+            <span>Vehicle</span>
+            <button class="btn btn-sm" id="vehicle-edit-btn" onclick="startVehicleEdit()" style="display:none"><i class="ti ti-edit"></i>Edit</button>
+          </div>
+          <div class="profile-section-body">
+            <div id="vehicle-view">
+              <div id="vehicle-empty" class="pg-sub">No vehicle on record.</div>
+              <div id="vehicle-data" style="display:none">
+                <div class="profile-grid-3">
+                  <div class="profile-field"><label>Active status</label><div class="val" id="vv-active_status"></div></div>
+                  <div class="profile-field"><label>License plate</label><div class="val" id="vv-license_plate"></div></div>
+                  <div class="profile-field"><label>Make / model</label><div class="val" id="vv-make_model"></div></div>
+                  <div class="profile-field"><label>Type / colour</label><div class="val" id="vv-type_colour"></div></div>
+                  <div class="profile-field"><label>Year</label><div class="val" id="vv-year"></div></div>
+                  <div class="profile-field"><label>Owned by driver</label><div class="val" id="vv-owned_by_driver"></div></div>
+                </div>
               </div>
             </div>
-            <hr class="divider">
-            <div class="form-grid">
-              <div class="field-group"><div class="field-label">Vehicle type</div><div class="field-value" id="d-vehicle"></div></div>
-              <div class="field-group"><div class="field-label">Uniform size</div><div class="field-value" id="d-unisize"></div></div>
-              <div class="field-group"><div class="field-label">Driver group</div><div class="field-value" id="d-groupval"></div></div>
-              <div class="field-group"><div class="field-label">Notes</div><div class="field-value" id="d-notes"></div></div>
+            <div id="vehicle-edit" style="display:none">
+              <div class="profile-grid-3">
+                <div class="profile-field"><label>Active status <span class="required">*</span></label><select id="ve-active_status"><option value="">Select...</option><option>Active</option><option>Inactive</option></select></div>
+                <div class="profile-field"><label>License plate <span class="required">*</span></label><input type="text" id="ve-license_plate" placeholder="e.g. CA 123-456"></div>
+                <div class="profile-field"><label>Make / model <span class="required">*</span></label><input type="text" id="ve-make_model" placeholder="e.g. Toyota Hilux"></div>
+                <div class="profile-field"><label>Type / colour <span class="required">*</span></label><input type="text" id="ve-type_colour" placeholder="e.g. Bakkie / White"></div>
+                <div class="profile-field"><label>Year <span class="required">*</span></label><input type="text" id="ve-year" placeholder="e.g. 2022"></div>
+                <div class="profile-field"><label>Owned by driver <span class="required">*</span></label><select id="ve-owned_by_driver"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:4px">
+                <button class="btn btn-sm" onclick="cancelVehicleEdit()">Cancel</button>
+                <button class="btn btn-primary btn-sm" id="vehicle-save-btn" onclick="saveVehicle()"><i class="ti ti-device-floppy"></i>Save vehicle</button>
+              </div>
             </div>
-            <hr class="divider">
-            <div style="font-weight:600;font-size:12px;margin-bottom:12px">Uniform allocations</div>
-            <div id="d-allocations-loading" class="pg-sub">Loading allocations...</div>
-            <div id="d-allocations-empty" style="display:none" class="pg-sub">No uniform allocations on record.</div>
-            <table class="tbl" id="d-allocations-table" style="display:none">
+          </div>
+        </div>
+
+        <!-- COMPLIANCE -->
+        <div class="profile-section" id="section-compliance">
+          <div class="profile-section-header">Compliance documents</div>
+          <div class="profile-section-body" style="padding:0">
+            <div id="compliance-loading" class="pg-sub" style="padding:14px 18px">Loading documents...</div>
+            <table class="compliance-table" id="compliance-table" style="display:none">
               <thead><tr>
-                <th style="width:35%">Item</th>
-                <th style="width:20%">Size</th>
-                <th style="width:15%">Qty</th>
-                <th style="width:30%">Issued date</th>
+                <th style="width:28%">Document</th>
+                <th style="width:15%">Start date</th>
+                <th style="width:15%">Expiry date</th>
+                <th style="width:14%">Status</th>
+                <th style="width:14%">File</th>
+                <th style="width:14%"></th>
               </tr></thead>
-              <tbody id="d-allocations-tbody"></tbody>
+              <tbody id="compliance-tbody"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- EDIT MODE -->
-        <div id="drv-edit-mode" style="display:none">
-          <div class="card" style="max-width:560px">
-            <div class="card-title">Edit driver profile</div>
-            <div class="form-grid">
-              <div class="form-field" style="grid-column:1/-1"><label>Full name *</label><input type="text" id="edit-fullname"></div>
-              <div class="form-field"><label>Driver group</label>
-                <select id="edit-group">
-                  <option value="">— None —</option>
-                  <option value="TYG">TYG</option>
-                  <option value="Green">Green</option>
-                  <option value="MIA">MIA</option>
-                </select>
-              </div>
-              <div class="form-field"><label>Vehicle type</label>
-                <select id="edit-vehicle">
-                  <option value="">— None —</option>
-                  <option value="Bike">Bike</option>
-                  <option value="Car">Car</option>
-                </select>
-              </div>
-              <div class="form-field"><label>Uniform size</label><input type="text" id="edit-unisize" placeholder="e.g. M, L, XL"></div>
-              <div class="form-field"><label>&nbsp;</label></div>
-            </div>
-            <div class="form-field" style="margin-bottom:16px"><label>Notes</label>
-              <textarea id="edit-notes" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
-            </div>
-            <div id="edit-error" style="display:none;color:var(--danger-text);font-size:12px;margin-bottom:10px"></div>
-            <div style="display:flex;gap:8px">
-              <button class="btn" onclick="cancelEditDriver()">Cancel</button>
-              <button class="btn btn-primary" id="edit-save-btn" onclick="saveDriverEdit()"><i class="ti ti-device-floppy"></i>Save changes</button>
+        <!-- PAYMENTS -->
+        <div class="profile-section" id="section-payments">
+          <div class="profile-section-header">Payments</div>
+          <div class="profile-section-body">
+            <div class="profile-grid-2">
+              <div class="profile-field"><label>COD tips offset <span class="required">*</span></label><div class="val" id="pv-cod_tips_offset"></div><select id="pe-cod_tips_offset" style="display:none"><option value="">Select...</option><option>Yes</option><option>No</option></select></div>
             </div>
           </div>
         </div>
+
+        <div id="profile-error" style="display:none;color:var(--danger-text);font-size:12px;margin-top:10px;padding:8px 12px;background:var(--danger-bg);border-radius:var(--radius-md)"></div>
       </div>
-    </div>
+
+      <!-- COMPLIANCE DOCUMENT MODAL -->
+      <div class="task-modal-wrap" id="compliance-modal-wrap">
+        <div class="task-modal" style="width:460px">
+          <div class="task-modal-title"><span id="compliance-modal-title">Update document</span><button class="btn-icon" onclick="closeComplianceModal()" aria-label="Close"><i class="ti ti-x" style="font-size:16px"></i></button></div>
+          <div class="pg-sub" style="margin-bottom:14px" id="compliance-modal-doctype"></div>
+          <div id="compliance-start-wrap" style="margin-bottom:12px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <label style="font-size:11px;color:var(--text-muted);font-weight:500">Validity start date <span style="color:var(--danger-text)">*</span></label>
+              <input type="date" id="compliance-start" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            </div>
+          </div>
+          <div id="compliance-end-wrap" style="margin-bottom:12px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <label style="font-size:11px;color:var(--text-muted);font-weight:500" id="compliance-end-label">Expiry date</label>
+              <input type="date" id="compliance-end" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:14px">
+            <label style="font-size:11px;color:var(--text-muted);font-weight:500">Upload document (PDF or image)</label>
+            <input type="file" id="compliance-file" accept=".pdf,.jpg,.jpeg,.png">
+          </div>
+          <div id="compliance-modal-error" style="display:none;color:var(--danger-text);font-size:12px;margin-bottom:10px"></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn" onclick="closeComplianceModal()">Cancel</button>
+            <button class="btn btn-primary" id="compliance-save-btn" onclick="saveComplianceDoc()"><i class="ti ti-check"></i>Save</button>
+          </div>
+        </div>
+      </div>
+
 
 
         <!-- ONBOARDING -->
@@ -1549,12 +1773,14 @@ function handleRoute(){
   const hash = window.location.hash;
   const publicLeave = document.getElementById('public-leave-wrap');
   const publicEod = document.getElementById('public-eod-wrap');
+  const publicComplaint = document.getElementById('public-complaint-wrap');
   const loginWrap = document.getElementById('login-wrap');
   const mainApp = document.getElementById('main-app');
 
   // Hide everything first
   publicLeave.classList.remove('active');
   publicEod.classList.remove('active');
+  publicComplaint.classList.remove('active');
 
   if(hash==='#leave'){
     loginWrap.style.display='none';
@@ -1569,6 +1795,13 @@ function handleRoute(){
     publicEod.classList.add('active');
     document.body.classList.add('public-mode');
     if(document.getElementById('peod-dfd-list').children.length===0) addPublicDfdRow();
+    return true;
+  }
+  if(hash==='#complaint'){
+    loginWrap.style.display='none';
+    mainApp.style.display='none';
+    publicComplaint.classList.add('active');
+    document.body.classList.add('public-mode');
     return true;
   }
   document.body.classList.remove('public-mode');
@@ -1600,7 +1833,6 @@ window.addEventListener('hashchange', handleRoute);
 })();
 
 const EMAILJS_SERVICE_ID = "service_hz5ta8n";
-const EMAILJS_TEMPLATE_LEAVE = "template_oncceye";
 const EMAILJS_TEMPLATE_EOD = "template_pl48jbc";
 const EMAILJS_PUBLIC_KEY = "_v2gf95gHb4cxwm_p";
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -1652,8 +1884,7 @@ async function submitLeaveForm(e){
     const { error } = await supabaseClient.from('leave_requests').insert([data]);
     if(error) throw error;
 
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_LEAVE, {...data, sicknote_url: sicknote_url||'None attached'});
-
+    // Leave request saved — Director and Adrian notified via portal dashboard
     document.getElementById('leave-form').style.display='none';
     document.getElementById('leave-success').style.display='flex';
   }catch(err){
@@ -2234,6 +2465,7 @@ async function saveLeaveStatus(){
     note.style.display='';
     alert('Leave request updated successfully.');
     loadAdminLeave();
+    loadLeaveNotifications();
   }catch(err){
     alert('Error saving decision: '+(err.message||err));
   }
@@ -2391,7 +2623,7 @@ async function submitPublicLeave(e){
     };
     const { error } = await supabaseClient.from('leave_requests').insert([data]);
     if(error) throw error;
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_LEAVE, {...data, sicknote_url: sicknote_url||'None attached'});
+    // Leave request saved — Director and Adrian notified via portal dashboard
     document.getElementById('public-leave-form').style.display='none';
     document.getElementById('public-leave-success').style.display='';
   }catch(err){
@@ -2782,7 +3014,7 @@ function uniAllocChangePage(dir){
 }
 
 
-/* ===== EDIT DRIVER PROFILE ===== */
+/* EDIT DRIVER PROFILE — replaced by full profile below */
 let currentDriverId = null;
 
 function startEditDriver(){
@@ -3023,13 +3255,519 @@ document.getElementById('stock-upload-wrap').addEventListener('click',function(e
   if(e.target===this) closeStockUpload();
 });
 
-/* ===== DASHBOARD: load real driver count ===== */
+/* ===== DASHBOARD: load real driver count + leave notifications ===== */
 async function loadDashboardStats(){
   try{
     const { count } = await supabaseClient.from('drivers').select('*',{count:'exact',head:true});
     document.getElementById('dash-driver-count').textContent=count||0;
     document.getElementById('dash-driver-sub').textContent='Total registered';
   }catch(e){}
+  loadLeaveNotifications();
+}
+
+async function loadLeaveNotifications(){
+  try{
+    const { count, error } = await supabaseClient
+      .from('leave_requests')
+      .select('*',{count:'exact',head:true})
+      .or('status.is.null,status.eq.Pending');
+    if(error) return;
+    const badge = document.getElementById('leave-bell-badge');
+    if(count && count > 0){
+      badge.textContent = count > 9 ? '9+' : count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }catch(e){}
+}
+
+
+/* ===== FULL DRIVER PROFILE ===== */
+
+const COMPLIANCE_DOCS = [
+  { type: "Independent Contractor's Contract", required: true,  hasExpiry: true  },
+  { type: "ID Document (SA)",                  required: false, hasExpiry: false },
+  { type: "Passport",                          required: false, hasExpiry: true  },
+  { type: "Work Permit / Asylum Papers",       required: false, hasExpiry: true  },
+  { type: "Proof of Residence",               required: true,  hasExpiry: true  },
+  { type: "Clean Criminal Record",            required: true,  hasExpiry: true  },
+  { type: "Driver's License",                 required: true,  hasExpiry: true  },
+  { type: "Proof of 3rd Party Vehicle Insurance", required: true, hasExpiry: true },
+  { type: "Vehicle License Disk",             required: true,  hasExpiry: true  },
+  { type: "Vehicle Licence Registration",     required: true,  hasExpiry: true  },
+  { type: "Certificate of Roadworthiness",    required: true,  hasExpiry: true  },
+  { type: "Alcohol Training Registrar",       required: true,  hasExpiry: true  },
+  { type: "Driver Consent",                   required: true,  hasExpiry: false },
+  { type: "Beneficiary Nomination",           required: true,  hasExpiry: false }
+];
+
+const PROFILE_TEXT_FIELDS = ['first_name','middle_name','nickname','last_name','nationality','national_id','primary_contact','secondary_contact','emergency_contact_name','emergency_contact_number','email_address','physical_address'];
+const PROFILE_SELECT_FIELDS = ['employment_type','contract_type','gender','race','driver_group','ondmd_cod','takealot_cod','cod_tips_offset'];
+const PROFILE_DATE_FIELDS = ['date_of_birth'];
+let profileEditMode = false;
+let currentVehicleId = null;
+let currentComplianceDocType = null;
+let complianceDocsCache = [];
+let profileImageUploading = false;
+
+function closeDriverDetail(){
+  document.getElementById('drivers-list').style.display='';
+  document.getElementById('driver-detail').style.display='none';
+  cancelProfileEdit();
+}
+
+function pVal(field, val){
+  const el = document.getElementById('pv-'+field);
+  if(!el) return;
+  if(val){
+    el.textContent = val;
+    el.className = 'val';
+  } else {
+    el.textContent = 'Not set';
+    el.className = 'val empty';
+  }
+}
+
+function pInput(field, val){
+  const el = document.getElementById('pe-'+field);
+  if(!el) return;
+  el.value = val||'';
+}
+
+function renderProfileHeader(d){
+  const firstName = d.first_name||'';
+  const lastName = d.last_name||'';
+  const fullName = [firstName, lastName].filter(Boolean).join(' ') || d.full_name || '—';
+  const initials = [firstName[0], lastName[0]].filter(Boolean).join('').toUpperCase() || '?';
+
+  document.getElementById('profile-display-name').textContent = fullName;
+  document.getElementById('profile-display-sub').textContent = [d.contract_type, d.employment_type].filter(Boolean).join(' · ')||'—';
+  document.getElementById('profile-avatar-initials').textContent = initials;
+
+  const img = document.getElementById('profile-avatar-img');
+  if(d.driver_image_url){
+    img.src = d.driver_image_url;
+    img.style.display='';
+    document.getElementById('profile-avatar-initials').style.display='none';
+  } else {
+    img.style.display='none';
+    document.getElementById('profile-avatar-initials').style.display='';
+  }
+
+  const badges = document.getElementById('profile-display-badges');
+  badges.innerHTML='';
+  if(d.driver_group) badges.innerHTML+=`<span class="badge badge-info">${d.driver_group}</span>`;
+  if(d.vehicle_type) badges.innerHTML+=`<span class="badge badge-gray">${d.vehicle_type}</span>`;
+  if(d.ondmd_cod==='Yes') badges.innerHTML+=`<span class="badge badge-success">ONDMD COD</span>`;
+  if(d.takealot_cod==='Yes') badges.innerHTML+=`<span class="badge badge-success">PLAN COD</span>`;
+}
+
+function renderProfileFields(d){
+  // Text fields
+  PROFILE_TEXT_FIELDS.forEach(f => pVal(f, d[f]));
+  PROFILE_SELECT_FIELDS.forEach(f => pVal(f, d[f]));
+  PROFILE_DATE_FIELDS.forEach(f => pVal(f, d[f]));
+  // Inputs
+  PROFILE_TEXT_FIELDS.forEach(f => pInput(f, d[f]));
+  PROFILE_SELECT_FIELDS.forEach(f => {
+    const el = document.getElementById('pe-'+f);
+    if(el) el.value = d[f]||'';
+  });
+  PROFILE_DATE_FIELDS.forEach(f => pInput(f, d[f]));
+}
+
+async function openDriverDetail(id){
+  const driver = drvAllDrivers.find(d=>d.id===id);
+  if(!driver) return;
+  currentDriverId = id;
+
+  document.getElementById('drivers-list').style.display='none';
+  document.getElementById('driver-detail').style.display='';
+  document.getElementById('profile-edit-bar').classList.remove('visible');
+  document.getElementById('profile-edit-toggle').style.display='';
+  document.getElementById('profile-error').style.display='none';
+  profileEditMode = false;
+
+  // Render header
+  renderProfileHeader(driver);
+  renderProfileFields(driver);
+
+  // Show vehicle edit button in view mode
+  document.getElementById('vehicle-edit-btn').style.display='';
+
+  // Load vehicle
+  loadDriverVehicle(id);
+
+  // Load compliance
+  loadComplianceDocs(id);
+}
+
+function startProfileEdit(){
+  profileEditMode = true;
+  document.getElementById('profile-edit-bar').classList.add('visible');
+  document.getElementById('profile-edit-toggle').style.display='none';
+  document.getElementById('vehicle-edit-btn').style.display='none';
+
+  // Show inputs, hide values
+  [...PROFILE_TEXT_FIELDS, ...PROFILE_SELECT_FIELDS, ...PROFILE_DATE_FIELDS].forEach(f=>{
+    const v=document.getElementById('pv-'+f);
+    const e=document.getElementById('pe-'+f);
+    if(v) v.style.display='none';
+    if(e) e.style.display='';
+  });
+}
+
+function cancelProfileEdit(){
+  profileEditMode = false;
+  document.getElementById('profile-edit-bar').classList.remove('visible');
+  document.getElementById('profile-edit-toggle').style.display='';
+  document.getElementById('vehicle-edit-btn').style.display='';
+
+  [...PROFILE_TEXT_FIELDS, ...PROFILE_SELECT_FIELDS, ...PROFILE_DATE_FIELDS].forEach(f=>{
+    const v=document.getElementById('pv-'+f);
+    const e=document.getElementById('pe-'+f);
+    if(v) v.style.display='';
+    if(e) e.style.display='none';
+  });
+  document.getElementById('profile-error').style.display='none';
+}
+
+async function saveFullProfile(){
+  const btn = document.getElementById('profile-save-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Saving...';
+
+  try{
+    const updates = {};
+    PROFILE_TEXT_FIELDS.forEach(f=>{ updates[f]=document.getElementById('pe-'+f)?.value.trim()||null; });
+    PROFILE_SELECT_FIELDS.forEach(f=>{ updates[f]=document.getElementById('pe-'+f)?.value||null; });
+    PROFILE_DATE_FIELDS.forEach(f=>{ updates[f]=document.getElementById('pe-'+f)?.value||null; });
+
+    // Validate required fields
+    const required = ['first_name','last_name','employment_type','contract_type','gender','date_of_birth','primary_contact','emergency_contact_name','emergency_contact_number','email_address','physical_address','race','nationality','national_id'];
+    const missing = required.filter(f=>!updates[f]);
+    if(missing.length){
+      document.getElementById('profile-error').textContent='Please fill in all required fields: '+missing.map(f=>f.replace(/_/g,' ')).join(', ');
+      document.getElementById('profile-error').style.display='';
+      return;
+    }
+
+    // Update full_name for list display
+    updates.full_name = [updates.first_name, updates.last_name].filter(Boolean).join(' ');
+
+    const { error } = await supabaseClient.from('drivers').update(updates).eq('id', currentDriverId);
+    if(error) throw error;
+
+    // Update local cache
+    const idx = drvAllDrivers.findIndex(x=>x.id===currentDriverId);
+    if(idx>-1) Object.assign(drvAllDrivers[idx], updates);
+
+    cancelProfileEdit();
+    renderProfileHeader(drvAllDrivers[idx]);
+    renderProfileFields(drvAllDrivers[idx]);
+    drvRender();
+    document.getElementById('profile-error').style.display='none';
+  }catch(err){
+    document.getElementById('profile-error').textContent='Error saving: '+(err.message||err);
+    document.getElementById('profile-error').style.display='';
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-device-floppy"></i>Save all changes';
+  }
+}
+
+/* ── PROFILE IMAGE ── */
+async function handleProfileImageUpload(input){
+  if(!input.files||!input.files[0]) return;
+  profileImageUploading=true;
+  try{
+    const url = await uploadFile(input, 'driver-photos');
+    if(!url) return;
+    const { error } = await supabaseClient.from('drivers').update({driver_image_url:url}).eq('id',currentDriverId);
+    if(error) throw error;
+    const idx=drvAllDrivers.findIndex(x=>x.id===currentDriverId);
+    if(idx>-1) drvAllDrivers[idx].driver_image_url=url;
+    const img=document.getElementById('profile-avatar-img');
+    img.src=url; img.style.display='';
+    document.getElementById('profile-avatar-initials').style.display='none';
+  }catch(err){
+    alert('Image upload failed: '+(err.message||err));
+  }finally{
+    profileImageUploading=false;
+  }
+}
+
+/* ── VEHICLE ── */
+async function loadDriverVehicle(driverId){
+  document.getElementById('vehicle-data').style.display='none';
+  document.getElementById('vehicle-empty').style.display='';
+  document.getElementById('vehicle-edit').style.display='none';
+  document.getElementById('vehicle-view').style.display='';
+  currentVehicleId=null;
+  try{
+    const { data, error } = await supabaseClient.from('driver_vehicles').select('*').eq('driver_id',driverId).limit(1);
+    if(error) throw error;
+    if(data&&data.length){
+      const v=data[0];
+      currentVehicleId=v.id;
+      document.getElementById('vv-active_status').textContent=v.active_status||'—';
+      document.getElementById('vv-license_plate').textContent=v.license_plate||'—';
+      document.getElementById('vv-make_model').textContent=v.make_model||'—';
+      document.getElementById('vv-type_colour').textContent=v.type_colour||'—';
+      document.getElementById('vv-year').textContent=v.year||'—';
+      document.getElementById('vv-owned_by_driver').textContent=v.owned_by_driver||'—';
+      document.getElementById('vehicle-empty').style.display='none';
+      document.getElementById('vehicle-data').style.display='';
+
+      document.getElementById('ve-active_status').value=v.active_status||'';
+      document.getElementById('ve-license_plate').value=v.license_plate||'';
+      document.getElementById('ve-make_model').value=v.make_model||'';
+      document.getElementById('ve-type_colour').value=v.type_colour||'';
+      document.getElementById('ve-year').value=v.year||'';
+      document.getElementById('ve-owned_by_driver').value=v.owned_by_driver||'';
+    }
+  }catch(err){
+    document.getElementById('vehicle-empty').textContent='Error loading vehicle: '+(err.message||err);
+    document.getElementById('vehicle-empty').style.display='';
+  }
+}
+
+function startVehicleEdit(){
+  document.getElementById('vehicle-view').style.display='none';
+  document.getElementById('vehicle-edit').style.display='';
+  document.getElementById('vehicle-edit-btn').style.display='none';
+  if(!currentVehicleId){
+    ['active_status','license_plate','make_model','type_colour','year','owned_by_driver'].forEach(f=>{
+      const el=document.getElementById('ve-'+f);
+      if(el) el.value='';
+    });
+  }
+}
+
+function cancelVehicleEdit(){
+  document.getElementById('vehicle-edit').style.display='none';
+  document.getElementById('vehicle-view').style.display='';
+  document.getElementById('vehicle-edit-btn').style.display='';
+}
+
+async function saveVehicle(){
+  const btn=document.getElementById('vehicle-save-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Saving...';
+  try{
+    const data={
+      driver_id:currentDriverId,
+      active_status:document.getElementById('ve-active_status').value||null,
+      license_plate:document.getElementById('ve-license_plate').value.trim()||null,
+      make_model:document.getElementById('ve-make_model').value.trim()||null,
+      type_colour:document.getElementById('ve-type_colour').value.trim()||null,
+      year:document.getElementById('ve-year').value.trim()||null,
+      owned_by_driver:document.getElementById('ve-owned_by_driver').value||null
+    };
+    if(currentVehicleId){
+      const {error}=await supabaseClient.from('driver_vehicles').update(data).eq('id',currentVehicleId);
+      if(error) throw error;
+    } else {
+      const {error}=await supabaseClient.from('driver_vehicles').insert([data]);
+      if(error) throw error;
+    }
+    cancelVehicleEdit();
+    loadDriverVehicle(currentDriverId);
+  }catch(err){
+    alert('Error saving vehicle: '+(err.message||err));
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-device-floppy"></i>Save vehicle';
+  }
+}
+
+/* ── COMPLIANCE DOCUMENTS ── */
+async function loadComplianceDocs(driverId){
+  document.getElementById('compliance-loading').style.display='';
+  document.getElementById('compliance-table').style.display='none';
+  complianceDocsCache=[];
+  try{
+    const {data,error}=await supabaseClient.from('driver_documents').select('*').eq('driver_id',driverId);
+    if(error) throw error;
+    complianceDocsCache=data||[];
+    renderComplianceTable();
+    document.getElementById('compliance-loading').style.display='none';
+    document.getElementById('compliance-table').style.display='';
+  }catch(err){
+    document.getElementById('compliance-loading').textContent='Error: '+(err.message||err);
+  }
+}
+
+function getDocStatus(doc){
+  if(!doc) return {label:'Not uploaded',cls:'doc-status-missing'};
+  if(!doc.validity_end) return {label:'On file',cls:'doc-status-valid'};
+  const end=new Date(doc.validity_end);
+  const now=new Date();
+  const days=Math.ceil((end-now)/(1000*60*60*24));
+  if(days<0) return {label:'Expired',cls:'doc-status-expired'};
+  if(days<=30) return {label:`Expires in ${days}d`,cls:'doc-status-expiring'};
+  return {label:'Valid',cls:'doc-status-valid'};
+}
+
+function renderComplianceTable(){
+  const tbody=document.getElementById('compliance-tbody');
+  tbody.innerHTML='';
+  COMPLIANCE_DOCS.forEach(def=>{
+    const doc=complianceDocsCache.find(d=>d.document_type===def.type);
+    const status=getDocStatus(doc);
+    const fileBtn=doc?.document_url
+      ? `<a href="${doc.document_url}" target="_blank" class="btn btn-sm"><i class="ti ti-eye"></i>View</a>`
+      : '<span class="doc-status-missing">—</span>';
+    const endDate = def.hasExpiry ? (doc?.validity_end||'—') : '<span style="color:var(--text-hint)">N/A</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><span style="font-weight:${def.required?'500':'400'}">${def.type}</span>${def.required?'<span style="color:var(--danger-text);margin-left:2px">*</span>':''}</td>
+      <td>${doc?.validity_start||'—'}</td>
+      <td>${endDate}</td>
+      <td><span class="${status.cls}">${status.label}</span></td>
+      <td>${fileBtn}</td>
+      <td><button class="btn btn-sm" onclick="openComplianceModal('${def.type}',${def.hasExpiry})"><i class="ti ti-pencil"></i>${doc?'Update':'Add'}</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openComplianceModal(docType, hasExpiry){
+  currentComplianceDocType=docType;
+  const existing=complianceDocsCache.find(d=>d.document_type===docType);
+  document.getElementById('compliance-modal-title').textContent=(existing?'Update':'Add')+' document';
+  document.getElementById('compliance-modal-doctype').textContent=docType;
+  document.getElementById('compliance-start').value=existing?.validity_start||'';
+  document.getElementById('compliance-end').value=existing?.validity_end||'';
+  document.getElementById('compliance-end-wrap').style.display=hasExpiry?'':'none';
+  document.getElementById('compliance-end-label').textContent=hasExpiry?'Expiry date *':'';
+  document.getElementById('compliance-file').value='';
+  document.getElementById('compliance-modal-error').style.display='none';
+  document.getElementById('compliance-modal-wrap').classList.add('open');
+}
+
+function closeComplianceModal(){
+  document.getElementById('compliance-modal-wrap').classList.remove('open');
+}
+
+async function saveComplianceDoc(){
+  const start=document.getElementById('compliance-start').value;
+  const end=document.getElementById('compliance-end').value;
+  const def=COMPLIANCE_DOCS.find(d=>d.type===currentComplianceDocType);
+  if(!start){
+    document.getElementById('compliance-modal-error').textContent='Please enter a start date.';
+    document.getElementById('compliance-modal-error').style.display='';
+    return;
+  }
+  if(def?.hasExpiry && !end){
+    document.getElementById('compliance-modal-error').textContent='Please enter an expiry date.';
+    document.getElementById('compliance-modal-error').style.display='';
+    return;
+  }
+  const btn=document.getElementById('compliance-save-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Saving...';
+  try{
+    let doc_url=complianceDocsCache.find(d=>d.document_type===currentComplianceDocType)?.document_url||null;
+    const fileInput=document.getElementById('compliance-file');
+    if(fileInput.files&&fileInput.files[0]){
+      doc_url=await uploadFile(fileInput,'driver-documents/'+currentDriverId);
+    }
+    const existing=complianceDocsCache.find(d=>d.document_type===currentComplianceDocType);
+    const payload={
+      driver_id:currentDriverId,
+      document_type:currentComplianceDocType,
+      validity_start:start||null,
+      validity_end:end||null,
+      document_url:doc_url
+    };
+    if(existing){
+      const {error}=await supabaseClient.from('driver_documents').update(payload).eq('id',existing.id);
+      if(error) throw error;
+    } else {
+      const {error}=await supabaseClient.from('driver_documents').insert([payload]);
+      if(error) throw error;
+    }
+    closeComplianceModal();
+    await loadComplianceDocs(currentDriverId);
+  }catch(err){
+    document.getElementById('compliance-modal-error').textContent='Error: '+(err.message||err);
+    document.getElementById('compliance-modal-error').style.display='';
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<i class="ti ti-check"></i>Save';
+  }
+}
+
+document.getElementById('compliance-modal-wrap').addEventListener('click',function(e){
+  if(e.target===this) closeComplianceModal();
+});
+
+
+/* ===== FOOD COMPLAINT FORM ===== */
+const EMAILJS_TEMPLATE_COMPLAINT = 'template_oncceye';
+
+async function submitComplaint(e){
+  e.preventDefault();
+  const btn = document.getElementById('fc-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2"></i>Submitting...';
+  try{
+    const statusEl = document.getElementById('complaint-attach-status');
+    statusEl.textContent = 'Uploading attachments...';
+
+    // Upload incident proof
+    let incident_proof_url = null;
+    const incidentFile = document.getElementById('fc-incident-proof');
+    if(incidentFile.files && incidentFile.files[0]){
+      incident_proof_url = await uploadFile(incidentFile, 'food-complaints/incident-proof');
+    }
+
+    // Upload breach proof
+    let breach_proof_url = null;
+    const breachFile = document.getElementById('fc-breach-proof');
+    if(breachFile.files && breachFile.files[0]){
+      breach_proof_url = await uploadFile(breachFile, 'food-complaints/breach-proof');
+    }
+
+    statusEl.textContent = '';
+
+    const data = {
+      liability: document.getElementById('fc-liability').value,
+      ic_name: document.getElementById('fc-ic_name').value.trim(),
+      incident_description: document.getElementById('fc-description').value.trim(),
+      incident_proof_url,
+      phone_check: document.getElementById('fc-phone_check').value,
+      request_for_assistance: document.getElementById('fc-request_for_assistance').value,
+      history: document.getElementById('fc-history').value.trim(),
+      action_taken: document.getElementById('fc-action_taken').value.trim(),
+      training_assistance: document.getElementById('fc-training_assistance').value.trim(),
+      complaint_acknowledgment: document.getElementById('fc-complaint_acknowledgment').value,
+      breach_acknowledgment: document.getElementById('fc-breach_acknowledgment').value,
+      breach_proof_url
+    };
+
+    // Save to Supabase
+    const { error } = await supabaseClient.from('food_complaints').insert([data]);
+    if(error) throw error;
+
+    // Send email
+    const emailData = {
+      ...data,
+      incident_proof_url: incident_proof_url || 'No file attached',
+      breach_proof_url: breach_proof_url || 'No file attached'
+    };
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_COMPLAINT, emailData);
+
+    document.getElementById('complaint-form').style.display = 'none';
+    document.getElementById('complaint-success').style.display = '';
+  }catch(err){
+    alert('There was a problem submitting. Please try again.\n\n' + (err.message || err));
+    console.error(err);
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-send"></i>Submit complaint';
+  }
 }
 
 </script>
