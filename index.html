@@ -454,21 +454,52 @@ body.public-mode{overflow-y:auto;height:auto}
       <div id="complaint-success" style="display:none;background:var(--success-bg);color:var(--success-text);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;margin-bottom:14px"><i class="ti ti-circle-check"></i> Complaint submitted successfully.</div>
       <form id="complaint-form" onsubmit="submitComplaint(event)">
 
-        <div class="cond-group" style="margin-bottom:14px">
-          <div class="form-field"><label>1. Liability <span style="color:var(--danger-text)">*</span></label>
-            <select id="fc-liability" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
-              <option value="">Select...</option>
-              <option>Driver Liable</option>
-              <option>Not Liable</option>
-              <option>Pending Investigation</option>
-            </select>
+        <!-- DFD Number + Date Received -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div class="form-field"><label>DFD Number <span style="color:var(--danger-text)">*</span></label>
+            <input type="text" id="fc-dfd_number" required placeholder="e.g. DFD12345" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+          </div>
+          <div class="form-field"><label>Date Received <span style="color:var(--danger-text)">*</span></label>
+            <input type="date" id="fc-date_received" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
           </div>
         </div>
 
+        <!-- 1. Liability -->
+        <div class="form-field" style="margin-bottom:14px"><label>1. Liability <span style="color:var(--danger-text)">*</span></label>
+          <select id="fc-liability" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            <option value="">Select...</option>
+            <option>Driver Liable</option>
+            <option>Not Liable</option>
+            <option>Pending Investigation</option>
+          </select>
+        </div>
+
+        <!-- 2. IC Name -->
         <div class="form-field" style="margin-bottom:14px"><label>2. IC Name — Independent Contractor Name <span style="color:var(--danger-text)">*</span></label>
           <input type="text" id="fc-ic_name" required placeholder="Full name of the Independent Contractor" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
         </div>
 
+        <!-- Type of food complaint -->
+        <div class="form-field" style="margin-bottom:14px"><label>Type of food complaint <span style="color:var(--danger-text)">*</span></label>
+          <select id="fc-complaint_type" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+            <option value="">Select...</option>
+            <option>Missing Drinks</option>
+            <option>Missing Food</option>
+            <option>MDNR</option>
+            <option>Deviation</option>
+            <option>Damaged in Transit</option>
+            <option>Rude</option>
+            <option>No Change</option>
+            <option>Failing to Log Return</option>
+            <option>Incorrectly Failed</option>
+            <option>Early POD</option>
+            <option>Fail not Returned</option>
+            <option>Vehicle Breakdown</option>
+            <option>Robbed</option>
+          </select>
+        </div>
+
+        <!-- 3. Description of Incident -->
         <div style="margin-bottom:14px">
           <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:6px">3. Description of Incident <span style="color:var(--danger-text)">*</span></label>
           <textarea id="fc-description" required placeholder="Detailed explanation of what caused the deviation" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:80px;margin-bottom:8px"></textarea>
@@ -476,14 +507,33 @@ body.public-mode{overflow-y:auto;height:auto}
           <input type="file" id="fc-incident-proof" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
         </div>
 
-        <div class="form-field" style="margin-bottom:14px"><label>4. Phone Check — Was the device inspected? <span style="color:var(--danger-text)">*</span></label>
-          <select id="fc-phone_check" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
-            <option value="">Select...</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
+        <!-- 4. Phone Check + conditional deviation fields -->
+        <div class="cond-group" style="margin-bottom:14px">
+          <div class="form-field"><label>4. Phone Check — Was the device inspected? <span style="color:var(--danger-text)">*</span></label>
+            <select id="fc-phone_check" required onchange="toggleDeviationFields()" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
+              <option value="">Select...</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="fc-deviation-wrap" style="display:none">
+            <div style="margin-bottom:10px">
+              <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:8px"><i class="ti ti-corner-down-right"></i> Deviation type — select all that apply</label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" id="fc-dev-uber" style="accent-color:var(--text)"> Uber</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" id="fc-dev-6060" style="accent-color:var(--text)"> 60/60</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" id="fc-dev-spar4u" style="accent-color:var(--text)"> Spar4U</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer"><input type="checkbox" id="fc-dev-other" style="accent-color:var(--text)"> Other</label>
+              </div>
+            </div>
+            <div class="form-field">
+              <label><i class="ti ti-corner-down-right"></i> Provide feedback on deviation type</label>
+              <textarea id="fc-deviation_feedback" placeholder="Describe the deviation in detail" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+            </div>
+          </div>
         </div>
 
+        <!-- 5. Request for Assistance -->
         <div class="form-field" style="margin-bottom:14px"><label>5. Request for Assistance — Did the IC ask for help during the delivery? <span style="color:var(--danger-text)">*</span></label>
           <select id="fc-request_for_assistance" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
             <option value="">Select...</option>
@@ -492,18 +542,22 @@ body.public-mode{overflow-y:auto;height:auto}
           </select>
         </div>
 
+        <!-- 6. History -->
         <div class="form-field" style="margin-bottom:14px"><label>6. History — When was the IC's last food complaint and what was the nature of it? <span style="color:var(--danger-text)">*</span></label>
           <textarea id="fc-history" required placeholder="Date and nature of previous complaint, or 'No previous complaints'" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
         </div>
 
+        <!-- 7. Action Taken -->
         <div class="form-field" style="margin-bottom:14px"><label>7. Action Taken — Details of disciplinary or corrective action <span style="color:var(--danger-text)">*</span></label>
           <textarea id="fc-action_taken" required placeholder="Describe the action taken" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
         </div>
 
+        <!-- 8. Training / Assistance -->
         <div class="form-field" style="margin-bottom:14px"><label>8. Training / Assistance — What specific training or assistance has been provided? <span style="color:var(--danger-text)">*</span></label>
           <textarea id="fc-training_assistance" required placeholder="Describe training or assistance provided" style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
         </div>
 
+        <!-- 9. Complaint Acknowledgment -->
         <div class="form-field" style="margin-bottom:14px"><label>9. Complaint Acknowledgment — Has the IC signed the complaint? <span style="color:var(--danger-text)">*</span></label>
           <select id="fc-complaint_acknowledgment" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none">
             <option value="">Select...</option>
@@ -512,6 +566,7 @@ body.public-mode{overflow-y:auto;height:auto}
           </select>
         </div>
 
+        <!-- 10. Breach Acknowledgment -->
         <div style="margin-bottom:20px">
           <label style="font-size:11px;color:var(--text-muted);font-weight:500;display:block;margin-bottom:6px">10. Breach Acknowledgment — Has the IC signed the breach? <span style="color:var(--danger-text)">*</span></label>
           <select id="fc-breach_acknowledgment" required style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;margin-bottom:8px">
@@ -524,6 +579,7 @@ body.public-mode{overflow-y:auto;height:auto}
         </div>
 
         <div id="complaint-attach-status" style="font-size:11px;color:var(--text-muted);margin-bottom:10px"></div>
+
         <button class="btn btn-primary" type="submit" id="fc-btn"><i class="ti ti-send"></i>Submit complaint</button>
       </form>
     </div>
@@ -3707,6 +3763,11 @@ document.getElementById('compliance-modal-wrap').addEventListener('click',functi
 /* ===== FOOD COMPLAINT FORM ===== */
 const EMAILJS_TEMPLATE_COMPLAINT = 'template_oncceye';
 
+function toggleDeviationFields(){
+  const val = document.getElementById('fc-phone_check').value;
+  document.getElementById('fc-deviation-wrap').style.display = val === 'Yes' ? '' : 'none';
+}
+
 async function submitComplaint(e){
   e.preventDefault();
   const btn = document.getElementById('fc-btn');
@@ -3732,12 +3793,24 @@ async function submitComplaint(e){
 
     statusEl.textContent = '';
 
+    // Collect deviation types from checkboxes
+    const deviationTypes = [];
+    if(document.getElementById('fc-dev-uber').checked) deviationTypes.push('Uber');
+    if(document.getElementById('fc-dev-6060').checked) deviationTypes.push('60/60');
+    if(document.getElementById('fc-dev-spar4u').checked) deviationTypes.push('Spar4U');
+    if(document.getElementById('fc-dev-other').checked) deviationTypes.push('Other');
+
     const data = {
+      dfd_number: document.getElementById('fc-dfd_number').value.trim(),
+      date_received: document.getElementById('fc-date_received').value,
       liability: document.getElementById('fc-liability').value,
       ic_name: document.getElementById('fc-ic_name').value.trim(),
+      complaint_type: document.getElementById('fc-complaint_type').value,
       incident_description: document.getElementById('fc-description').value.trim(),
       incident_proof_url,
       phone_check: document.getElementById('fc-phone_check').value,
+      deviation_types: deviationTypes.length ? deviationTypes.join(', ') : null,
+      deviation_feedback: document.getElementById('fc-deviation_feedback').value.trim()||null,
       request_for_assistance: document.getElementById('fc-request_for_assistance').value,
       history: document.getElementById('fc-history').value.trim(),
       action_taken: document.getElementById('fc-action_taken').value.trim(),
@@ -3754,6 +3827,8 @@ async function submitComplaint(e){
     // Send email
     const emailData = {
       ...data,
+      deviation_types: data.deviation_types || 'None',
+      deviation_feedback: data.deviation_feedback || 'N/A',
       incident_proof_url: incident_proof_url || 'No file attached',
       breach_proof_url: breach_proof_url || 'No file attached'
     };
