@@ -586,6 +586,134 @@ body.public-mode{overflow-y:auto;height:auto}
   </div>
 </div>
 
+<!-- PUBLIC: FAILS FORM -->
+<div class="public-form-wrap" id="public-fails-wrap">
+  <div style="width:100%;max-width:560px;padding-bottom:40px">
+    <div class="public-form-header"><i class="ti ti-steering-wheel"></i>TDT Tygervalley Portal</div>
+    <div class="card">
+      <div class="card-title" style="font-size:16px;margin-bottom:4px">Fails</div>
+      <div class="pg-sub" style="margin-bottom:20px">Complete all questions. If No is selected a reason must be provided.</div>
+      <div id="fails-success" style="display:none;background:var(--success-bg);color:var(--success-text);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;margin-bottom:14px"><i class="ti ti-circle-check"></i> Fails check submitted successfully.</div>
+      <form id="fails-form" onsubmit="submitFails(event)">
+
+        <div class="cond-group">
+          <div class="form-field"><label>1. Are all parcels in the order accounted for? <span style="color:var(--danger-text)">*</span></label>
+            <select id="ff-parcels_accounted" required onchange="toggleFailReason('ff-parcels_accounted','ff-parcels-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="ff-parcels-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Explanation</label>
+              <textarea id="ff-parcels_accounted_reason" placeholder="Provide explanation..." style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="cond-group">
+          <div class="form-field"><label>2. Are there any damages on the parcels being received? <span style="color:var(--danger-text)">*</span></label>
+            <select id="ff-damages_present" required onchange="toggleFailReason('ff-damages_present','ff-damages-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="ff-damages-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Explanation</label>
+              <textarea id="ff-damages_present_reason" placeholder="Describe the damages..." style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="cond-group" style="margin-bottom:20px">
+          <div class="form-field"><label>3. Has the driver written the fails down on the fail register and signed? <span style="color:var(--danger-text)">*</span></label>
+            <select id="ff-fail_register_signed" required onchange="toggleFailReason('ff-fail_register_signed','ff-register-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="ff-register-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Explanation</label>
+              <textarea id="ff-fail_register_signed_reason" placeholder="Provide explanation..." style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit" id="ff-btn"><i class="ti ti-send"></i>Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- PUBLIC: RETURNS FORM -->
+<div class="public-form-wrap" id="public-returns-wrap">
+  <div style="width:100%;max-width:560px;padding-bottom:40px">
+    <div class="public-form-header"><i class="ti ti-steering-wheel"></i>TDT Tygervalley Portal</div>
+    <div class="card">
+      <div class="card-title" style="font-size:16px;margin-bottom:4px">Returns</div>
+      <div class="pg-sub" style="margin-bottom:20px">Complete all questions. If No is selected a reason must be provided.</div>
+      <div id="returns-success" style="display:none;background:var(--success-bg);color:var(--success-text);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;margin-bottom:14px"><i class="ti ti-circle-check"></i> Returns check submitted successfully.</div>
+      <form id="returns-form" onsubmit="submitReturns(event)">
+
+        <div class="cond-group">
+          <div class="form-field"><label>1. Is the order sealed or unsealed? <span style="color:var(--danger-text)">*</span></label>
+            <select id="rf-order_sealed" required onchange="toggleUnsealedFields()">
+              <option value="">Select...</option><option>Sealed</option><option>Unsealed</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="rf-unsealed-wrap" style="display:none">
+            <div class="form-field" style="margin-bottom:10px"><label><i class="ti ti-corner-down-right"></i> What is inside the box and does it match the description?</label>
+              <textarea id="rf-box_contents" placeholder="List contents and confirm whether they match the order description..." style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:70px"></textarea>
+            </div>
+            <div class="form-field">
+              <label><i class="ti ti-corner-down-right"></i> Photo of items inside the box</label>
+              <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+                <label style="cursor:pointer" title="Take photo">
+                  <input type="file" id="rf-box-photo-camera" accept="image/*" capture="environment" style="display:none" onchange="handleReturnPhoto(this,'camera')">
+                  <span class="btn btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Take photo</span>
+                </label>
+                <label style="cursor:pointer" title="Upload from gallery">
+                  <input type="file" id="rf-box-photo-gallery" accept="image/*" style="display:none" onchange="handleReturnPhoto(this,'gallery')">
+                  <span class="btn btn-sm"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Upload from gallery</span>
+                </label>
+              </div>
+              <div id="rf-photo-preview-wrap" style="display:none;margin-top:10px">
+                <img id="rf-photo-preview" src="" alt="Preview" style="max-width:100%;max-height:200px;border-radius:var(--radius-md);border:1px solid var(--border);object-fit:cover">
+                <div style="font-size:11px;color:var(--success-text);margin-top:4px" id="rf-photo-name"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cond-group">
+          <div class="form-field"><label>3. Do all items or parcels have their reference sticker on top with the reference number attached? <span style="color:var(--danger-text)">*</span></label>
+            <select id="rf-reference_stickers" required onchange="toggleReturnReason('rf-reference_stickers','rf-stickers-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="rf-stickers-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Explanation</label>
+              <textarea id="rf-reference_stickers_reason" placeholder="Provide explanation..." style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="cond-group" style="margin-bottom:20px">
+          <div class="form-field"><label>4. Has the return been captured on the manual sign in sheet? <span style="color:var(--danger-text)">*</span></label>
+            <select id="rf-manual_signin_captured" required onchange="toggleReturnReason('rf-manual_signin_captured','rf-signin-reason-wrap')">
+              <option value="">Select...</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="cond-reason" id="rf-signin-reason-wrap" style="display:none">
+            <div class="form-field"><label><i class="ti ti-corner-down-right"></i> Explanation</label>
+              <textarea id="rf-manual_signin_captured_reason" placeholder="Provide explanation..." style="font-size:12px;padding:7px 10px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;width:100%;outline:none;resize:vertical;min-height:60px"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div id="returns-attach-status" style="font-size:11px;color:var(--text-muted);margin-bottom:10px"></div>
+        <button class="btn btn-primary" type="submit" id="rf-btn"><i class="ti ti-send"></i>Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div class="app" id="main-app">
 
 <!-- SIDEBAR -->
@@ -606,6 +734,8 @@ body.public-mode{overflow-y:auto;height:auto}
     <div class="nav-section">Admin</div>
     <div class="nav-item" onclick="nav('admin-eod',this)"><i class="ti ti-report"></i>EOD Reports</div>
     <div class="nav-item" onclick="nav('admin-leave',this)"><i class="ti ti-calendar-off"></i>Leave Requests</div>
+    <div class="nav-item" onclick="nav('admin-fails',this)"><i class="ti ti-package-off"></i>Fails</div>
+    <div class="nav-item" onclick="nav('admin-returns',this)"><i class="ti ti-package-import"></i>Returns</div>
     <div class="nav-item" onclick="nav('admin-docs',this)"><i class="ti ti-files"></i>Documents</div>
     <div class="nav-section">Analytics</div>
     <div class="nav-item" onclick="nav('eodanalytics',this)"><i class="ti ti-chart-bar"></i>EOD Analytics</div>
@@ -1370,6 +1500,56 @@ body.public-mode{overflow-y:auto;height:auto}
       </div>
     </div>
 
+    <!-- ADMIN FAILS -->
+    <div class="page" id="page-admin-fails">
+      <div class="pg-hdr" style="margin-bottom:14px">
+        <div class="pg-sub">Fails check submissions</div>
+        <button class="btn btn-sm" onclick="loadAdminFails()"><i class="ti ti-refresh"></i>Refresh</button>
+      </div>
+      <div id="admin-fails-loading" class="pg-sub">Click refresh to load submissions.</div>
+      <div id="admin-fails-empty" style="display:none" class="pg-sub">No fails submissions yet.</div>
+      <div id="admin-fails-content" style="display:none">
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:14%">Date</th>
+              <th style="width:22%">Parcels accounted</th>
+              <th style="width:22%">Damages</th>
+              <th style="width:22%">Register signed</th>
+              <th style="width:20%">Issues</th>
+            </tr></thead>
+            <tbody id="admin-fails-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN RETURNS -->
+    <div class="page" id="page-admin-returns">
+      <div class="pg-hdr" style="margin-bottom:14px">
+        <div class="pg-sub">Returns check submissions</div>
+        <button class="btn btn-sm" onclick="loadAdminReturns()"><i class="ti ti-refresh"></i>Refresh</button>
+      </div>
+      <div id="admin-returns-loading" class="pg-sub">Click refresh to load submissions.</div>
+      <div id="admin-returns-empty" style="display:none" class="pg-sub">No returns submissions yet.</div>
+      <div id="admin-returns-content" style="display:none">
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:12%">Date</th>
+              <th style="width:14%">Sealed?</th>
+              <th style="width:20%">Box contents</th>
+              <th style="width:10%">Photo</th>
+              <th style="width:16%">Ref stickers</th>
+              <th style="width:16%">Sign in sheet</th>
+              <th style="width:12%">Issues</th>
+            </tr></thead>
+            <tbody id="admin-returns-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- EOD ANALYTICS -->
     <div class="page" id="page-eodanalytics">
       <div class="pg-hdr">
@@ -1576,7 +1756,7 @@ body.public-mode{overflow-y:auto;height:auto}
 </div>
 
 <script>
-const titles={dashboard:'Dashboard',drivers:'Drivers',onboarding:'Onboarding',vehicles:'Vehicles',uniforms:'Uniforms',leaveform:'Leave Request',eodform:'End of Day Report','admin-eod':'Admin — EOD Reports','admin-leave':'Admin — Leave Requests','admin-docs':'Admin — Documents',eodanalytics:'EOD Analytics',tasks:'Tasks',contracts:'Contracts',compliance:'Compliance records',sops:'SOPs',policies:'Policies'};
+const titles={dashboard:'Dashboard',drivers:'Drivers',onboarding:'Onboarding',vehicles:'Vehicles',uniforms:'Uniforms',leaveform:'Leave Request',eodform:'End of Day Report','admin-eod':'Admin — EOD Reports','admin-leave':'Admin — Leave Requests','admin-fails':'Admin — Fails','admin-returns':'Admin — Returns','admin-docs':'Admin — Documents',eodanalytics:'EOD Analytics',tasks:'Tasks',contracts:'Contracts',compliance:'Compliance records',sops:'SOPs',policies:'Policies'};
 
 function nav(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1830,35 +2010,43 @@ function handleRoute(){
   const publicLeave = document.getElementById('public-leave-wrap');
   const publicEod = document.getElementById('public-eod-wrap');
   const publicComplaint = document.getElementById('public-complaint-wrap');
+  const publicFails = document.getElementById('public-fails-wrap');
+  const publicReturns = document.getElementById('public-returns-wrap');
   const loginWrap = document.getElementById('login-wrap');
   const mainApp = document.getElementById('main-app');
 
-  // Hide everything first
   publicLeave.classList.remove('active');
   publicEod.classList.remove('active');
   publicComplaint.classList.remove('active');
+  publicFails.classList.remove('active');
+  publicReturns.classList.remove('active');
 
   if(hash==='#leave'){
-    loginWrap.style.display='none';
-    mainApp.style.display='none';
+    loginWrap.style.display='none'; mainApp.style.display='none';
     publicLeave.classList.add('active');
-    document.body.classList.add('public-mode');
-    return true;
+    document.body.classList.add('public-mode'); return true;
   }
   if(hash==='#eod'){
-    loginWrap.style.display='none';
-    mainApp.style.display='none';
+    loginWrap.style.display='none'; mainApp.style.display='none';
     publicEod.classList.add('active');
     document.body.classList.add('public-mode');
     if(document.getElementById('peod-dfd-list').children.length===0) addPublicDfdRow();
     return true;
   }
   if(hash==='#complaint'){
-    loginWrap.style.display='none';
-    mainApp.style.display='none';
+    loginWrap.style.display='none'; mainApp.style.display='none';
     publicComplaint.classList.add('active');
-    document.body.classList.add('public-mode');
-    return true;
+    document.body.classList.add('public-mode'); return true;
+  }
+  if(hash==='#fails'){
+    loginWrap.style.display='none'; mainApp.style.display='none';
+    publicFails.classList.add('active');
+    document.body.classList.add('public-mode'); return true;
+  }
+  if(hash==='#returns'){
+    loginWrap.style.display='none'; mainApp.style.display='none';
+    publicReturns.classList.add('active');
+    document.body.classList.add('public-mode'); return true;
   }
   document.body.classList.remove('public-mode');
   return false;
@@ -2521,7 +2709,7 @@ async function saveLeaveStatus(){
     note.style.display='';
     alert('Leave request updated successfully.');
     loadAdminLeave();
-    loadLeaveNotifications();
+    loadDashboardNotifications();
   }catch(err){
     alert('Error saving decision: '+(err.message||err));
   }
@@ -3321,22 +3509,7 @@ async function loadDashboardStats(){
   loadLeaveNotifications();
 }
 
-async function loadLeaveNotifications(){
-  try{
-    const { count, error } = await supabaseClient
-      .from('leave_requests')
-      .select('*',{count:'exact',head:true})
-      .or('status.is.null,status.eq.Pending');
-    if(error) return;
-    const badge = document.getElementById('leave-bell-badge');
-    if(count && count > 0){
-      badge.textContent = count > 9 ? '9+' : count;
-      badge.style.display = 'flex';
-    } else {
-      badge.style.display = 'none';
-    }
-  }catch(e){}
-}
+// loadLeaveNotifications merged into loadDashboardNotifications below
 
 
 /* ===== FULL DRIVER PROFILE ===== */
@@ -3843,6 +4016,190 @@ async function submitComplaint(e){
     btn.disabled = false;
     btn.innerHTML = '<i class="ti ti-send"></i>Submit complaint';
   }
+}
+
+
+/* ===== FAILS FORM ===== */
+function toggleFailReason(selectId, wrapId){
+  document.getElementById(wrapId).style.display =
+    document.getElementById(selectId).value === 'No' ? '' : 'none';
+}
+
+async function submitFails(e){
+  e.preventDefault();
+  const btn = document.getElementById('ff-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2"></i>Submitting...';
+  try{
+    const data = {
+      check_date: new Date().toISOString().slice(0,10),
+      parcels_accounted: document.getElementById('ff-parcels_accounted').value,
+      parcels_accounted_reason: document.getElementById('ff-parcels_accounted_reason').value.trim()||null,
+      damages_present: document.getElementById('ff-damages_present').value,
+      damages_present_reason: document.getElementById('ff-damages_present_reason').value.trim()||null,
+      fail_register_signed: document.getElementById('ff-fail_register_signed').value,
+      fail_register_signed_reason: document.getElementById('ff-fail_register_signed_reason').value.trim()||null
+    };
+    const { error } = await supabaseClient.from('fails_checks').insert([data]);
+    if(error) throw error;
+    document.getElementById('fails-form').style.display = 'none';
+    document.getElementById('fails-success').style.display = '';
+    loadDashboardNotifications();
+  }catch(err){
+    alert('There was a problem submitting. Please try again.\n\n'+(err.message||err));
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-send"></i>Submit';
+  }
+}
+
+/* ===== RETURNS FORM ===== */
+let returnPhotoFile = null;
+
+function toggleUnsealedFields(){
+  const val = document.getElementById('rf-order_sealed').value;
+  document.getElementById('rf-unsealed-wrap').style.display = val === 'Unsealed' ? '' : 'none';
+}
+
+function toggleReturnReason(selectId, wrapId){
+  document.getElementById(wrapId).style.display =
+    document.getElementById(selectId).value === 'No' ? '' : 'none';
+}
+
+function handleReturnPhoto(input, source){
+  if(!input.files || !input.files[0]) return;
+  returnPhotoFile = input.files[0];
+  // Show preview
+  const reader = new FileReader();
+  reader.onload = function(e){
+    document.getElementById('rf-photo-preview').src = e.target.result;
+    document.getElementById('rf-photo-preview-wrap').style.display = '';
+    document.getElementById('rf-photo-name').textContent = returnPhotoFile.name;
+  };
+  reader.readAsDataURL(returnPhotoFile);
+}
+
+async function submitReturns(e){
+  e.preventDefault();
+  const btn = document.getElementById('rf-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2"></i>Submitting...';
+  try{
+    const statusEl = document.getElementById('returns-attach-status');
+    let box_photo_url = null;
+    if(returnPhotoFile){
+      statusEl.textContent = 'Uploading photo...';
+      // Create a fake input-like object for uploadFile
+      const fakeInput = { files: [returnPhotoFile] };
+      box_photo_url = await uploadFile(fakeInput, 'returns/box-photos');
+      statusEl.textContent = '';
+    }
+    const data = {
+      check_date: new Date().toISOString().slice(0,10),
+      order_sealed: document.getElementById('rf-order_sealed').value,
+      box_contents: document.getElementById('rf-box_contents').value.trim()||null,
+      box_photo_url,
+      reference_stickers: document.getElementById('rf-reference_stickers').value,
+      reference_stickers_reason: document.getElementById('rf-reference_stickers_reason').value.trim()||null,
+      manual_signin_captured: document.getElementById('rf-manual_signin_captured').value,
+      manual_signin_captured_reason: document.getElementById('rf-manual_signin_captured_reason').value.trim()||null
+    };
+    const { error } = await supabaseClient.from('returns_checks').insert([data]);
+    if(error) throw error;
+    document.getElementById('returns-form').style.display = 'none';
+    document.getElementById('returns-success').style.display = '';
+    loadDashboardNotifications();
+  }catch(err){
+    alert('There was a problem submitting. Please try again.\n\n'+(err.message||err));
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-send"></i>Submit';
+  }
+}
+
+/* ===== ADMIN: FAILS ===== */
+async function loadAdminFails(){
+  document.getElementById('admin-fails-loading').textContent = 'Loading...';
+  document.getElementById('admin-fails-loading').style.display = '';
+  document.getElementById('admin-fails-content').style.display = 'none';
+  document.getElementById('admin-fails-empty').style.display = 'none';
+  try{
+    const { data, error } = await supabaseClient
+      .from('fails_checks').select('*').order('check_date',{ascending:false});
+    if(error) throw error;
+    document.getElementById('admin-fails-loading').style.display = 'none';
+    if(!data||data.length===0){ document.getElementById('admin-fails-empty').style.display=''; return; }
+    const tbody = document.getElementById('admin-fails-tbody');
+    tbody.innerHTML = '';
+    data.forEach(r=>{
+      const issues = [
+        r.parcels_accounted==='No'?'Parcels missing':'',
+        r.damages_present==='Yes'?'Damages reported':'',
+        r.fail_register_signed==='No'?'Register not signed':''
+      ].filter(Boolean);
+      const tr = document.createElement('tr');
+      tr.innerHTML=`
+        <td>${r.check_date||'—'}</td>
+        <td><span class="badge ${r.parcels_accounted==='Yes'?'badge-success':'badge-danger'}">${r.parcels_accounted||'—'}</span>${r.parcels_accounted==='No'&&r.parcels_accounted_reason?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px">'+r.parcels_accounted_reason+'</div>':''}</td>
+        <td><span class="badge ${r.damages_present==='No'?'badge-success':'badge-warning'}">${r.damages_present||'—'}</span>${r.damages_present==='Yes'&&r.damages_present_reason?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px">'+r.damages_present_reason+'</div>':''}</td>
+        <td><span class="badge ${r.fail_register_signed==='Yes'?'badge-success':'badge-danger'}">${r.fail_register_signed||'—'}</span>${r.fail_register_signed==='No'&&r.fail_register_signed_reason?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px">'+r.fail_register_signed_reason+'</div>':''}</td>
+        <td>${issues.length?'<span class="badge badge-danger">'+issues.length+' issue'+(issues.length>1?'s':'')+'</span>':'<span class="badge badge-success">None</span>'}`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('admin-fails-content').style.display = '';
+  }catch(err){
+    document.getElementById('admin-fails-loading').textContent = 'Error: '+(err.message||err);
+  }
+}
+
+/* ===== ADMIN: RETURNS ===== */
+async function loadAdminReturns(){
+  document.getElementById('admin-returns-loading').textContent = 'Loading...';
+  document.getElementById('admin-returns-loading').style.display = '';
+  document.getElementById('admin-returns-content').style.display = 'none';
+  document.getElementById('admin-returns-empty').style.display = 'none';
+  try{
+    const { data, error } = await supabaseClient
+      .from('returns_checks').select('*').order('check_date',{ascending:false});
+    if(error) throw error;
+    document.getElementById('admin-returns-loading').style.display = 'none';
+    if(!data||data.length===0){ document.getElementById('admin-returns-empty').style.display=''; return; }
+    const tbody = document.getElementById('admin-returns-tbody');
+    tbody.innerHTML = '';
+    data.forEach(r=>{
+      const issues = [
+        r.reference_stickers==='No'?'Missing stickers':'',
+        r.manual_signin_captured==='No'?'Not on sign-in sheet':''
+      ].filter(Boolean);
+      const photoBtn = r.box_photo_url
+        ? `<a href="${r.box_photo_url}" target="_blank" class="btn btn-sm"><i class="ti ti-photo"></i>View</a>`
+        : '—';
+      const tr = document.createElement('tr');
+      tr.innerHTML=`
+        <td>${r.check_date||'—'}</td>
+        <td><span class="badge ${r.order_sealed==='Sealed'?'badge-success':'badge-warning'}">${r.order_sealed||'—'}</span></td>
+        <td style="white-space:normal;font-size:11px">${r.box_contents||'—'}</td>
+        <td>${photoBtn}</td>
+        <td><span class="badge ${r.reference_stickers==='Yes'?'badge-success':'badge-danger'}">${r.reference_stickers||'—'}</span>${r.reference_stickers==='No'&&r.reference_stickers_reason?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px">'+r.reference_stickers_reason+'</div>':''}</td>
+        <td><span class="badge ${r.manual_signin_captured==='Yes'?'badge-success':'badge-danger'}">${r.manual_signin_captured||'—'}</span>${r.manual_signin_captured==='No'&&r.manual_signin_captured_reason?'<div style="font-size:11px;color:var(--text-muted);margin-top:3px">'+r.manual_signin_captured_reason+'</div>':''}</td>
+        <td>${issues.length?'<span class="badge badge-danger">'+issues.length+'</span>':'<span class="badge badge-success">None</span>'}`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('admin-returns-content').style.display = '';
+  }catch(err){
+    document.getElementById('admin-returns-loading').textContent = 'Error: '+(err.message||err);
+  }
+}
+
+/* ===== DASHBOARD NOTIFICATIONS (all forms) ===== */
+async function loadDashboardNotifications(){
+  // Leave requests pending
+  try{
+    const { count } = await supabaseClient.from('leave_requests').select('*',{count:'exact',head:true}).or('status.is.null,status.eq.Pending');
+    const badge = document.getElementById('leave-bell-badge');
+    if(count&&count>0){ badge.textContent=count>9?'9+':count; badge.style.display='flex'; }
+    else { badge.style.display='none'; }
+  }catch(e){}
 }
 
 </script>
